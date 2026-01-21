@@ -33,7 +33,7 @@ class PersistenceTest {
 	        var found = repository.findByEmail("ana@test.com");
 
 	        assertThat(found).isPresent();
-//	        assertThat(found.get().getUsername()).isEqualTo("ana");
+	        assertThat(found.get().toDomain().getUsername()).isEqualTo("ana");
 	    }
 	    
 	
