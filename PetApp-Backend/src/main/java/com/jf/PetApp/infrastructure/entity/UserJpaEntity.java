@@ -1,7 +1,6 @@
-package com.jf.PetApp.infrastructure.persistence.user;
+package com.jf.PetApp.infrastructure.entity;
 
 import com.jf.PetApp.domain.User;
-import com.jf.PetApp.infrastructure.persistence.finance.FinanceJpaEntity;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;

@@ -1,4 +1,6 @@
-package com.jf.PetApp.domain;
+package com.jf.PetApp.infrastructure.repository;
+
+import com.jf.PetApp.domain.User;
 
 import java.util.Optional;
 

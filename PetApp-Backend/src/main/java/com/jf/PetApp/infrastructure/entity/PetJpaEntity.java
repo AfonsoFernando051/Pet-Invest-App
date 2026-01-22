@@ -1,7 +1,7 @@
-package com.jf.PetApp.infrastructure.persistence.pet;
+package com.jf.PetApp.infrastructure.entity;
 
 import com.jf.PetApp.domain.Pet;
-import com.jf.PetApp.domain.PetSpecie;
+import com.jf.PetApp.domain.enums.PetSpecieEnum;
 import com.jf.PetApp.domain.User;
 
 import jakarta.persistence.Entity;
@@ -22,7 +22,7 @@ public class PetJpaEntity {
     private int health;
 
     @Enumerated(EnumType.STRING)
-    private PetSpecie specie;
+    private PetSpecieEnum specie;
 
     private int userId;
 

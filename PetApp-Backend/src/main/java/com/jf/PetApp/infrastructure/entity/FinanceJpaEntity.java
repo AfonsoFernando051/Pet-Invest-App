@@ -1,9 +1,8 @@
-package com.jf.PetApp.infrastructure.persistence.finance;
+package com.jf.PetApp.infrastructure.entity;
 
 import java.math.BigDecimal;
 
 import com.jf.PetApp.domain.Finance;
-import com.jf.PetApp.infrastructure.persistence.user.UserJpaEntity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

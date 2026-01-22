@@ -1,11 +1,11 @@
-package com.jf.PetApp.infrastructure.persistence.user;
+package com.jf.PetApp.infrastructure.repository;
 
 import java.util.Optional;
 
+import com.jf.PetApp.infrastructure.entity.UserJpaEntity;
 import org.springframework.stereotype.Repository;
 
 import com.jf.PetApp.domain.User;
-import com.jf.PetApp.domain.UserRepository;
 
 @Repository
 public class JpaUserRepository implements UserRepository {

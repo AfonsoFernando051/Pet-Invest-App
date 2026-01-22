@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 
 import com.jf.PetApp.domain.User;
-import com.jf.PetApp.infrastructure.persistence.user.SpringUserJpaRepository;
-import com.jf.PetApp.infrastructure.persistence.user.UserJpaEntity;
+import com.jf.PetApp.infrastructure.repository.SpringUserJpaRepository;
+import com.jf.PetApp.infrastructure.entity.UserJpaEntity;
 
 @DataJpaTest
 class PersistenceTest {

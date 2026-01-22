@@ -1,5 +1,6 @@
-package com.jf.PetApp.infrastructure.persistence.user;
+package com.jf.PetApp.infrastructure.repository;
 
+import com.jf.PetApp.infrastructure.entity.UserJpaEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.jf.PetApp.domain.User;

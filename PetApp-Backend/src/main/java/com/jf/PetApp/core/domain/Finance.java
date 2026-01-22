@@ -1,4 +1,4 @@
-package com.jf.PetApp.domain;
+package com.jf.PetApp.core.domain;
 
 import java.math.BigDecimal;
 import java.util.Collection;

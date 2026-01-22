@@ -1,4 +1,6 @@
-package com.jf.PetApp.domain;
+package com.jf.PetApp.core.domain;
+
+import com.jf.PetApp.domain.enums.PetSpecieEnum;
 
 public class Pet {
 	
@@ -15,7 +17,7 @@ public class Pet {
 	/**
 	 * Specie for pet
 	 */
-	PetSpecie specie;
+	PetSpecieEnum specie;
 	
 	/**
 	 * Pet health
@@ -39,10 +41,10 @@ public class Pet {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public PetSpecie getSpecie() {
+	public PetSpecieEnum getSpecie() {
 		return specie;
 	}
-	public void setSpecie(PetSpecie specie) {
+	public void setSpecie(PetSpecieEnum specie) {
 		this.specie = specie;
 	}
 	public int getHealth() {
