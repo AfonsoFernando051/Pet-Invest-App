@@ -1,11 +1,11 @@
-package com.jf.PetApp.infrastructure.repository;
-
-import com.jf.PetApp.domain.User;
+package com.jf.PetApp.application.user.port;
 
 import java.util.Optional;
 
+import com.jf.PetApp.core.domain.User;
+
 public interface UserRepository {
-	Optional<User> findById(int id);
+    Optional<User> findById(int id);
 
     Optional<User> findByEmail(String email);
 

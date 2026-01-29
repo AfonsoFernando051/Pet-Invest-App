@@ -1,6 +1,6 @@
 package com.jf.PetApp.core.domain;
 
-import com.jf.PetApp.domain.enums.PetSpecieEnum;
+import com.jf.PetApp.core.domain.enums.PetSpecieEnum;
 
 public class Pet {
 	

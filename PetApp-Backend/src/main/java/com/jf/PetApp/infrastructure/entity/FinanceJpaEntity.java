@@ -2,7 +2,7 @@ package com.jf.PetApp.infrastructure.entity;
 
 import java.math.BigDecimal;
 
-import com.jf.PetApp.domain.Finance;
+import com.jf.PetApp.core.domain.Finance;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -22,8 +22,8 @@ public class FinanceJpaEntity {
 
     private BigDecimal balance;
 
-    @OneToOne
-    @JoinColumn(name = "user_id")
+    @OneToOne(optional = false)
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
     private UserJpaEntity user;
 
     /* ---------- Mapping ---------- */

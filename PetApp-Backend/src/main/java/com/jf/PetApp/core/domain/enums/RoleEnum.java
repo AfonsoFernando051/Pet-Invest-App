@@ -1,8 +1,6 @@
 package com.jf.PetApp.core.domain.enums;
 
-public enum PetSpecieEnum {
-
-	DOG,
-	
-	CAT;
+public enum RoleEnum {
+    ADMIN,
+    USER
 }

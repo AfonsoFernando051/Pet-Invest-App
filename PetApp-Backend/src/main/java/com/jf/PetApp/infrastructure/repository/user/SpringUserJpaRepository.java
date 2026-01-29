@@ -1,9 +1,8 @@
-package com.jf.PetApp.infrastructure.repository;
+package com.jf.PetApp.infrastructure.repository.user;
 
+import com.jf.PetApp.core.domain.User;
 import com.jf.PetApp.infrastructure.entity.UserJpaEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
-
-import com.jf.PetApp.domain.User;
 
 import java.util.Optional;
 
@@ -12,5 +11,5 @@ public interface SpringUserJpaRepository
 
     Optional<UserJpaEntity> findByEmail(String email);
 
-	void save(User user);
+    void save(User user);
 }

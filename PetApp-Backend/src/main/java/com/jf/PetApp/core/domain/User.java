@@ -1,5 +1,7 @@
 package com.jf.PetApp.core.domain;
 
+import com.jf.PetApp.core.domain.enums.RoleEnum;
+
 public class User {
 
 	/**
@@ -31,6 +33,16 @@ public class User {
 	 * The user's pet
 	 */
 	Finance finance;
+
+	/**
+	 * The user's role
+	 */
+	RoleEnum role;
+
+	/**
+	 * The user's active status
+	 */
+	boolean isActive;
 
 	public int getId() {
 		return id;
@@ -71,6 +83,29 @@ public class User {
 	public void setPet(Pet pet) {
 		this.pet = pet;
 	}
-	
-	
+
+	public Finance getFinance() {
+		return finance;
+	}
+
+	public void setFinance(Finance finance) {
+		this.finance = finance;
+	}
+
+	public RoleEnum getRole() {
+		return role;
+	}
+
+	public void setRole(RoleEnum role) {
+		this.role = role;
+	}
+
+	public boolean isActive() {
+		return isActive;
+	}
+
+	public void setActive(boolean isActive) {
+		this.isActive = isActive;
+	}
+
 }

@@ -1,9 +1,13 @@
 package com.jf.PetApp.infrastructure.entity;
 
-import com.jf.PetApp.domain.User;
+import com.jf.PetApp.core.domain.User;
+import com.jf.PetApp.core.domain.enums.RoleEnum;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -16,6 +20,7 @@ public class UserJpaEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="user_id")
     private int id;
 
     private String username;
@@ -24,8 +29,16 @@ public class UserJpaEntity {
 
     private String password;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private boolean isActive;
+
+    @Enumerated(EnumType.STRING)
+    private RoleEnum role;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private FinanceJpaEntity finance;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private PetJpaEntity pet;
 
     /* ---------- Mapping ---------- */
 

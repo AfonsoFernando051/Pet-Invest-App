@@ -1,30 +1,35 @@
 package com.jf.PetApp.infrastructure.entity;
 
-import com.jf.PetApp.domain.Pet;
-import com.jf.PetApp.domain.enums.PetSpecieEnum;
-import com.jf.PetApp.domain.User;
+import com.jf.PetApp.core.domain.Pet;
+import com.jf.PetApp.core.domain.User;
+import com.jf.PetApp.core.domain.enums.PetSpecieEnum;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "jf_pets")
 public class PetJpaEntity {
-	
-	@Id
+
+    @Id
     private int id;
 
     private String name;
 
     private int health;
+  
 
     @Enumerated(EnumType.STRING)
     private PetSpecieEnum specie;
-
-    private int userId;
+    
+    @OneToOne(optional = false)
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
+    private UserJpaEntity user;
 
     public static PetJpaEntity fromDomain(Pet pet) {
         PetJpaEntity entity = new PetJpaEntity();
@@ -32,7 +37,6 @@ public class PetJpaEntity {
         entity.name = pet.getName();
         entity.health = pet.getHealth();
         entity.specie = pet.getSpecie();
-        entity.userId = pet.getUser().getId();
         return entity;
     }
 
