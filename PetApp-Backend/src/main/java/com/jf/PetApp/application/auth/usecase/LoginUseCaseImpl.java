@@ -1,9 +1,9 @@
 package com.jf.PetApp.application.auth.usecase;
 
-import javax.naming.AuthenticationException;
 
 import com.jf.PetApp.application.auth.dto.LoginCommand;
 import com.jf.PetApp.application.auth.dto.LoginResult;
+import com.jf.PetApp.application.auth.exception.AuthenticationException;
 import com.jf.PetApp.application.auth.port.PasswordEncoderPort;
 import com.jf.PetApp.application.auth.port.TokenProvider;
 import com.jf.PetApp.application.user.port.UserRepository;
