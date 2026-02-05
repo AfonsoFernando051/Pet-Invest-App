@@ -7,7 +7,7 @@ public class User {
 	/**
 	 * Id for pet
 	 */
-	int id;
+	Long id;
 
 	/**
 	 * Name for user
@@ -44,11 +44,11 @@ public class User {
 	 */
 	boolean isActive;
 
-	public int getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -106,6 +106,15 @@ public class User {
 
 	public void setActive(boolean isActive) {
 		this.isActive = isActive;
+	}
+
+	public static User create(String email, String password, RoleEnum role) {
+		User user = new User();
+		user.setEmail(email);
+		user.setPassword(password);
+		user.setRole(role);
+		user.setActive(true);
+		return user;
 	}
 
 }

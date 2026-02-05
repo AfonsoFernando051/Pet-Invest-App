@@ -9,11 +9,11 @@ import com.jf.PetApp.infrastructure.entity.UserJpaEntity;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class JpaUserRepository implements UserRepository {
+public class UserJpaRepository implements UserRepository {
 
     private final SpringUserJpaRepository jpa;
 
-    public JpaUserRepository(SpringUserJpaRepository jpa) {
+    public UserJpaRepository(SpringUserJpaRepository jpa) {
         this.jpa = jpa;
     }
 
@@ -30,7 +30,9 @@ public class JpaUserRepository implements UserRepository {
     }
 
     @Override
-    public void save(User user) {
-        jpa.save(UserJpaEntity.fromDomain(user));
+    public User save(User user) {
+        UserJpaEntity U = UserJpaEntity.fromDomain(user);
+		jpa.save(U);
+		return U.toDomain();
     }
 }
