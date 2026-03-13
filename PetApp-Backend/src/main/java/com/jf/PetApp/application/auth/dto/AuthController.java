@@ -1,7 +1,5 @@
 package com.jf.PetApp.application.auth.dto;
 
-import javax.naming.AuthenticationException;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -31,7 +29,7 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(
         @RequestBody LoginRequest request
-    ) throws AuthenticationException {
+    ) {
         LoginResult result = loginUseCase.execute(
             new LoginCommand(request.email(), request.password())
         );
@@ -64,5 +62,12 @@ public class AuthController {
         return ResponseEntity
             .status(HttpStatus.CONFLICT)
             .body("User already exists");
+    }
+
+    @ExceptionHandler(com.jf.PetApp.application.auth.exception.AuthenticationException.class)
+    public ResponseEntity<?> handleAuthenticationException() {
+        return ResponseEntity
+            .status(HttpStatus.UNAUTHORIZED)
+            .body("Invalid email or password");
     }
 }
