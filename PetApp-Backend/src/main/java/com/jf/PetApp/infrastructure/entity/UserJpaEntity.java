@@ -48,6 +48,8 @@ public class UserJpaEntity {
         entity.username = user.getUsername();
         entity.email = user.getEmail();
         entity.password = user.getPassword();
+        entity.role = user.getRole();
+        entity.isActive = user.isActive();
         return entity;
     }
 
@@ -57,6 +59,8 @@ public class UserJpaEntity {
         user.setUsername(username);
         user.setEmail(email);
         user.setPassword(password);
+        user.setRole(role);
+        user.setActive(isActive);
         return user;
     }
 }
