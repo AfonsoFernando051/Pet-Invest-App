@@ -33,3 +33,5 @@ build/
 .vscode/
 .metadata/
 /bin/
+
+PetApp-Backend/mvnw
