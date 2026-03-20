@@ -17,9 +17,11 @@ class InMemoryQuestionRepositoryTest {
         List<Question> questions = repository.findAll();
 
         assertFalse(questions.isEmpty());
-        assertEquals(3, questions.size());
+        assertEquals(5, questions.size());
         assertEquals("q1", questions.get(0).id());
         assertEquals("q2", questions.get(1).id());
         assertEquals("q3", questions.get(2).id());
+        assertEquals("q4", questions.get(3).id());
+        assertEquals("q5", questions.get(4).id());
     }
 }
