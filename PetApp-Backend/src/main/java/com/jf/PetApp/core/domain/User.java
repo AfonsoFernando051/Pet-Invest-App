@@ -108,8 +108,9 @@ public class User {
 		this.isActive = isActive;
 	}
 
-	public static User create(String email, String password, RoleEnum role) {
+	public static User create(String username, String email, String password, RoleEnum role) {
 		User user = new User();
+		user.setUsername(username);
 		user.setEmail(email);
 		user.setPassword(password);
 		user.setRole(role);
