@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
+import '../../../../core/utils/translator.dart';
 
 class LoginButton extends StatelessWidget {
   const LoginButton({super.key});
@@ -20,7 +21,7 @@ class LoginButton extends StatelessWidget {
           ),
           backgroundColor: AppColors.primaryButton,
         ),
-        child: const Text(AppStrings.loginButton),
+        child: Text(Translator.translate(AppStrings.loginButton)),
       ),
     );
   }

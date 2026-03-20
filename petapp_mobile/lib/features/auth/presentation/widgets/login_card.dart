@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
+import '../../../../core/utils/translator.dart';
 import 'custom_text_field.dart';
 import 'login_button.dart';
 
@@ -23,46 +24,46 @@ class LoginCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(24),
               border: Border.all(color: AppColors.white20),
             ),
-            child: const Column(
+            child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.explore, size: 64, color: AppColors.white),
-                SizedBox(height: 16),
+                const Icon(Icons.explore, size: 64, color: AppColors.white),
+                const SizedBox(height: 16),
                 Text(
-                  AppStrings.welcomeBack,
-                  style: TextStyle(
+                  Translator.translate(AppStrings.welcomeBack),
+                  style: const TextStyle(
                     color: AppColors.white,
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Text(
-                  AppStrings.loginToContinue,
-                  style: TextStyle(color: AppColors.white70),
+                  Translator.translate(AppStrings.loginToContinue),
+                  style: const TextStyle(color: AppColors.white70),
                 ),
-                SizedBox(height: 24),
+                const SizedBox(height: 24),
                 CustomTextField(
-                  hint: AppStrings.emailOrUserHint,
+                  hint: Translator.translate(AppStrings.emailOrUserHint),
                   icon: Icons.email,
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 CustomTextField(
-                  hint: AppStrings.passwordHint,
+                  hint: Translator.translate(AppStrings.passwordHint),
                   icon: Icons.lock,
                   obscure: true,
                 ),
-                SizedBox(height: 24),
-                LoginButton(),
-                SizedBox(height: 16),
+                const SizedBox(height: 24),
+                const LoginButton(),
+                const SizedBox(height: 16),
                 Text(
-                  AppStrings.forgotPassword,
-                  style: TextStyle(color: AppColors.white70),
+                  Translator.translate(AppStrings.forgotPassword),
+                  style: const TextStyle(color: AppColors.white70),
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Text(
-                  AppStrings.noAccountSignUp,
-                  style: TextStyle(color: AppColors.white),
+                  Translator.translate(AppStrings.noAccountSignUp),
+                  style: const TextStyle(color: AppColors.white),
                 ),
               ],
             ),
