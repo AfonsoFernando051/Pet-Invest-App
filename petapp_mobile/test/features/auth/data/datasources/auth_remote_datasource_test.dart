@@ -25,7 +25,7 @@ void main() {
     test('should return UserModel when the response code is 200/201 (success)', () async {
       // arrange
       when(() => mockApiClient.post(any(), any())).thenAnswer(
-        (_) async => http.Response(jsonEncode({'email': tEmail, 'token': 'mock_token'}), 200),
+        (_) async => http.Response(jsonEncode({'email': tEmail, 'accessToken': 'mock_token'}), 200),
       );
 
       // act
@@ -61,7 +61,7 @@ void main() {
     test('should return UserModel when the response code is 200/201 (success)', () async {
       // arrange
       when(() => mockApiClient.post(any(), any())).thenAnswer(
-        (_) async => http.Response(jsonEncode({'email': tEmail, 'token': 'mock_token'}), 201),
+        (_) async => http.Response(jsonEncode({'email': tEmail, 'accessToken': 'mock_token'}), 201),
       );
 
       // act

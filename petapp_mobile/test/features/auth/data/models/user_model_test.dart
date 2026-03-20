@@ -6,7 +6,7 @@ void main() {
     test('fromJson should return a valid model when both email and token are provided', () {
       final Map<String, dynamic> jsonMap = {
         'email': 'test@test.com',
-        'token': 'mock_token',
+        'accessToken': 'mock_token',
       };
       
       final result = UserModel.fromJson(jsonMap);
@@ -28,7 +28,7 @@ void main() {
 
     test('fromJson should handle null email safely fallback to empty string', () {
       final Map<String, dynamic> jsonMap = {
-        'token': 'mock_token',
+        'accessToken': 'mock_token',
       };
       
       final result = UserModel.fromJson(jsonMap);

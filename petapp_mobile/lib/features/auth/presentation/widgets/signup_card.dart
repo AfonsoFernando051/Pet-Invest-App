@@ -53,9 +53,13 @@ class _SignupCardState extends State<SignupCard> {
     setState(() => _isLoading = true);
     try {
       await DI.authRepository.register(email, password);
+      
+      // Auto-login since register doesn't return an accessToken
+      await DI.authRepository.login(email, password);
+      
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Registration successful!')),
+          const SnackBar(content: Text('Registration and Login successful!')),
         );
       }
     } catch (e) {
