@@ -4,6 +4,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/utils/translator.dart';
 import '../../../../core/di/dependency_injection.dart';
+import '../../../home/presentation/screens/home_screen.dart';
 import 'custom_text_field.dart';
 import 'forgot_password_button.dart';
 import 'login_button.dart';
@@ -42,10 +43,9 @@ class _LoginCardState extends State<LoginCard> {
     setState(() => _isLoading = true);
     try {
       await DI.authRepository.login(email, password);
-      // Handle navigation on success if needed
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Login successful!')),
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const HomeScreen()),
         );
       }
     } catch (e) {

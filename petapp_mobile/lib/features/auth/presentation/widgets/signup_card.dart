@@ -4,6 +4,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/utils/translator.dart';
 import '../../../../core/di/dependency_injection.dart';
+import '../../../home/presentation/screens/home_screen.dart';
 import 'custom_text_field.dart';
 import 'signup_action_button.dart';
 import 'already_have_account_button.dart';
@@ -59,8 +60,8 @@ class _SignupCardState extends State<SignupCard> {
       await DI.authRepository.login(email, password);
       
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Registration and Login successful!')),
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const HomeScreen()),
         );
       }
     } catch (e) {
