@@ -25,6 +25,16 @@ public class InMemoryQuestionRepository implements QuestionRepository {
             new Option("q3_1", "Less than 1 year (need liquidity soon)", 0),
             new Option("q3_2", "1 to 5 years", 2),
             new Option("q3_3", "More than 5 years (long term player)", 4)
+        )),
+        new Question("q4", "When markets are volatile, which action feels most like you?", List.of(
+            new Option("q4_1", "Avoid risk and focus on capital protection", 0),
+            new Option("q4_2", "Rebalance gradually and keep a long-term plan", 2),
+            new Option("q4_3", "Increase exposure when prices drop, accepting swings", 4)
+        )),
+        new Question("q5", "How important is the possibility of large short-term losses to you?", List.of(
+            new Option("q5_1", "Very important - I prefer smaller, steadier outcomes", 0),
+            new Option("q5_2", "Somewhat important - I can tolerate losses for better upside", 2),
+            new Option("q5_3", "Not very important - I prioritize growth even if it hurts", 4)
         ))
     );
 
