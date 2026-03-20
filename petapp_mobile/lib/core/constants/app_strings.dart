@@ -8,4 +8,12 @@ class AppStrings {
   static const String forgotPassword = "forgotPassword";
   static const String noAccountSignUp = "noAccountSignUp";
   static const String loginButton = "loginButton";
+
+  // Signup
+  static const String createAccount = "createAccount";
+  static const String fillDetails = "fillDetails";
+  static const String nameHint = "nameHint";
+  static const String confirmPasswordHint = "confirmPasswordHint";
+  static const String signupButton = "signupButton";
+  static const String alreadyHaveAccount = "alreadyHaveAccount";
 }
