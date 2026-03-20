@@ -30,6 +30,7 @@ public class RegisterUserUseCaseImpl implements RegisterUserUseCase {
             });
 
         User user = User.create(
+            command.username(),
             command.email(),
             passwordEncoder.encode(command.password()),
             RoleEnum.USER

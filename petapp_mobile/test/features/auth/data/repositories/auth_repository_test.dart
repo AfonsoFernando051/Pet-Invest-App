@@ -18,9 +18,11 @@ void main() {
   });
 
   group('AuthRepository', () {
-    const tEmail = 'test@test.com';
-    const tPassword = 'password';
-    final tUserModel = UserModel(email: tEmail, token: 'mock_token');
+    final tName = 'Test User';
+    final tEmail = 'test@example.com';
+    final tPassword = 'password123';
+    final tToken = 'mock_token';
+    final tUserModel = UserModel(email: tEmail, token: tToken);
 
     test('should call login on remote data source and save token in SharedPreferences', () async {
       // arrange
@@ -32,6 +34,20 @@ void main() {
 
       // assert
       verify(() => mockRemoteDataSource.login(tEmail, tPassword)).called(1);
+      final prefs = await SharedPreferences.getInstance();
+      expect(prefs.getString('auth_token'), 'mock_token');
+    });
+
+    test('should call remoteDataSource.register and save token when register is successful', () async {
+      // arrange
+      when(() => mockRemoteDataSource.register(any(), any(), any()))
+          .thenAnswer((_) async => UserModel(email: tEmail, token: tToken));
+      
+      // act
+      await repository.register(tName, tEmail, tPassword);
+
+      // assert
+      verify(() => mockRemoteDataSource.register(tName, tEmail, tPassword)).called(1);
       final prefs = await SharedPreferences.getInstance();
       expect(prefs.getString('auth_token'), 'mock_token');
     });

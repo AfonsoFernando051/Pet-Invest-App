@@ -25,10 +25,11 @@ class AuthRemoteDataSource {
     }
   }
 
-  Future<UserModel> register(String email, String password) async {
+  Future<UserModel> register(String name, String email, String password) async {
     final response = await apiClient.post(
       ApiConstants.registerEndpoint,
       {
+        'username': name,
         'email': email,
         'password': password,
       },

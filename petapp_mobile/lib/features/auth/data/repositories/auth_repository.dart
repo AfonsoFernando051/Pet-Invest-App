@@ -11,8 +11,8 @@ class AuthRepository {
     await _saveToken(user.token);
   }
 
-  Future<void> register(String email, String password) async {
-    final user = await remoteDataSource.register(email, password);
+  Future<void> register(String name, String email, String password) async {
+    final user = await remoteDataSource.register(name, email, password);
     await _saveToken(user.token);
   }
 

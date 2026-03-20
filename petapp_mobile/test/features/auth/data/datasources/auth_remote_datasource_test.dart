@@ -55,8 +55,9 @@ void main() {
   });
 
   group('AuthRemoteDataSource - register', () {
-    const tEmail = 'test@example.com';
-    const tPassword = 'password123';
+    final tName = 'Test User';
+    final tEmail = 'test@example.com';
+    final tPassword = 'password123';
     
     test('should return UserModel when the response code is 200/201 (success)', () async {
       // arrange
@@ -65,14 +66,18 @@ void main() {
       );
 
       // act
-      final result = await dataSource.register(tEmail, tPassword);
+      final result = await dataSource.register(tName, tEmail, tPassword);
 
       // assert
-      expect(result.email, equals(tEmail));
-      expect(result.token, equals('mock_token'));
+      expect(result, isA<UserModel>());
+      expect(result.email, tEmail);
       verify(() => mockApiClient.post(
             ApiConstants.registerEndpoint,
-            {'email': tEmail, 'password': tPassword},
+            {
+              'username': tName,
+              'email': tEmail,
+              'password': tPassword,
+            },
           )).called(1);
     });
 

@@ -32,11 +32,12 @@ class _SignupCardState extends State<SignupCard> {
   }
 
   Future<void> _handleRegister() async {
+    final name = _nameController.text.trim();
     final email = _emailController.text.trim();
     final password = _passwordController.text;
     final confirmPassword = _confirmPasswordController.text;
 
-    if (email.isEmpty || password.isEmpty) {
+    if (name.isEmpty || email.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please fill in required fields')),
       );
@@ -52,7 +53,7 @@ class _SignupCardState extends State<SignupCard> {
 
     setState(() => _isLoading = true);
     try {
-      await DI.authRepository.register(email, password);
+      await DI.authRepository.register(name, email, password);
       
       // Auto-login since register doesn't return an accessToken
       await DI.authRepository.login(email, password);

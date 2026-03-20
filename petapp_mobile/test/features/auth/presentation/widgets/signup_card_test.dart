@@ -43,13 +43,16 @@ void main() {
 
       final nameField = textFields.at(0);
       final emailField = textFields.at(1);
-      final passwordField = textFields.at(2);
-      final confirmField = textFields.at(3);
+      final passwordFields = find.descendant(
+        of: find.byType(CustomTextField).at(2),
+        matching: find.byType(TextField),
+      );
 
+      // Fill in the form
       await tester.enterText(nameField, 'Test User');
       await tester.enterText(emailField, 'test@example.com');
-      await tester.enterText(passwordField, 'password123');
-      await tester.enterText(confirmField, 'password123');
+      await tester.enterText(passwordFields.first, 'password123');
+      await tester.enterText(passwordFields.last, 'password123');
       await tester.pump();
 
       // Tap the signup button, it should be the first ElevatedButton
@@ -59,7 +62,7 @@ void main() {
       await tester.pump(); // UI updates with loading state
       await tester.pump(); // UI updates with success snackbar
 
-      verify(() => mockAuthRepository.register('test@example.com', 'password123')).called(1);
+      verify(() => mockAuthRepository.register('Test User', 'test@example.com', 'password123')).called(1);
     });
   });
 }

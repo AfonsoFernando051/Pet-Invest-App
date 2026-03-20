@@ -1,5 +1,5 @@
 package com.jf.PetApp.presentation.auth.dto;
 
-public record RegisterRequest(String email, String password) {
+public record RegisterRequest(String username, String email, String password) {
 
 }

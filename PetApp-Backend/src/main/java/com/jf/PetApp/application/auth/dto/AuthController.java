@@ -45,6 +45,7 @@ public class AuthController {
     ) {
         RegisterResult result = registerUserUseCase.execute(
             new RegisterCommand(
+                request.username(),
                 request.email(),
                 request.password()
             )
