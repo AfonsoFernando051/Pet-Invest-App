@@ -29,6 +29,7 @@ void main() {
   group('SignupCard', () {
     testWidgets('renders all fields and attempts registration on tap', (WidgetTester tester) async {
       when(() => mockAuthRepository.register(any(), any())).thenAnswer((_) async {});
+      when(() => mockAuthRepository.login(any(), any())).thenAnswer((_) async {});
       
       await tester.pumpWidget(buildTestableWidget());
 
