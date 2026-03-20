@@ -1,5 +1,6 @@
 package com.jf.PetApp.infrastructure.entity;
 
+import com.jf.PetApp.core.domain.assessment.InvestorProfile;
 import com.jf.PetApp.core.domain.User;
 import com.jf.PetApp.core.domain.enums.RoleEnum;
 
@@ -31,6 +32,13 @@ public class UserJpaEntity {
 
     private boolean isActive;
 
+    @Column(name = "has_answered_onboarding")
+    private boolean hasAnsweredOnboarding;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "investor_profile")
+    private InvestorProfile investorProfile;
+
     @Enumerated(EnumType.STRING)
     private RoleEnum role;
 
@@ -50,6 +58,8 @@ public class UserJpaEntity {
         entity.password = user.getPassword();
         entity.role = user.getRole();
         entity.isActive = user.isActive();
+        entity.hasAnsweredOnboarding = user.hasAnsweredOnboarding();
+        entity.investorProfile = user.getInvestorProfile();
         return entity;
     }
 
@@ -61,6 +71,8 @@ public class UserJpaEntity {
         user.setPassword(password);
         user.setRole(role);
         user.setActive(isActive);
+        user.setHasAnsweredOnboarding(hasAnsweredOnboarding);
+        user.setInvestorProfile(investorProfile);
         return user;
     }
 }

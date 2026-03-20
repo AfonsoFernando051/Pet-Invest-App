@@ -28,7 +28,7 @@ void main() {
 
   group('SignupCard', () {
     testWidgets('renders all fields and attempts registration on tap', (WidgetTester tester) async {
-      when(() => mockAuthRepository.register(any(), any())).thenAnswer((_) async {});
+      when(() => mockAuthRepository.register(any(), any(), any())).thenAnswer((_) async {});
       when(() => mockAuthRepository.login(any(), any())).thenAnswer((_) async {});
       
       await tester.pumpWidget(buildTestableWidget());
@@ -43,16 +43,14 @@ void main() {
 
       final nameField = textFields.at(0);
       final emailField = textFields.at(1);
-      final passwordFields = find.descendant(
-        of: find.byType(CustomTextField).at(2),
-        matching: find.byType(TextField),
-      );
+      final passwordField = textFields.at(2);
+      final confirmPasswordField = textFields.at(3);
 
       // Fill in the form
       await tester.enterText(nameField, 'Test User');
       await tester.enterText(emailField, 'test@example.com');
-      await tester.enterText(passwordFields.first, 'password123');
-      await tester.enterText(passwordFields.last, 'password123');
+      await tester.enterText(passwordField, 'password123');
+      await tester.enterText(confirmPasswordField, 'password123');
       await tester.pump();
 
       // Tap the signup button, it should be the first ElevatedButton
