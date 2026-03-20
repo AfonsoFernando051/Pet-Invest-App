@@ -3,12 +3,71 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/utils/translator.dart';
+import '../../../../core/di/dependency_injection.dart';
 import 'custom_text_field.dart';
 import 'signup_action_button.dart';
 import 'already_have_account_button.dart';
 
-class SignupCard extends StatelessWidget {
+class SignupCard extends StatefulWidget {
   const SignupCard({super.key});
+
+  @override
+  State<SignupCard> createState() => _SignupCardState();
+}
+
+class _SignupCardState extends State<SignupCard> {
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
+  bool _isLoading = false;
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _handleRegister() async {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
+    final confirmPassword = _confirmPasswordController.text;
+
+    if (email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill in required fields')),
+      );
+      return;
+    }
+
+    if (password != confirmPassword) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Passwords do not match')),
+      );
+      return;
+    }
+
+    setState(() => _isLoading = true);
+    try {
+      await DI.authRepository.register(email, password);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Registration successful!')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Registration failed: ${e.toString().replaceAll('Exception: ', '')}')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,26 +109,33 @@ class SignupCard extends StatelessWidget {
                     CustomTextField(
                       hint: Translator.translate(AppStrings.nameHint),
                       icon: Icons.person,
+                      controller: _nameController,
                     ),
                     const SizedBox(height: 16),
                     CustomTextField(
                       hint: Translator.translate(AppStrings.emailOrUserHint),
                       icon: Icons.email,
+                      controller: _emailController,
                     ),
                     const SizedBox(height: 16),
                     CustomTextField(
                       hint: Translator.translate(AppStrings.passwordHint),
                       icon: Icons.lock,
                       obscure: true,
+                      controller: _passwordController,
                     ),
                     const SizedBox(height: 16),
                     CustomTextField(
                       hint: Translator.translate(AppStrings.confirmPasswordHint),
                       icon: Icons.lock_outline,
                       obscure: true,
+                      controller: _confirmPasswordController,
                     ),
                     const SizedBox(height: 24),
-                    const SignupActionButton(),
+                    SignupActionButton(
+                      onPressed: _handleRegister,
+                      isLoading: _isLoading,
+                    ),
                     const SizedBox(height: 16),
                     const AlreadyHaveAccountButton(),
                   ],

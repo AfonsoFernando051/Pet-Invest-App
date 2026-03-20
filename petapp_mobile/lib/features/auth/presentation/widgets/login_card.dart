@@ -3,13 +3,61 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/utils/translator.dart';
+import '../../../../core/di/dependency_injection.dart';
 import 'custom_text_field.dart';
 import 'forgot_password_button.dart';
 import 'login_button.dart';
 import 'signup_button.dart';
 
-class LoginCard extends StatelessWidget {
+class LoginCard extends StatefulWidget {
   const LoginCard({super.key});
+
+  @override
+  State<LoginCard> createState() => _LoginCardState();
+}
+
+class _LoginCardState extends State<LoginCard> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  bool _isLoading = false;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _handleLogin() async {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
+
+    if (email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill in both email and password')),
+      );
+      return;
+    }
+
+    setState(() => _isLoading = true);
+    try {
+      await DI.authRepository.login(email, password);
+      // Handle navigation on success if needed
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Login successful!')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Login failed: ${e.toString().replaceAll('Exception: ', '')}')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,15 +96,20 @@ class LoginCard extends StatelessWidget {
                 CustomTextField(
                   hint: Translator.translate(AppStrings.emailOrUserHint),
                   icon: Icons.email,
+                  controller: _emailController,
                 ),
                 const SizedBox(height: 16),
                 CustomTextField(
                   hint: Translator.translate(AppStrings.passwordHint),
                   icon: Icons.lock,
                   obscure: true,
+                  controller: _passwordController,
                 ),
                 const SizedBox(height: 24),
-                const LoginButton(),
+                LoginButton(
+                  onPressed: _handleLogin,
+                  isLoading: _isLoading,
+                ),
                 const SizedBox(height: 16),
                 const ForgotPasswordButton(),
                 const SizedBox(height: 8),

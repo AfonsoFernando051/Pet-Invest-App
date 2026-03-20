@@ -4,16 +4,21 @@ import '../../../../core/constants/app_strings.dart';
 import '../../../../core/utils/translator.dart';
 
 class SignupActionButton extends StatelessWidget {
-  const SignupActionButton({super.key});
+  final VoidCallback? onPressed;
+  final bool isLoading;
+
+  const SignupActionButton({
+    super.key,
+    this.onPressed,
+    this.isLoading = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
-        onPressed: () {
-          // TODO: lógica de cadastro real
-        },
+        onPressed: isLoading ? null : onPressed,
         style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(
@@ -21,7 +26,19 @@ class SignupActionButton extends StatelessWidget {
           ),
           backgroundColor: AppColors.primaryButton,
         ),
-        child: Text(Translator.translate(AppStrings.signupButton)),
+        child: isLoading
+            ? const SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2,
+                ),
+              )
+            : Text(
+                Translator.translate(AppStrings.signupButton),
+                style: const TextStyle(color: Colors.white),
+              ),
       ),
     );
   }
