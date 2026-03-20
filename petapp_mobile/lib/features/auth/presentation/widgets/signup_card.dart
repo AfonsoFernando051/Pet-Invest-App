@@ -5,6 +5,7 @@ import '../../../../core/constants/app_strings.dart';
 import '../../../../core/utils/translator.dart';
 import '../../../../core/di/dependency_injection.dart';
 import '../../../home/presentation/screens/home_screen.dart';
+import '../../../onboarding/presentation/screens/onboarding_screen.dart';
 import 'custom_text_field.dart';
 import 'signup_action_button.dart';
 import 'already_have_account_button.dart';
@@ -58,10 +59,15 @@ class _SignupCardState extends State<SignupCard> {
       
       // Auto-login since register doesn't return an accessToken
       await DI.authRepository.login(email, password);
-      
+
+      final status = await DI.onboardingRepository.getStatus();
       if (mounted) {
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const HomeScreen()),
+          MaterialPageRoute(
+            builder: (_) => status.hasAnswered
+                ? const HomeScreen()
+                : const OnboardingScreen(),
+          ),
         );
       }
     } catch (e) {

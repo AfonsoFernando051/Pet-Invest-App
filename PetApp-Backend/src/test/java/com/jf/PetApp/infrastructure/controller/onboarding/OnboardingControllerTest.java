@@ -23,7 +23,9 @@ import com.jf.PetApp.application.onboarding.usecase.CalculateInvestorProfileUseC
 import com.jf.PetApp.core.domain.assessment.InvestorProfile;
 import com.jf.PetApp.core.domain.assessment.Option;
 import com.jf.PetApp.core.domain.assessment.Question;
+import com.jf.PetApp.core.domain.User;
 import com.jf.PetApp.core.port.QuestionRepository;
+import com.jf.PetApp.application.user.port.UserRepository;
 import com.jf.PetApp.infrastructure.security.jwt.JwtAuthenticationFilter;
 
 @WebMvcTest(controllers = OnboardingController.class)
@@ -40,6 +42,9 @@ class OnboardingControllerTest {
 
     @MockitoBean
     private CalculateInvestorProfileUseCase calculateInvestorProfileUseCase;
+
+    @MockitoBean
+    private UserRepository userRepository;
     
     @MockitoBean
     private JwtAuthenticationFilter jwtAuthenticationFilter; // mock the exact filter that security config uses
@@ -64,9 +69,17 @@ class OnboardingControllerTest {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(username = "test@example.com")
     void shouldSubmitAssessmentAndReturnProfile() throws Exception {
         when(calculateInvestorProfileUseCase.execute(any())).thenReturn(InvestorProfile.TACTICIAN);
+
+        User user = new User();
+        user.setId(1L);
+        user.setEmail("test@example.com");
+        user.setHasAnsweredOnboarding(false);
+
+        when(userRepository.findByEmail("test@example.com")).thenReturn(java.util.Optional.of(user));
+        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         OnboardingController.SubmitAssessmentRequestDTO request = 
             new OnboardingController.SubmitAssessmentRequestDTO(List.of("opt1", "opt2"));

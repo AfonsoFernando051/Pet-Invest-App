@@ -5,4 +5,8 @@ class ApiConstants {
 
   static const String loginEndpoint = '/auth/login';
   static const String registerEndpoint = '/auth/register';
+
+  static const String onboardingQuestionsEndpoint = '/api/onboarding/questions';
+  static const String onboardingSubmitEndpoint = '/api/onboarding/submit';
+  static const String onboardingStatusEndpoint = '/api/onboarding/status';
 }

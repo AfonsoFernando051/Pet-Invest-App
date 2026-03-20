@@ -1,5 +1,6 @@
 package com.jf.PetApp.core.domain;
 
+import com.jf.PetApp.core.domain.assessment.InvestorProfile;
 import com.jf.PetApp.core.domain.enums.RoleEnum;
 
 public class User {
@@ -43,6 +44,16 @@ public class User {
 	 * The user's active status
 	 */
 	boolean isActive;
+
+	/**
+	 * Whether the user already answered the investor questionnaire.
+	 */
+	boolean hasAnsweredOnboarding;
+
+	/**
+	 * Computed investor profile based on the questionnaire answers.
+	 */
+	InvestorProfile investorProfile;
 
 	public Long getId() {
 		return id;
@@ -108,6 +119,22 @@ public class User {
 		this.isActive = isActive;
 	}
 
+	public boolean hasAnsweredOnboarding() {
+		return hasAnsweredOnboarding;
+	}
+
+	public void setHasAnsweredOnboarding(boolean hasAnsweredOnboarding) {
+		this.hasAnsweredOnboarding = hasAnsweredOnboarding;
+	}
+
+	public InvestorProfile getInvestorProfile() {
+		return investorProfile;
+	}
+
+	public void setInvestorProfile(InvestorProfile investorProfile) {
+		this.investorProfile = investorProfile;
+	}
+
 	public static User create(String username, String email, String password, RoleEnum role) {
 		User user = new User();
 		user.setUsername(username);
@@ -115,6 +142,8 @@ public class User {
 		user.setPassword(password);
 		user.setRole(role);
 		user.setActive(true);
+		user.setHasAnsweredOnboarding(false);
+		user.setInvestorProfile(null);
 		return user;
 	}
 
