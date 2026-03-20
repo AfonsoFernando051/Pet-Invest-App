@@ -15,6 +15,7 @@ class DI {
 
   static final OnboardingRemoteDataSource _onboardingRemoteDataSource =
       OnboardingRemoteDataSource(apiClient: _apiClient);
-  static final OnboardingRepository onboardingRepository =
+  // Not `final` so tests can replace it with a mock repository.
+  static OnboardingRepository onboardingRepository =
       OnboardingRepository(remoteDataSource: _onboardingRemoteDataSource);
 }
