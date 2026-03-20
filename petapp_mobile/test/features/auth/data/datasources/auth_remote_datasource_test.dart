@@ -91,7 +91,7 @@ void main() {
       final call = dataSource.register;
 
       // assert
-      expect(() => call(tEmail, tPassword), throwsA(isA<Exception>()));
+      expect(() => call(tName, tEmail, tPassword), throwsA(isA<Exception>()));
     });
   });
 }
