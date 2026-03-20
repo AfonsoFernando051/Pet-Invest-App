@@ -6,6 +6,7 @@ import '../../../../core/utils/translator.dart';
 import 'custom_text_field.dart';
 import 'forgot_password_button.dart';
 import 'login_button.dart';
+import 'signup_button.dart';
 
 class LoginCard extends StatelessWidget {
   const LoginCard({super.key});
@@ -59,10 +60,7 @@ class LoginCard extends StatelessWidget {
                 const SizedBox(height: 16),
                 const ForgotPasswordButton(),
                 const SizedBox(height: 8),
-                Text(
-                  Translator.translate(AppStrings.noAccountSignUp),
-                  style: const TextStyle(color: AppColors.white),
-                ),
+                const SignupButton(),
               ],
             ),
           ),
