@@ -83,9 +83,16 @@ class _LoginCardState extends State<LoginCard> {
                   width: 340,
                   padding: const EdgeInsets.fromLTRB(24, 48, 24, 24),
                   decoration: BoxDecoration(
-                    color: AppColors.white10,
+                    color: AppColors.white10.withValues(alpha: 0.05),
                     borderRadius: BorderRadius.circular(24),
-                    border: Border.all(color: AppColors.goldenBorder.withValues(alpha: 0.5), width: 1.5),
+                    border: Border.all(color: AppColors.neonPurple.withValues(alpha: 0.3), width: 1.5),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.spaceDark.withValues(alpha: 0.5),
+                        blurRadius: 30,
+                        spreadRadius: -5,
+                      ),
+                    ],
                   ),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -132,22 +139,35 @@ class _LoginCardState extends State<LoginCard> {
             ),
           ),
           Positioned(
-            top: 0,
+            top: -70, // Shifted up to overlap the top border significantly
             child: Container(
-              padding: const EdgeInsets.all(12),
+              height: 140,
+              width: 140,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: AppColors.backgroundDark.withValues(alpha: 0.8),
-                border: Border.all(color: AppColors.neonCyan, width: 2),
                 boxShadow: [
-                  BoxShadow(
-                    color: AppColors.neonCyan.withValues(alpha: 0.5),
-                    blurRadius: 10,
-                    spreadRadius: 2,
-                  ),
+                  BoxShadow(color: AppColors.neonCyan.withValues(alpha: 0.5), blurRadius: 20, spreadRadius: 2),
+                  BoxShadow(color: AppColors.neonPink.withValues(alpha: 0.4), blurRadius: 30, spreadRadius: -5),
+                  BoxShadow(color: AppColors.neonPurple.withValues(alpha: 0.3), blurRadius: 40, spreadRadius: 10),
                 ],
+                border: Border.all(color: AppColors.white20, width: 2),
               ),
-              child: const Icon(Icons.person_outline, size: 40, color: AppColors.neonCyan),
+              child: ClipOval(
+                child: Image.asset(
+                  'assets/images/magic_fox.jpg',
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: AppColors.spaceDark.withValues(alpha: 0.8),
+                      ),
+                      child: const Icon(Icons.person_outline, size: 40, color: AppColors.neonCyan),
+                    );
+                  },
+                ),
+              ),
             ),
           ),
         ],

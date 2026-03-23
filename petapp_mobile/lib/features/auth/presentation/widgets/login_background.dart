@@ -22,9 +22,9 @@ class LoginBackground extends StatelessWidget {
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      AppColors.backgroundDark,
-                      AppColors.backgroundMedium,
-                      AppColors.backgroundLight,
+                      AppColors.spaceDark,
+                      AppColors.spacePurple,
+                      AppColors.spaceBlue,
                     ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
@@ -32,21 +32,6 @@ class LoginBackground extends StatelessWidget {
                 ),
               );
             },
-          ),
-          
-          // Cosmic Fox with Compass Graphic
-          Positioned(
-            top: 40,
-            left: 0,
-            right: 0,
-            child: Center(
-              child: Image.asset(
-                'assets/images/fox_compass.png',
-                height: 350,
-                fit: BoxFit.contain,
-                errorBuilder: (context, error, stackTrace) => const SizedBox(height: 350),
-              ),
-            ),
           ),
         ],
       ),
