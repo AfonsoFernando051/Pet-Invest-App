@@ -15,7 +15,7 @@ class LoginBackground extends StatelessWidget {
         children: [
           // Background Nebula Image
           Image.asset(
-            'assets/images/bg_nebula.png',
+            'assets/images/questionary_space_paw.png',
             fit: BoxFit.cover,
             filterQuality: FilterQuality.high,
             errorBuilder: (context, error, stackTrace) {
