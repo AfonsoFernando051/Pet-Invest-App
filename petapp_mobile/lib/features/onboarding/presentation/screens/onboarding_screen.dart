@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
 import 'package:petapp_mobile/core/di/dependency_injection.dart';
@@ -57,7 +58,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF16242B), // Dark greenish-blue from image
+      backgroundColor: AppColors.spaceDark, // Update to spaceDark
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         title: const Text(
@@ -79,146 +80,178 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           },
         ),
       ),
-      body: Stack(
-        children: [
-          // Background graphic
-          Positioned.fill(
-            child: Opacity(
-              opacity: 0.25,
-              child: Image.asset(
-                'assets/images/questionary_bg.png',
-                fit: BoxFit.cover,
-                alignment: Alignment.topCenter,
-              ),
-            ),
-          ),
-          
-          SafeArea(
-            child: FutureBuilder<List<QuestionModel>>(
-              future: _questionsFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator(color: AppColors.neonCyan));
-                }
-                if (snapshot.hasError) {
-                  return Center(
-                    child: Text(
-                      'Failed to load questions: ${snapshot.error}',
-                      style: const TextStyle(color: Colors.white),
-                    )
-                  );
-                }
-                final questions = snapshot.data ?? [];
-                if (questions.isEmpty) {
-                  return const Center(
-                    child: Text('No questions available.', style: TextStyle(color: Colors.white))
-                  );
-                }
-
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Column(
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(24),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                child: Container(
+                  width: double.infinity,
+                  constraints: const BoxConstraints(maxWidth: 400),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.06),
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.2),
+                        blurRadius: 30,
+                        spreadRadius: 5,
+                      ),
+                    ],
+                  ),
+                  child: Stack(
                     children: [
-                      const SizedBox(height: 16),
-                      Expanded(
-                        child: ListView.separated(
-                          padding: const EdgeInsets.only(bottom: 24),
-                          itemCount: questions.length,
-                          separatorBuilder: (context, _) => const SizedBox(height: 16),
-                          itemBuilder: (context, index) {
-                            final q = questions[index];
-                            return _QuestionCard(
-                              question: q,
-                              isFirst: index == 0,
-                              selectedOptionId: _selectedOptionByQuestionId[q.id],
-                              onSelected: (optionId) {
-                                setState(() => _selectedOptionByQuestionId[q.id] = optionId);
-                              },
+                      // Background graphic inside the card
+                      Positioned.fill(
+                        child: Opacity(
+                          opacity: 0.25,
+                          child: Image.asset(
+                            'assets/images/questionary_bg.png',
+                            fit: BoxFit.cover,
+                            alignment: Alignment.topCenter,
+                          ),
+                        ),
+                      ),
+                      
+                      Padding(
+                        padding: const EdgeInsets.all(24.0),
+                        child: FutureBuilder<List<QuestionModel>>(
+                          future: _questionsFuture,
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState == ConnectionState.waiting) {
+                              return const SizedBox(
+                                height: 300,
+                                child: Center(child: CircularProgressIndicator(color: AppColors.neonCyan)),
+                              );
+                            }
+                            if (snapshot.hasError) {
+                              return SizedBox(
+                                height: 300,
+                                child: Center(
+                                  child: Text(
+                                    'Failed to load questions: ${snapshot.error}',
+                                    style: const TextStyle(color: Colors.white),
+                                  )
+                                ),
+                              );
+                            }
+                            final questions = snapshot.data ?? [];
+                            if (questions.isEmpty) {
+                              return const SizedBox(
+                                height: 300,
+                                child: Center(
+                                  child: Text('No questions available.', style: TextStyle(color: Colors.white))
+                                ),
+                              );
+                            }
+
+                            return Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                ...questions.asMap().entries.map((entry) {
+                                  final index = entry.key;
+                                  final q = entry.value;
+                                  return Padding(
+                                    padding: const EdgeInsets.only(bottom: 16),
+                                    child: _QuestionCard(
+                                      question: q,
+                                      isFirst: index == 0,
+                                      selectedOptionId: _selectedOptionByQuestionId[q.id],
+                                      onSelected: (optionId) {
+                                        setState(() => _selectedOptionByQuestionId[q.id] = optionId);
+                                      },
+                                    ),
+                                  );
+                                }),
+                                
+                                const SizedBox(height: 8),
+                                
+                                // Submit Button
+                                Container(
+                                  width: double.infinity,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(30),
+                                    gradient: const LinearGradient(
+                                      colors: [Color(0xFF8E2DE2), AppColors.neonCyan],
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: const Color(0xFF8E2DE2).withValues(alpha: 0.4),
+                                        blurRadius: 12,
+                                        offset: const Offset(0, 4),
+                                      ),
+                                    ],
+                                  ),
+                                  child: ElevatedButton(
+                                    onPressed: _isSubmitting ? null : () => _handleSubmit(questions),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.transparent,
+                                      shadowColor: Colors.transparent,
+                                      padding: const EdgeInsets.symmetric(vertical: 18),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(30),
+                                      ),
+                                    ),
+                                    child: _isSubmitting
+                                        ? const SizedBox(
+                                            width: 24,
+                                            height: 24,
+                                            child: CircularProgressIndicator(
+                                              color: Colors.white,
+                                              strokeWidth: 2.5,
+                                            ),
+                                          )
+                                        : const Text(
+                                            'Enviar Respostas',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                  ),
+                                ),
+                                
+                                const SizedBox(height: 12),
+                                
+                                TextButton(
+                                  onPressed: () {},
+                                  child: const Text(
+                                    'Esqueceu as respostas?',
+                                    style: TextStyle(
+                                      color: Colors.white54,
+                                      decoration: TextDecoration.underline,
+                                      decorationColor: Colors.white54,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             );
                           },
                         ),
                       ),
                       
-                      // Submit Button
-                      Container(
-                        width: double.infinity,
-                        margin: const EdgeInsets.only(bottom: 12),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(30),
-                          gradient: const LinearGradient(
-                            colors: [Color(0xFF8E2DE2), AppColors.neonCyan],
-                            begin: Alignment.centerLeft,
-                            end: Alignment.centerRight,
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color(0xFF8E2DE2).withValues(alpha: 0.4),
-                              blurRadius: 12,
-                              spreadRadius: 2,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: ElevatedButton(
-                          onPressed: _isSubmitting ? null : () => _handleSubmit(questions),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.transparent,
-                            shadowColor: Colors.transparent,
-                            padding: const EdgeInsets.symmetric(vertical: 18),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                          ),
-                          child: _isSubmitting
-                              ? const SizedBox(
-                                  width: 24,
-                                  height: 24,
-                                  child: CircularProgressIndicator(
-                                    color: Colors.white,
-                                    strokeWidth: 2.5,
-                                  ),
-                                )
-                              : const Text(
-                                  'Enviar Respostas',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
+                      // Bottom right star decoration - moved inside the card
+                      Positioned(
+                        bottom: 24,
+                        right: 24,
+                        child: Icon(
+                          Icons.auto_awesome, 
+                          color: Colors.white.withValues(alpha: 0.6),
+                          size: 24,
                         ),
                       ),
-                      
-                      TextButton(
-                        onPressed: () {},
-                        child: const Text(
-                          'Esqueceu as respostas?',
-                          style: TextStyle(
-                            color: Colors.white54,
-                            decoration: TextDecoration.underline,
-                            decorationColor: Colors.white54,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
                     ],
                   ),
-                );
-              },
+                ),
+              ),
             ),
           ),
-          
-          // Bottom right star decoration
-          Positioned(
-            bottom: 24,
-            right: 24,
-            child: Icon(
-              Icons.auto_awesome, 
-              color: Colors.white.withValues(alpha: 0.8),
-              size: 28,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
