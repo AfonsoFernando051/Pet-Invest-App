@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
 import 'package:petapp_mobile/core/di/dependency_injection.dart';
+import 'package:petapp_mobile/features/auth/presentation/widgets/login_background.dart';
 import 'package:petapp_mobile/features/home/presentation/screens/home_screen.dart';
 import 'package:petapp_mobile/features/onboarding/data/models/question_model.dart';
 
@@ -80,9 +81,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           },
         ),
       ),
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
+      body: Stack(
+        children: [
+          const LoginBackground(),
+          SafeArea(
+            child: Center(
+              child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(24),
@@ -252,6 +256,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             ),
           ),
         ),
+      ),
+        ],
       ),
     );
   }
