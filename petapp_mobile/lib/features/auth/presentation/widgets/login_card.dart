@@ -94,46 +94,51 @@ class _LoginCardState extends State<LoginCard> {
                       ),
                     ],
                   ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
+                  child: Stack(
                     children: [
                       // Large integrated Fox Image with ShaderMask fading out
-                      ClipRRect(
-                        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-                        child: ShaderMask(
-                          shaderCallback: (Rect bounds) {
-                            return const LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [Colors.white, Colors.white, Colors.transparent],
-                              stops: [0.0, 0.7, 1.0],
-                            ).createShader(bounds);
-                          },
-                          blendMode: BlendMode.dstIn,
-                          child: Image.asset(
-                            'assets/images/magic_fox.jpg',
-                            height: 220,
-                            width: double.infinity,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Container(
-                                height: 200,
-                                alignment: Alignment.center,
-                                child: const Icon(Icons.broken_image, color: AppColors.white54, size: 50),
-                              );
+                      Positioned(
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        child: ClipRRect(
+                          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                          child: ShaderMask(
+                            shaderCallback: (Rect bounds) {
+                              return const LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: [Colors.white, Colors.white, Colors.transparent],
+                                stops: [0.0, 0.6, 1.0],
+                              ).createShader(bounds);
                             },
+                            blendMode: BlendMode.dstIn,
+                            child: Image.asset(
+                              'assets/images/magic_fox.jpg',
+                              height: 300,
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  height: 200,
+                                  alignment: Alignment.center,
+                                  child: const Icon(Icons.broken_image, color: AppColors.white54, size: 50),
+                                );
+                              },
+                            ),
                           ),
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
+                        padding: const EdgeInsets.fromLTRB(24, 220, 24, 32),
                         child: Column(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
                               Translator.translate(AppStrings.welcomeBack),
                               style: const TextStyle(
                                 color: AppColors.white,
-                                fontSize: 24,
+                                fontSize: 26,
                                 fontWeight: FontWeight.bold,
                                 letterSpacing: 1.0,
                               ),
@@ -143,7 +148,7 @@ class _LoginCardState extends State<LoginCard> {
                               Translator.translate(AppStrings.loginToContinue),
                               style: const TextStyle(color: AppColors.white70, fontSize: 14),
                             ),
-                            const SizedBox(height: 24),
+                            const SizedBox(height: 32),
                             CustomTextField(
                               hint: Translator.translate(AppStrings.emailOrUserHint),
                               icon: Icons.email_outlined,
@@ -161,7 +166,7 @@ class _LoginCardState extends State<LoginCard> {
                               onPressed: _handleLogin,
                               isLoading: _isLoading,
                             ),
-                            const SizedBox(height: 16),
+                            const SizedBox(height: 24),
                             const ForgotPasswordButton(),
                             const SizedBox(height: 16),
                             const SignupButton(),
