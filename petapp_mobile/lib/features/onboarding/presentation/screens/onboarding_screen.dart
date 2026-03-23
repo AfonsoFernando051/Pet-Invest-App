@@ -112,9 +112,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       // Background graphic inside the card
                       Positioned.fill(
                         child: Opacity(
-                          opacity: 0.25,
+                          opacity: 0.4,
                           child: Image.asset(
-                            'assets/images/questionary_bg.png',
+                            'assets/images/questionary_space_paw.png',
                             fit: BoxFit.cover,
                             alignment: Alignment.topCenter,
                           ),
