@@ -9,16 +9,46 @@ class LoginBackground extends StatelessWidget {
     return Container(
       width: double.infinity,
       height: double.infinity,
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            AppColors.backgroundDark,
-            AppColors.backgroundMedium,
-            AppColors.backgroundLight,
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+      color: AppColors.backgroundDark,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          // Background Nebula Image
+          Image.asset(
+            'assets/images/bg_nebula.jpg',
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) {
+              return Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      AppColors.backgroundDark,
+                      AppColors.backgroundMedium,
+                      AppColors.backgroundLight,
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+              );
+            },
+          ),
+          
+          // Cosmic Fox with Compass Graphic
+          Positioned(
+            top: 40,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: Image.asset(
+                'assets/images/fox_compass.png',
+                height: 350,
+                fit: BoxFit.contain,
+                errorBuilder: (context, error, stackTrace) => const SizedBox(height: 350),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

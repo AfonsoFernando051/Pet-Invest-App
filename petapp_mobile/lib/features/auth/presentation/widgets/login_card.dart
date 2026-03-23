@@ -69,62 +69,88 @@ class _LoginCardState extends State<LoginCard> {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(24),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-          child: Container(
-            width: 320,
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: AppColors.white10,
+      child: Stack(
+        clipBehavior: Clip.none,
+        alignment: Alignment.topCenter,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 32),
+            child: ClipRRect(
               borderRadius: BorderRadius.circular(24),
-              border: Border.all(color: AppColors.white20),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(Icons.explore, size: 64, color: AppColors.white),
-                const SizedBox(height: 16),
-                Text(
-                  Translator.translate(AppStrings.welcomeBack),
-                  style: const TextStyle(
-                    color: AppColors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                child: Container(
+                  width: 340,
+                  padding: const EdgeInsets.fromLTRB(24, 48, 24, 24),
+                  decoration: BoxDecoration(
+                    color: AppColors.white10,
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(color: AppColors.goldenBorder.withValues(alpha: 0.5), width: 1.5),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        Translator.translate(AppStrings.welcomeBack),
+                        style: const TextStyle(
+                          color: AppColors.white,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        Translator.translate(AppStrings.loginToContinue),
+                        style: const TextStyle(color: AppColors.white70),
+                      ),
+                      const SizedBox(height: 32),
+                      CustomTextField(
+                        hint: Translator.translate(AppStrings.emailOrUserHint),
+                        icon: Icons.email_outlined,
+                        controller: _emailController,
+                      ),
+                      const SizedBox(height: 16),
+                      CustomTextField(
+                        hint: Translator.translate(AppStrings.passwordHint),
+                        icon: Icons.lock_outline,
+                        obscure: true,
+                        controller: _passwordController,
+                      ),
+                      const SizedBox(height: 32),
+                      LoginButton(
+                        onPressed: _handleLogin,
+                        isLoading: _isLoading,
+                      ),
+                      const SizedBox(height: 16),
+                      const ForgotPasswordButton(),
+                      const SizedBox(height: 16),
+                      const SignupButton(),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  Translator.translate(AppStrings.loginToContinue),
-                  style: const TextStyle(color: AppColors.white70),
-                ),
-                const SizedBox(height: 24),
-                CustomTextField(
-                  hint: Translator.translate(AppStrings.emailOrUserHint),
-                  icon: Icons.email,
-                  controller: _emailController,
-                ),
-                const SizedBox(height: 16),
-                CustomTextField(
-                  hint: Translator.translate(AppStrings.passwordHint),
-                  icon: Icons.lock,
-                  obscure: true,
-                  controller: _passwordController,
-                ),
-                const SizedBox(height: 24),
-                LoginButton(
-                  onPressed: _handleLogin,
-                  isLoading: _isLoading,
-                ),
-                const SizedBox(height: 16),
-                const ForgotPasswordButton(),
-                const SizedBox(height: 8),
-                const SignupButton(),
-              ],
+              ),
             ),
           ),
-        ),
+          Positioned(
+            top: 0,
+            child: Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppColors.backgroundDark.withValues(alpha: 0.8),
+                border: Border.all(color: AppColors.neonCyan, width: 2),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.neonCyan.withValues(alpha: 0.5),
+                    blurRadius: 10,
+                    spreadRadius: 2,
+                  ),
+                ],
+              ),
+              child: const Icon(Icons.person_outline, size: 40, color: AppColors.neonCyan),
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -14,7 +14,11 @@ class ForgotPasswordButton extends StatelessWidget {
       },
       child: Text(
         Translator.translate(AppStrings.forgotPassword),
-        style: const TextStyle(color: AppColors.white70),
+        style: const TextStyle(
+          color: AppColors.white70,
+          decoration: TextDecoration.underline,
+          decorationColor: AppColors.white70,
+        ),
       ),
     );
   }

@@ -13,4 +13,10 @@ class AppColors {
   static const Color white54 = Colors.white54;
   static const Color white70 = Colors.white70;
   static const Color white = Colors.white;
+
+  // Neon theme colors
+  static const Color neonCyan = Color(0xFF00E5FF);
+  static const Color neonPurple = Color(0xFFB388FF);
+  static const Color neonBlue = Color(0xFF2979FF);
+  static const Color goldenBorder = Color(0xFFFFD54F);
 }
