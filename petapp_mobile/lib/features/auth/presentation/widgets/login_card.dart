@@ -112,7 +112,8 @@ class _LoginCardState extends State<LoginCard> {
                           child: Image.asset(
                             'assets/images/magic_fox.jpg',
                             width: double.infinity,
-                            fit: BoxFit.fitWidth, // This guarantees the image scales dynamically and isn't cropped!
+                            fit: BoxFit.fitWidth, 
+                            filterQuality: FilterQuality.high,
                             errorBuilder: (context, error, stackTrace) {
                               return Container(
                                 height: 200,
