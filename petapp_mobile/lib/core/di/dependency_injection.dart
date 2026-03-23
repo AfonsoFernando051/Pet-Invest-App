@@ -5,9 +5,9 @@ import 'package:petapp_mobile/features/onboarding/data/datasources/onboarding_re
 import 'package:petapp_mobile/features/onboarding/data/repositories/onboarding_repository.dart';
 
 class DI {
-  static final final ApiClient _apiClient = ApiClient();
+  static final ApiClient _apiClient = ApiClient();
 
-  static final final AuthRemoteDataSource _authRemoteDataSource =
+  static final AuthRemoteDataSource _authRemoteDataSource =
      
       AuthRemoteDataSource(apiClient: _apiClient);
   // Not `final` so tests can replace it with a mock repository.
