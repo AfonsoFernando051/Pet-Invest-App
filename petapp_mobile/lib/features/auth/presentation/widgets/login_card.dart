@@ -96,41 +96,35 @@ class _LoginCardState extends State<LoginCard> {
                   ),
                   child: Stack(
                     children: [
-                      // Large integrated Fox Image with ShaderMask fading out
-                      Positioned(
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        child: ClipRRect(
-                          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-                          child: ShaderMask(
-                            shaderCallback: (Rect bounds) {
-                              return const LinearGradient(
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                                colors: [Colors.white, Colors.white, Colors.transparent],
-                                stops: [0.0, 0.6, 1.0],
-                              ).createShader(bounds);
+                      // Large integrated Fox Image with ShaderMask fading out (shows 100% of image)
+                      ClipRRect(
+                        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                        child: ShaderMask(
+                          shaderCallback: (Rect bounds) {
+                            return const LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [Colors.white, Colors.white, Colors.transparent],
+                              stops: [0.0, 0.7, 1.0],
+                            ).createShader(bounds);
+                          },
+                          blendMode: BlendMode.dstIn,
+                          child: Image.asset(
+                            'assets/images/magic_fox.jpg',
+                            width: double.infinity,
+                            fit: BoxFit.fitWidth, // This guarantees the image scales dynamically and isn't cropped!
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                height: 200,
+                                alignment: Alignment.center,
+                                child: const Icon(Icons.broken_image, color: AppColors.white54, size: 50),
+                              );
                             },
-                            blendMode: BlendMode.dstIn,
-                            child: Image.asset(
-                              'assets/images/magic_fox.jpg',
-                              height: 300,
-                              width: double.infinity,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return Container(
-                                  height: 200,
-                                  alignment: Alignment.center,
-                                  child: const Icon(Icons.broken_image, color: AppColors.white54, size: 50),
-                                );
-                              },
-                            ),
                           ),
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.fromLTRB(24, 220, 24, 32),
+                        padding: const EdgeInsets.fromLTRB(24, 380, 24, 32),
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -138,7 +132,7 @@ class _LoginCardState extends State<LoginCard> {
                               Translator.translate(AppStrings.welcomeBack),
                               style: const TextStyle(
                                 color: AppColors.white,
-                                fontSize: 26,
+                                fontSize: 24,
                                 fontWeight: FontWeight.bold,
                                 letterSpacing: 1.0,
                               ),
