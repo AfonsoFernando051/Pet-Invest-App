@@ -69,62 +69,129 @@ class _LoginCardState extends State<LoginCard> {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(24),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-          child: Container(
-            width: 320,
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: AppColors.white10,
+      child: SingleChildScrollView(
+        child: Stack(
+          clipBehavior: Clip.none,
+          alignment: Alignment.topCenter,
+          children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 24, bottom: 24),
+            child: ClipRRect(
               borderRadius: BorderRadius.circular(24),
-              border: Border.all(color: AppColors.white20),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(Icons.explore, size: 64, color: AppColors.white),
-                const SizedBox(height: 16),
-                Text(
-                  Translator.translate(AppStrings.welcomeBack),
-                  style: const TextStyle(
-                    color: AppColors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                child: Container(
+                  width: 340,
+                  decoration: BoxDecoration(
+                    color: AppColors.white.withValues(alpha: 0.06),
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(color: AppColors.goldenBorder.withValues(alpha: 0.5), width: 1.0),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.spaceBlue.withValues(alpha: 0.2),
+                        blurRadius: 30,
+                        spreadRadius: 5,
+                      ),
+                    ],
+                  ),
+                  child: Stack(
+                    children: [
+                      // Large integrated Fox Image with ShaderMask fading out (shows 100% of image)
+                      ClipRRect(
+                        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                        child: ShaderMask(
+                          shaderCallback: (Rect bounds) {
+                            return const LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [Colors.white, Colors.white, Colors.transparent],
+                              stops: [0.0, 0.7, 1.0],
+                            ).createShader(bounds);
+                          },
+                          blendMode: BlendMode.dstIn,
+                          child: Image.asset(
+                            'assets/images/magic_fox.jpg',
+                            width: double.infinity,
+                            fit: BoxFit.fitWidth, 
+                            filterQuality: FilterQuality.high,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                height: 200,
+                                alignment: Alignment.center,
+                                child: const Icon(Icons.broken_image, color: AppColors.white54, size: 50),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(24, 380, 24, 32),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              Translator.translate(AppStrings.welcomeBack),
+                              style: const TextStyle(
+                                color: AppColors.white,
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1.0,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              Translator.translate(AppStrings.loginToContinue),
+                              style: const TextStyle(color: AppColors.white70, fontSize: 14),
+                            ),
+                            const SizedBox(height: 32),
+                            CustomTextField(
+                              hint: Translator.translate(AppStrings.emailOrUserHint),
+                              icon: Icons.email_outlined,
+                              controller: _emailController,
+                            ),
+                            const SizedBox(height: 16),
+                            CustomTextField(
+                              hint: Translator.translate(AppStrings.passwordHint),
+                              icon: Icons.lock_outline,
+                              obscure: true,
+                              controller: _passwordController,
+                            ),
+                            const SizedBox(height: 24),
+                            LoginButton(
+                              onPressed: _handleLogin,
+                              isLoading: _isLoading,
+                            ),
+                            const SizedBox(height: 24),
+                            const ForgotPasswordButton(),
+                            const SizedBox(height: 16),
+                            const SignupButton(),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  Translator.translate(AppStrings.loginToContinue),
-                  style: const TextStyle(color: AppColors.white70),
-                ),
-                const SizedBox(height: 24),
-                CustomTextField(
-                  hint: Translator.translate(AppStrings.emailOrUserHint),
-                  icon: Icons.email,
-                  controller: _emailController,
-                ),
-                const SizedBox(height: 16),
-                CustomTextField(
-                  hint: Translator.translate(AppStrings.passwordHint),
-                  icon: Icons.lock,
-                  obscure: true,
-                  controller: _passwordController,
-                ),
-                const SizedBox(height: 24),
-                LoginButton(
-                  onPressed: _handleLogin,
-                  isLoading: _isLoading,
-                ),
-                const SizedBox(height: 16),
-                const ForgotPasswordButton(),
-                const SizedBox(height: 8),
-                const SignupButton(),
-              ],
+              ),
             ),
           ),
-        ),
+           // Floating avatar top icon
+          Positioned(
+            top: 0,
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppColors.white10.withValues(alpha: 0.2),
+                border: Border.all(color: AppColors.neonCyan.withValues(alpha: 0.5), width: 1.5),
+                boxShadow: [
+                  BoxShadow(color: AppColors.neonCyan.withValues(alpha: 0.2), blurRadius: 10, spreadRadius: 1),
+                ],
+              ),
+              child: const Icon(Icons.person_outline, size: 36, color: AppColors.white),
+            ),
+          ),
+        ],
+      ),
       ),
     );
   }

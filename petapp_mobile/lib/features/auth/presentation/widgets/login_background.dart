@@ -18,8 +18,6 @@ class LoginBackground extends StatelessWidget {
             'assets/images/bg_nebula.png',
             fit: BoxFit.cover,
             filterQuality: FilterQuality.high,
-            color: AppColors.neonCyan.withValues(alpha: 0.2),
-            colorBlendMode: BlendMode.overlay,
             errorBuilder: (context, error, stackTrace) {
               return Container(
                 decoration: const BoxDecoration(
@@ -35,21 +33,6 @@ class LoginBackground extends StatelessWidget {
                 ),
               );
             },
-          ),
-          // Cinematic Vignette Overlay
-          Container(
-            decoration: BoxDecoration(
-              gradient: RadialGradient(
-                center: Alignment.center,
-                radius: 1.2,
-                colors: [
-                  Colors.transparent,
-                  AppColors.spaceDark.withValues(alpha: 0.5),
-                  AppColors.spaceDark.withValues(alpha: 0.95),
-                ],
-                stops: const [0.3, 0.8, 1.0],
-              ),
-            ),
           ),
         ],
       ),
