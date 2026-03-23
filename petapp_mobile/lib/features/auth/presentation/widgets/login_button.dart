@@ -20,22 +20,16 @@ class LoginButton extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
         gradient: const LinearGradient(
-          colors: [AppColors.neonPurple, AppColors.neonPink],
+          colors: [AppColors.neonBlue, AppColors.neonPurple],
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
         ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.neonPink.withValues(alpha: 0.4),
+            color: AppColors.neonBlue.withValues(alpha: 0.4),
             blurRadius: 15,
             spreadRadius: 1,
-            offset: const Offset(-2, 4),
-          ),
-          BoxShadow(
-            color: AppColors.neonPurple.withValues(alpha: 0.4),
-            blurRadius: 15,
-            spreadRadius: 1,
-            offset: const Offset(2, 4),
+            offset: const Offset(0, 4),
           ),
         ],
       ),

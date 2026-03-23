@@ -19,22 +19,14 @@ class CustomTextField extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.white10,
+        color: AppColors.white.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppColors.neonCyan, width: 1.5),
+        border: Border.all(color: AppColors.neonCyan.withValues(alpha: 0.4), width: 1.0),
         boxShadow: [
-          // Outer neon glow
           BoxShadow(
-            color: AppColors.neonCyan.withValues(alpha: 0.5),
-            blurRadius: 10,
+            color: AppColors.neonCyan.withValues(alpha: 0.1),
+            blurRadius: 8,
             spreadRadius: 1,
-          ),
-          // Inner neon glow
-          BoxShadow(
-            color: AppColors.neonCyan.withValues(alpha: 0.2),
-            blurRadius: 5,
-            spreadRadius: -2,
-            offset: const Offset(0, 0),
           ),
         ],
       ),
