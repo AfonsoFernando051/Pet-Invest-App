@@ -9,16 +9,32 @@ class LoginBackground extends StatelessWidget {
     return Container(
       width: double.infinity,
       height: double.infinity,
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            AppColors.backgroundDark,
-            AppColors.backgroundMedium,
-            AppColors.backgroundLight,
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+      color: AppColors.backgroundDark,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          // Background Nebula Image
+          Image.asset(
+            'assets/images/bg_nebula.png',
+            fit: BoxFit.cover,
+            filterQuality: FilterQuality.high,
+            errorBuilder: (context, error, stackTrace) {
+              return Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      AppColors.spaceDark,
+                      AppColors.spacePurple,
+                      AppColors.spaceBlue,
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
       ),
     );
   }

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
-import '../../../../core/constants/app_strings.dart';
-import '../../../../core/utils/translator.dart';
 import 'signup_card.dart';
 
 class SignupButton extends StatelessWidget {
@@ -31,9 +29,20 @@ class SignupButton extends StatelessWidget {
           },
         );
       },
-      child: Text(
-        Translator.translate(AppStrings.noAccountSignUp),
-        style: const TextStyle(color: AppColors.white),
+      child: RichText(
+        text: TextSpan(
+          text: 'Não tem conta? ',
+          style: const TextStyle(color: AppColors.white70),
+          children: [
+            TextSpan(
+              text: 'Cadastre-se',
+              style: const TextStyle(
+                color: AppColors.neonCyan,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
