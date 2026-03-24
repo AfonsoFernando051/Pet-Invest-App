@@ -3,6 +3,9 @@ package com.jf.PetApp.core.domain.enums;
 public enum PetSpecieEnum {
 
 	DOG,
-	
-	CAT;
+	CAT,
+	WOLF,
+	FOX,
+	BEAR,
+	LION;
 }
