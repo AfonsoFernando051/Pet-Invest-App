@@ -4,6 +4,7 @@ import 'package:petapp_mobile/core/constants/app_colors.dart';
 import 'package:petapp_mobile/core/di/dependency_injection.dart';
 import 'package:petapp_mobile/features/home/presentation/screens/home_screen.dart';
 import 'package:petapp_mobile/features/pet/data/models/pet_specie_enum.dart';
+import 'package:fl_chart/fl_chart.dart';
 
 class PetConfigurationScreen extends StatefulWidget {
   const PetConfigurationScreen({super.key});
@@ -15,12 +16,14 @@ class PetConfigurationScreen extends StatefulWidget {
 class _PetConfigurationScreenState extends State<PetConfigurationScreen> {
   PetSpecieEnum _selectedSpecie = PetSpecieEnum.DOG;
   bool _isLoading = false;
+  String _selectedGoal = 'Growth';
+  String _selectedHorizon = '1 years';
 
   final Map<PetSpecieEnum, IconData> _specieIcons = {
-    PetSpecieEnum.DOG: Icons.pets,
     PetSpecieEnum.CAT: Icons.cruelty_free,
-    PetSpecieEnum.WOLF: Icons.nightlight_round,
+    PetSpecieEnum.DOG: Icons.pets,
     PetSpecieEnum.FOX: Icons.local_fire_department,
+    PetSpecieEnum.WOLF: Icons.nightlight_round,
     PetSpecieEnum.BEAR: Icons.catching_pokemon,
     PetSpecieEnum.LION: Icons.star,
   };
@@ -48,192 +51,442 @@ class _PetConfigurationScreenState extends State<PetConfigurationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.spaceDark,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: const Text(
-          'Select Your PET Companion',
-          style: TextStyle(
-            color: AppColors.white,
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
+        title: const Text('PET Profile', style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.white),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
-            if (Navigator.canPop(context)) {
-              Navigator.pop(context);
-            }
+            if (Navigator.canPop(context)) Navigator.pop(context);
           },
         ),
       ),
-      body: SafeArea(
-        child: Column(
-          children: [
-            const SizedBox(height: 20),
-            const Text(
-              'Pet Laboratory',
-              style: TextStyle(
-                color: AppColors.white,
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 30),
-            
-            // Main visual capsule
-            Expanded(
-              flex: 2,
-              child: Center(
-                child: Container(
-                  width: 250,
-                  height: 250,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: RadialGradient(
-                      colors: [
-                        AppColors.neonCyan.withValues(alpha: 0.2),
-                        Colors.transparent
-                      ],
-                      radius: 0.8,
-                    ),
-                  ),
-                  child: Stack(
-                    alignment: Alignment.center,
+      body: Container(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/images/bg_nebula.png'),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final isWide = constraints.maxWidth > 800;
+                if (isWide) {
+                  return Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      // Glass capsule base
-                      Positioned(
-                        bottom: 0,
-                        child: Container(
-                          width: 200,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            color: AppColors.spaceBlue,
-                            borderRadius: BorderRadius.circular(20),
-                            boxShadow: [
-                              BoxShadow(
-                                color: AppColors.neonCyan.withValues(alpha: 0.5),
-                                blurRadius: 15,
-                                spreadRadius: -5,
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                      // Pet presentation
-                      Icon(
-                        _specieIcons[_selectedSpecie],
-                        size: 150,
-                        color: AppColors.white.withValues(alpha: 0.9),
-                      ),
+                      Expanded(flex: 4, child: _buildLeftPanel()),
+                      const SizedBox(width: 16),
+                      Expanded(flex: 6, child: _buildRightPanel()),
                     ],
-                  ),
-                ),
-              ),
-            ),
-            
-            const SizedBox(height: 30),
-            
-            // Grid of options
-            Expanded(
-              flex: 3,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: GridView.builder(
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    childAspectRatio: 1,
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 16,
-                  ),
-                  itemCount: PetSpecieEnum.values.length,
-                  itemBuilder: (context, index) {
-                    final specie = PetSpecieEnum.values[index];
-                    final isSelected = _selectedSpecie == specie;
-                    
-                    return GestureDetector(
-                      onTap: () => setState(() => _selectedSpecie = specie),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: isSelected 
-                            ? AppColors.neonCyan.withValues(alpha: 0.1) 
-                            : Colors.white.withValues(alpha: 0.05),
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(
-                            color: isSelected ? AppColors.neonCyan : Colors.white10,
-                            width: isSelected ? 2 : 1,
-                          ),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              _specieIcons[specie],
-                              color: isSelected ? AppColors.neonCyan : Colors.white54,
-                              size: 40,
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              specie.name,
-                              style: TextStyle(
-                                color: isSelected ? AppColors.neonCyan : Colors.white54,
-                                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ),
-            
-            // Select button
-            Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF8E2DE2), Color(0xFF4A00E0)],
-                      begin: Alignment.centerLeft,
-                      end: Alignment.centerRight,
+                  );
+                } else {
+                  return SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        _buildLeftPanel(),
+                        const SizedBox(height: 16),
+                        _buildRightPanel(),
+                      ],
                     ),
-                    borderRadius: BorderRadius.circular(28),
-                  ),
-                  child: ElevatedButton(
-                    onPressed: _isLoading ? null : _handleSelectType,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.transparent,
-                      shadowColor: Colors.transparent,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(28),
-                      ),
-                    ),
-                    child: _isLoading
-                        ? const CircularProgressIndicator(color: Colors.white)
-                        : const Text(
-                            'Select type',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                  ),
-                ),
-              ),
+                  );
+                }
+              },
             ),
-          ],
+          ),
         ),
       ),
+    );
+  }
+
+  Widget _buildLeftPanel() {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.spaceDark.withValues(alpha: 0.6),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppColors.goldenBorder.withValues(alpha: 0.5), width: 1.5),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.3),
+            blurRadius: 10,
+            spreadRadius: 2,
+          )
+        ]
+      ),
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const Text(
+            'Seu PET Ativo',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 20),
+          Expanded(
+            child: _buildActivePetCapsule(),
+          ),
+          const SizedBox(height: 20),
+          _buildPetSelector(),
+          const SizedBox(height: 16),
+          _buildDropdown('Main Goal: Reação to Drop', _selectedGoal, (v) => setState(() => _selectedGoal = v!)),
+          const SizedBox(height: 12),
+          _buildDropdown('Time Horizon, Market Action', _selectedHorizon, (v) => setState(() => _selectedHorizon = v!)),
+          const SizedBox(height: 24),
+          _buildConfirmButton(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActivePetCapsule() {
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        // Glow effect
+        Container(
+          width: 180,
+          height: 180,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.neonPink.withValues(alpha: 0.2),
+                blurRadius: 50,
+                spreadRadius: 10,
+              )
+            ],
+          ),
+        ),
+        // Glass capsule
+        ClipRRect(
+          borderRadius: BorderRadius.circular(90),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+            child: Container(
+              width: 160,
+              height: 200,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(80),
+                color: Colors.white.withValues(alpha: 0.1),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.white.withValues(alpha: 0.2),
+                    Colors.transparent,
+                  ]
+                )
+              ),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Positioned(
+                    bottom: 20,
+                    child: Container(
+                      width: 120,
+                      height: 20,
+                      decoration: BoxDecoration(
+                        color: AppColors.neonCyan.withValues(alpha: 0.5),
+                        borderRadius: BorderRadius.circular(50),
+                        boxShadow: [
+                          BoxShadow(color: AppColors.neonCyan, blurRadius: 10)
+                        ]
+                      ),
+                    ),
+                  ),
+                  Icon(
+                    _specieIcons[_selectedSpecie],
+                    size: 100,
+                    color: Colors.white,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPetSelector() {
+    return SizedBox(
+      height: 90,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: PetSpecieEnum.values.length,
+        itemBuilder: (context, index) {
+          final specie = PetSpecieEnum.values[index];
+          final isSelected = _selectedSpecie == specie;
+          return GestureDetector(
+            onTap: () => setState(() => _selectedSpecie = specie),
+            child: Container(
+              width: 70,
+              margin: const EdgeInsets.only(right: 12),
+              decoration: BoxDecoration(
+                color: isSelected ? AppColors.neonCyan.withValues(alpha: 0.2) : Colors.white.withValues(alpha: 0.05),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: isSelected ? AppColors.neonCyan : Colors.white.withValues(alpha: 0.2),
+                  width: isSelected ? 2 : 1,
+                ),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    _specieIcons[specie],
+                    color: isSelected ? Colors.white : Colors.white70,
+                    size: 36,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    specie.name[0].toUpperCase() + specie.name.substring(1).toLowerCase(),
+                    style: TextStyle(
+                      color: isSelected ? Colors.white : Colors.white70,
+                      fontSize: 12,
+                      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildDropdown(String title, String value, Function(String?) onChanged) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              Icon(title.contains('Goal') ? Icons.track_changes : Icons.access_time, color: Colors.white70, size: 20),
+              const SizedBox(width: 12),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)),
+                  Text('Goal: $value', style: const TextStyle(color: Colors.white70, fontSize: 12)),
+                ],
+              ),
+            ],
+          ),
+          const Icon(Icons.keyboard_arrow_down, color: Colors.white70),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildConfirmButton() {
+    return Container(
+      height: 56,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [AppColors.neonPurple, AppColors.neonCyan],
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+        ),
+        borderRadius: BorderRadius.circular(28),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(28),
+          onTap: _isLoading ? null : _handleSelectType,
+          child: Center(
+            child: _isLoading
+                ? const SizedBox(height: 24, width: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                : const Text(
+                    'Confirmar Seleção & Voltar',
+                    style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRightPanel() {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.spaceDark.withValues(alpha: 0.6),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppColors.neonCyan.withValues(alpha: 0.3), width: 1.5),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.neonCyan.withValues(alpha: 0.1),
+            blurRadius: 15,
+            spreadRadius: 2,
+          )
+        ]
+      ),
+      child: Stack(
+        children: [
+          // Background decorative chart
+          Positioned(
+            top: 20,
+            left: -50,
+            child: Opacity(
+              opacity: 0.5,
+              child: SizedBox(
+                width: 250,
+                height: 250,
+                child: _buildRadarChart(false),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Align(
+                  alignment: Alignment.topRight,
+                  child: SizedBox(
+                    width: 300,
+                    height: 300,
+                    child: _buildRadarChart(true),
+                  ),
+                ),
+                const Spacer(),
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.05),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: const [
+                              Text('PET-Invest Valor:', style: TextStyle(color: Colors.white70, fontSize: 14)),
+                              Text('R\$ 8,250.00', style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
+                            ],
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: const [
+                              Text('Desempenho:', style: TextStyle(color: Colors.white70, fontSize: 14)),
+                              Text('+15.2%', style: TextStyle(color: AppColors.neonCyan, fontSize: 20, fontWeight: FontWeight.bold)),
+                            ],
+                          ),
+                        ],
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 16.0),
+                        child: Divider(color: Colors.white24),
+                      ),
+                      _buildStatRow(Icons.healing, 'Regeneração', '2,00'),
+                      const SizedBox(height: 12),
+                      _buildStatRow(Icons.psychology, 'Inteligência', '1,0'),
+                      const SizedBox(height: 12),
+                      _buildStatRow(Icons.monetization_on, 'Custo de Evocação', '1,00'),
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRadarChart(bool main) {
+    return RadarChart(
+      RadarChartData(
+        dataSets: [
+          RadarDataSet(
+            fillColor: AppColors.neonCyan.withValues(alpha: 0.2),
+            borderColor: AppColors.neonCyan,
+            entryRadius: 0,
+            dataEntries: [
+              const RadarEntry(value: 8),
+              const RadarEntry(value: 5),
+              const RadarEntry(value: 7),
+              const RadarEntry(value: 6),
+            ],
+            borderWidth: 2,
+          ),
+          RadarDataSet(
+            fillColor: AppColors.goldenBorder.withValues(alpha: 0.2),
+            borderColor: AppColors.goldenBorder,
+            entryRadius: 0,
+            dataEntries: [
+              const RadarEntry(value: 6),
+              const RadarEntry(value: 8),
+              const RadarEntry(value: 4),
+              const RadarEntry(value: 9),
+            ],
+            borderWidth: 2,
+          ),
+        ],
+        radarBackgroundColor: Colors.transparent,
+        borderData: FlBorderData(show: false),
+        radarBorderData: const BorderSide(color: Colors.white24),
+        titlePositionPercentageOffset: 0.2,
+        titleTextStyle: TextStyle(color: Colors.white.withValues(alpha: main ? 0.8 : 0.4), fontSize: main ? 14 : 10),
+        getTitle: (index, angle) {
+          switch (index) {
+            case 0: return const RadarChartTitle(text: 'DY');
+            case 1: return const RadarChartTitle(text: 'ROE');
+            case 2: return const RadarChartTitle(text: 'P/VP');
+            case 3: return const RadarChartTitle(text: 'Stock');
+            default: return const RadarChartTitle(text: '');
+          }
+        },
+        tickCount: 3,
+        ticksTextStyle: const TextStyle(color: Colors.transparent, fontSize: 10),
+        tickBorderData: const BorderSide(color: Colors.white12),
+        gridBorderData: const BorderSide(color: Colors.white24, width: 2),
+      ),
+      swapAnimationDuration: const Duration(milliseconds: 150),
+      swapAnimationCurve: Curves.linear,
+    );
+  }
+
+  Widget _buildStatRow(IconData icon, String label, String value) {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.1),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(icon, color: AppColors.neonCyan, size: 20),
+        ),
+        const SizedBox(width: 12),
+        Text(label, style: const TextStyle(color: Colors.white, fontSize: 16)),
+        const Spacer(),
+        Text(value, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+      ],
     );
   }
 }
