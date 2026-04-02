@@ -20,7 +20,7 @@ public class PetJpaEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     private String name;
 
@@ -49,7 +49,7 @@ public class PetJpaEntity {
 
     public Pet toDomain(User user) {
         Pet pet = new Pet();
-        pet.setId(id);
+        pet.setId(id != null ? id : 0);
         pet.setName(name);
         pet.setHealth(health);
         pet.setSpecie(specie);

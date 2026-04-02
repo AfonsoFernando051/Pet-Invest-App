@@ -7,7 +7,7 @@ public class Pet {
 	/**
 	 * Id for pet
 	 */
-	int id;
+	Integer id;
 
 	/**
 	 * Name for pet
@@ -29,10 +29,10 @@ public class Pet {
 	 */
 	User user;
 	
-	public int getId() {
+	public Integer getId() {
 		return id;
 	}
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 	public String getName() {
