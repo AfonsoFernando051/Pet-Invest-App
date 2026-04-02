@@ -60,6 +60,12 @@ public class UserJpaEntity {
         entity.isActive = user.isActive();
         entity.hasAnsweredOnboarding = user.hasAnsweredOnboarding();
         entity.investorProfile = user.getInvestorProfile();
+        
+        if (user.getPet() != null) {
+            entity.pet = PetJpaEntity.fromDomain(user.getPet());
+            entity.pet.setUser(entity);
+        }
+        
         return entity;
     }
 
@@ -73,6 +79,11 @@ public class UserJpaEntity {
         user.setActive(isActive);
         user.setHasAnsweredOnboarding(hasAnsweredOnboarding);
         user.setInvestorProfile(investorProfile);
+        
+        if (pet != null) {
+            user.setPet(pet.toDomain(user));
+        }
+
         return user;
     }
 }

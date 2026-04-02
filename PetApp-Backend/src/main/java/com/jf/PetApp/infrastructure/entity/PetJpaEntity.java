@@ -7,6 +7,8 @@ import com.jf.PetApp.core.domain.enums.PetSpecieEnum;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
@@ -17,7 +19,8 @@ import jakarta.persistence.Table;
 public class PetJpaEntity {
 
     @Id
-    private int id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
     private String name;
 
@@ -31,6 +34,10 @@ public class PetJpaEntity {
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private UserJpaEntity user;
 
+    public void setUser(UserJpaEntity user) {
+        this.user = user;
+    }
+
     public static PetJpaEntity fromDomain(Pet pet) {
         PetJpaEntity entity = new PetJpaEntity();
         entity.id = pet.getId();
@@ -42,7 +49,7 @@ public class PetJpaEntity {
 
     public Pet toDomain(User user) {
         Pet pet = new Pet();
-        pet.setId(id);
+        pet.setId(id != null ? id : 0);
         pet.setName(name);
         pet.setHealth(health);
         pet.setSpecie(specie);

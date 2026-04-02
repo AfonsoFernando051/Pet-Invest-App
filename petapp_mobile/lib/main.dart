@@ -3,12 +3,13 @@ import 'package:petapp_mobile/core/di/dependency_injection.dart';
 import 'package:petapp_mobile/features/auth/presentation/screens/login_screen.dart';
 import 'package:petapp_mobile/features/home/presentation/screens/home_screen.dart';
 import 'package:petapp_mobile/features/onboarding/presentation/screens/onboarding_screen.dart';
+import 'package:petapp_mobile/features/pet/presentation/screens/pet_configuration_screen.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
-enum StartRoute { login, onboarding, home }
+enum StartRoute { login, onboarding, petConfig, home }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -19,7 +20,12 @@ class MyApp extends StatelessWidget {
 
     try {
       final status = await DI.onboardingRepository.getStatus();
-      return status.hasAnswered ? StartRoute.home : StartRoute.onboarding;
+      if (!status.hasAnswered) return StartRoute.onboarding;
+
+      final hasPet = await DI.petRepository.getPetStatus();
+      if (!hasPet) return StartRoute.petConfig;
+
+      return StartRoute.home;
     } catch (_) {
       // Token might be invalid/expired; clear it and force login.
       await DI.authRepository.logout();
@@ -42,6 +48,7 @@ class MyApp extends StatelessWidget {
 
           final route = snapshot.data;
           if (route == StartRoute.home) return const HomeScreen();
+          if (route == StartRoute.petConfig) return const PetConfigurationScreen();
           if (route == StartRoute.onboarding) return const OnboardingScreen();
           return const LoginScreen();
         },

@@ -5,6 +5,7 @@ import '../../../../core/utils/translator.dart';
 import '../../../../core/di/dependency_injection.dart';
 import '../../../home/presentation/screens/home_screen.dart';
 import '../../../onboarding/presentation/screens/onboarding_screen.dart';
+import '../../../pet/presentation/screens/pet_configuration_screen.dart';
 import 'custom_text_field.dart';
 import 'signup_action_button.dart';
 import 'already_have_account_button.dart';
@@ -61,13 +62,25 @@ class _SignupFormState extends State<SignupForm> {
 
       final status = await DI.onboardingRepository.getStatus();
       if (mounted) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (_) => status.hasAnswered
-                ? const HomeScreen()
-                : const OnboardingScreen(),
-          ),
-        );
+        if (!status.hasAnswered) {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (_) => const OnboardingScreen()),
+          );
+          return;
+        }
+
+        final hasPet = await DI.petRepository.getPetStatus();
+        if (mounted) {
+          if (!hasPet) {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (_) => const PetConfigurationScreen()),
+            );
+          } else {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (_) => const HomeScreen()),
+            );
+          }
+        }
       }
     } catch (e) {
       if (mounted) {

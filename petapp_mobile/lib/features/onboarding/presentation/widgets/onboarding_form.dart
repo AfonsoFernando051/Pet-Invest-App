@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/dependency_injection.dart';
 import '../../../home/presentation/screens/home_screen.dart';
+import '../../../pet/presentation/screens/pet_configuration_screen.dart';
 import '../../data/models/question_model.dart';
 import '../widgets/question_card.dart';
 import '../widgets/submit_assessment_button.dart';
@@ -43,9 +44,19 @@ class _OnboardingFormState extends State<OnboardingForm> {
     try {
       await DI.onboardingRepository.submitAssessment(selectedOptionIds);
       if (!mounted) return;
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const HomeScreen()),
-      );
+      
+      final hasPet = await DI.petRepository.getPetStatus();
+      if (!mounted) return;
+
+      if (!hasPet) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const PetConfigurationScreen()),
+        );
+      } else {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const HomeScreen()),
+        );
+      }
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
