@@ -149,73 +149,23 @@ class _PetConfigurationScreenState extends State<PetConfigurationScreen> {
   }
 
   Widget _buildActivePetCapsule() {
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        // Glow effect
-        Container(
-          width: 180,
-          height: 180,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.neonPink.withValues(alpha: 0.2),
-                blurRadius: 50,
-                spreadRadius: 10,
-              )
-            ],
-          ),
+    return Container(
+      width: 250,
+      height: 250,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(32),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.neonCyan.withValues(alpha: 0.15),
+            blurRadius: 40,
+            spreadRadius: 10,
+          )
+        ],
+        image: DecorationImage(
+          image: AssetImage('assets/images/generated_${_selectedSpecie.name.toLowerCase()}.png'),
+          fit: BoxFit.cover,
         ),
-        // Glass capsule
-        ClipRRect(
-          borderRadius: BorderRadius.circular(90),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-            child: Container(
-              width: 160,
-              height: 200,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(80),
-                color: Colors.white.withValues(alpha: 0.1),
-                border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.white.withValues(alpha: 0.2),
-                    Colors.transparent,
-                  ]
-                )
-              ),
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  Positioned(
-                    bottom: 20,
-                    child: Container(
-                      width: 120,
-                      height: 20,
-                      decoration: BoxDecoration(
-                        color: AppColors.neonCyan.withValues(alpha: 0.5),
-                        borderRadius: BorderRadius.circular(50),
-                        boxShadow: [
-                          BoxShadow(color: AppColors.neonCyan, blurRadius: 10)
-                        ]
-                      ),
-                    ),
-                  ),
-                  Icon(
-                    _specieIcons[_selectedSpecie],
-                    size: 100,
-                    color: Colors.white,
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ],
+      ),
     );
   }
 
@@ -244,10 +194,17 @@ class _PetConfigurationScreenState extends State<PetConfigurationScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    _specieIcons[specie],
-                    color: isSelected ? Colors.white : Colors.white70,
-                    size: 36,
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      image: DecorationImage(
+                        image: AssetImage('assets/images/generated_${specie.name.toLowerCase()}.png'),
+                        fit: BoxFit.cover,
+                      ),
+                      border: Border.all(color: Colors.white24, width: 1),
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Text(
