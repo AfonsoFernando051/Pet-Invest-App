@@ -13,11 +13,38 @@ class PetConfigurationScreen extends StatefulWidget {
   State<PetConfigurationScreen> createState() => _PetConfigurationScreenState();
 }
 
-class _PetConfigurationScreenState extends State<PetConfigurationScreen> {
+class _PetConfigurationScreenState extends State<PetConfigurationScreen> with SingleTickerProviderStateMixin {
   PetSpecieEnum _selectedSpecie = PetSpecieEnum.DOG;
   bool _isLoading = false;
   String _selectedGoal = 'Growth';
   String _selectedHorizon = '1 years';
+
+  late AnimationController _animationController;
+  late Animation<double> _breatheAnimation;
+  late Animation<double> _floatAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 3),
+    )..repeat(reverse: true);
+
+    _breatheAnimation = Tween<double>(begin: 0.98, end: 1.02).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    );
+
+    _floatAnimation = Tween<double>(begin: -5.0, end: 5.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
 
   final Map<PetSpecieEnum, IconData> _specieIcons = {
     PetSpecieEnum.CAT: Icons.cruelty_free,
@@ -149,23 +176,39 @@ class _PetConfigurationScreenState extends State<PetConfigurationScreen> {
   }
 
   Widget _buildActivePetCapsule() {
-    return Container(
-      width: 250,
-      height: 250,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(32),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.neonCyan.withValues(alpha: 0.15),
-            blurRadius: 40,
-            spreadRadius: 10,
-          )
-        ],
-        image: DecorationImage(
-          image: AssetImage('assets/images/generated_${_selectedSpecie.name.toLowerCase()}.png'),
-          fit: BoxFit.cover,
-        ),
-      ),
+    return AnimatedBuilder(
+      animation: _animationController,
+      builder: (context, child) {
+        return Transform.translate(
+          offset: Offset(0, _floatAnimation.value),
+          child: Transform.scale(
+            scale: _breatheAnimation.value,
+            child: Container(
+              width: 250,
+              height: 250,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(32),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.neonCyan.withValues(alpha: 0.15 + (_animationController.value * 0.1)),
+                    blurRadius: 40 + (_animationController.value * 15),
+                    spreadRadius: 10 + (_animationController.value * 5),
+                  ),
+                  BoxShadow(
+                    color: AppColors.neonPink.withValues(alpha: 0.1 * _animationController.value),
+                    blurRadius: 20 * _animationController.value,
+                    spreadRadius: 5 * _animationController.value,
+                  )
+                ],
+                image: DecorationImage(
+                  image: AssetImage('assets/images/generated_${_selectedSpecie.name.toLowerCase()}.png'),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 
