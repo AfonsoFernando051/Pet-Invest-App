@@ -10,4 +10,8 @@ class InvestmentRepository {
   Future<void> configureInvestments(List<AssetRegistrationModel> investments) async {
     return await remoteDataSource.configureInvestments(investments);
   }
+
+  Future<Map<String, dynamic>?> fetchQuote(String ticker) async {
+    return await remoteDataSource.fetchQuote(ticker);
+  }
 }

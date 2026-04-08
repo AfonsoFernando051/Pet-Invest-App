@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:petapp_mobile/core/network/api_client.dart';
 import 'package:petapp_mobile/features/investment/data/models/investment_type_enum.dart';
 import 'package:petapp_mobile/features/investment/data/models/asset_registration_model.dart';
@@ -16,5 +17,17 @@ class InvestmentRemoteDataSource {
     if (response.statusCode != 200) {
       throw Exception('Failed to configure investments');
     }
+  }
+
+  Future<Map<String, dynamic>?> fetchQuote(String ticker) async {
+    try {
+      final response = await apiClient.get('/api/investments/quote/$ticker');
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body) as Map<String, dynamic>;
+      }
+    } catch (e) {
+      // Return null on failure
+    }
+    return null;
   }
 }

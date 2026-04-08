@@ -15,15 +15,20 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.jf.PetApp.infrastructure.controller.investment.dto.AssetRegistrationDto;
+import com.jf.PetApp.application.investment.port.ExternalInvestmentApiPort;
+import com.jf.PetApp.application.investment.dto.AssetQuoteResponse;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/investments")
 public class InvestmentController {
 
     private final ConfigureInvestmentsUseCase configureInvestmentsUseCase;
+    private final ExternalInvestmentApiPort externalInvestmentApiPort;
 
-    public InvestmentController(ConfigureInvestmentsUseCase configureInvestmentsUseCase) {
+    public InvestmentController(ConfigureInvestmentsUseCase configureInvestmentsUseCase, ExternalInvestmentApiPort externalInvestmentApiPort) {
         this.configureInvestmentsUseCase = configureInvestmentsUseCase;
+        this.externalInvestmentApiPort = externalInvestmentApiPort;
     }
 
     @PostMapping("/configure")
@@ -35,5 +40,12 @@ public class InvestmentController {
         } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(org.springframework.http.HttpStatus.BAD_REQUEST, "Invalid investment data");
         }
+    }
+
+    @GetMapping("/quote/{ticker}")
+    public ResponseEntity<AssetQuoteResponse> getQuote(@PathVariable String ticker) {
+        Optional<AssetQuoteResponse> quoteOpt = externalInvestmentApiPort.getQuote(ticker);
+        return quoteOpt.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 }

@@ -16,6 +16,7 @@ class InvestmentConfigurationScreen extends StatefulWidget {
 class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationScreen> {
   final List<AssetRegistrationModel> _assets = [];
   bool _isLoading = false;
+  bool _isFetchingQuote = false;
 
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
@@ -69,6 +70,32 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
     }
   }
 
+  Future<void> _fetchQuote() async {
+    final ticker = _nameController.text.trim();
+    if (ticker.isEmpty) return;
+
+    setState(() => _isFetchingQuote = true);
+    try {
+      final quoteData = await DI.investmentRepository.fetchQuote(ticker);
+      if (quoteData != null && mounted) {
+        setState(() {
+          _priceController.text = quoteData['regularMarketPrice']?.toString() ?? '';
+          _nameController.text = ticker.toUpperCase();
+        });
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Ativo não encontrado ou erro na busca.')));
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Erro ao buscar ativo.')));
+      }
+    } finally {
+      if (mounted) setState(() => _isFetchingQuote = false);
+    }
+  }
+
   Future<void> _handleConfirm() async {
     if (_assets.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Adicione pelo menos um ativo para continuar.')));
@@ -117,7 +144,7 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
     }
   }
 
-  Widget _buildTextField(TextEditingController controller, String label, TextInputType type) {
+  Widget _buildTextField(TextEditingController controller, String label, TextInputType type, {Widget? suffixIcon}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
       child: TextFormField(
@@ -127,6 +154,7 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
         decoration: InputDecoration(
           labelText: label,
           labelStyle: const TextStyle(color: Colors.white70),
+          suffixIcon: suffixIcon,
           filled: true,
           fillColor: AppColors.spaceDark.withValues(alpha: 0.5),
           border: OutlineInputBorder(
@@ -318,7 +346,20 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
                   child: Column(
                     children: [
                       _buildDropdown(),
-                      _buildTextField(_nameController, 'Nome/Ticker (ex: PETR4)', TextInputType.text),
+                      _buildTextField(
+                        _nameController, 
+                        'Nome/Ticker (ex: PETR4)', 
+                        TextInputType.text,
+                        suffixIcon: _isFetchingQuote 
+                            ? const Padding(
+                                padding: EdgeInsets.all(12), 
+                                child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.neonCyan))
+                              )
+                            : IconButton(
+                                icon: const Icon(Icons.search, color: AppColors.neonCyan),
+                                onPressed: _fetchQuote,
+                              ),
+                      ),
                       Row(
                         children: [
                           Expanded(child: _buildTextField(_quantityController, 'Qtd.', const TextInputType.numberWithOptions(decimal: true))),
