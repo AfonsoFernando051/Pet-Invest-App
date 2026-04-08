@@ -12,7 +12,7 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  int _selectedIndex = 2; // Dashboard is selected
+  int _selectedIndex = 0; // Início is selected
 
   @override
   Widget build(BuildContext context) {
@@ -71,10 +71,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          _buildTopTab('Home', false),
-          _buildTopTab('Dashboard', true),
-          _buildTopTab('Profile Quiz', false),
-          _buildTopTab('Asset Analysis', false),
+          _buildTopTab('Início', true),
+          _buildTopTab('Meu Pet', false),
+          _buildTopTab('Conquistas', false),
+          _buildTopTab('Análises', false),
         ],
       ),
     );
@@ -517,16 +517,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
         currentIndex: _selectedIndex,
         onTap: (i) => setState(() => _selectedIndex = i),
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.login), label: 'Login'),
-          BottomNavigationBarItem(icon: Icon(Icons.quiz), label: 'Profile Quiz'),
           BottomNavigationBarItem(
             icon: Padding(
               padding: EdgeInsets.all(4.0),
-              child: Icon(Icons.dashboard),
+              child: Icon(Icons.home),
             ), 
-            label: 'Dashboard'
+            label: 'Início'
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.analytics), label: 'Asset Analysis'),
+          BottomNavigationBarItem(icon: Icon(Icons.account_balance_wallet), label: 'Carteira'),
+          BottomNavigationBarItem(icon: Icon(Icons.analytics), label: 'Análise'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Perfil'),
         ],
       ),
     );
