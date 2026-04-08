@@ -2,6 +2,7 @@ package com.jf.PetApp.application.investment.usecase;
 
 import com.jf.PetApp.core.domain.User;
 import com.jf.PetApp.core.domain.enums.InvestmentType;
+import com.jf.PetApp.infrastructure.controller.investment.dto.AssetRegistrationDto;
 import com.jf.PetApp.infrastructure.entity.UserJpaEntity;
 import com.jf.PetApp.infrastructure.repository.InvestmentRepository;
 import com.jf.PetApp.infrastructure.repository.user.SpringUserJpaRepository;
@@ -41,7 +42,10 @@ public class ConfigureInvestmentsUseCaseImplTest {
 
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(mockUser));
 
-        configureInvestmentsUseCase.execute(email, List.of(InvestmentType.STOCKS, InvestmentType.CRYPTO));
+        AssetRegistrationDto asset1 = new AssetRegistrationDto("PETR4", 100.0, 35.5, java.time.LocalDate.now(), InvestmentType.STOCKS);
+        AssetRegistrationDto asset2 = new AssetRegistrationDto("BTC", 0.5, 300000.0, java.time.LocalDate.now(), InvestmentType.CRYPTO);
+
+        configureInvestmentsUseCase.execute(email, List.of(asset1, asset2));
 
         verify(investmentRepository, times(1)).deleteByUserEmail(email);
         verify(investmentRepository, times(1)).saveAll(any());
@@ -53,8 +57,10 @@ public class ConfigureInvestmentsUseCaseImplTest {
 
         when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
 
+        AssetRegistrationDto asset1 = new AssetRegistrationDto("PETR4", 100.0, 35.5, java.time.LocalDate.now(), InvestmentType.STOCKS);
+
         assertThrows(IllegalArgumentException.class, () -> 
-            configureInvestmentsUseCase.execute(email, List.of(InvestmentType.STOCKS)));
+            configureInvestmentsUseCase.execute(email, List.of(asset1)));
             
         verify(investmentRepository, never()).saveAll(any());
     }

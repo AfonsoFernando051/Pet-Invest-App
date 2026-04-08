@@ -16,7 +16,7 @@ class ApiClient {
     };
   }
 
-  Future<http.Response> post(String endpoint, Map<String, dynamic> body) async {
+  Future<http.Response> post(String endpoint, dynamic body) async {
     final headers = await _getHeaders();
     final url = Uri.parse('${ApiConstants.baseUrl}$endpoint');
     

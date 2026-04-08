@@ -14,6 +14,8 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.jf.PetApp.infrastructure.controller.investment.dto.AssetRegistrationDto;
+
 @RestController
 @RequestMapping("/api/investments")
 public class InvestmentController {
@@ -25,19 +27,13 @@ public class InvestmentController {
     }
 
     @PostMapping("/configure")
-    public ResponseEntity<Void> configureInvestments(@RequestBody ConfigureInvestmentsRequestDTO request) {
+    public ResponseEntity<Void> configureInvestments(@RequestBody List<AssetRegistrationDto> request) {
         String email = com.jf.PetApp.core.security.SecurityUtils.getCurrentUserEmail();
         try {
-            List<InvestmentType> types = request.investments().stream()
-                .map(inv -> InvestmentType.valueOf(inv.toUpperCase()))
-                .collect(Collectors.toList());
-                
-            configureInvestmentsUseCase.execute(email, types);
+            configureInvestmentsUseCase.execute(email, request);
             return ResponseEntity.ok().build();
         } catch (IllegalArgumentException e) {
-            throw new ResponseStatusException(org.springframework.http.HttpStatus.BAD_REQUEST, "Invalid investment type");
+            throw new ResponseStatusException(org.springframework.http.HttpStatus.BAD_REQUEST, "Invalid investment data");
         }
     }
-
-    public record ConfigureInvestmentsRequestDTO(List<String> investments) {}
 }

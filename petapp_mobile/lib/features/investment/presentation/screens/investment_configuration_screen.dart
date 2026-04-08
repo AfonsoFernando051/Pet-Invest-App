@@ -3,6 +3,7 @@ import 'package:petapp_mobile/core/constants/app_colors.dart';
 import 'package:petapp_mobile/core/di/dependency_injection.dart';
 import 'package:petapp_mobile/features/home/presentation/screens/home_screen.dart';
 import 'package:petapp_mobile/features/investment/data/models/investment_type_enum.dart';
+import 'package:petapp_mobile/features/investment/data/models/asset_registration_model.dart';
 import 'package:petapp_mobile/core/widgets/glass_card.dart';
 
 class InvestmentConfigurationScreen extends StatefulWidget {
@@ -13,62 +14,200 @@ class InvestmentConfigurationScreen extends StatefulWidget {
 }
 
 class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationScreen> {
-  final Set<InvestmentTypeEnum> _selectedInvestments = {};
+  final List<AssetRegistrationModel> _assets = [];
   bool _isLoading = false;
 
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _quantityController = TextEditingController();
+  final TextEditingController _priceController = TextEditingController();
+  
+  InvestmentTypeEnum? _selectedType;
+  DateTime? _selectedDate;
+
   final Map<InvestmentTypeEnum, String> _investmentLabels = {
-    InvestmentTypeEnum.STOCKS: 'Stocks & Equities',
-    InvestmentTypeEnum.FIXED_INCOME: 'Fixed Income',
-    InvestmentTypeEnum.REAL_ESTATE: 'Real Estate (REITs)',
-    InvestmentTypeEnum.CRYPTO: 'Cryptocurrency',
-    InvestmentTypeEnum.FUNDS: 'Mutual & ETFs',
-    InvestmentTypeEnum.OTHERS: 'Other Assets',
+    InvestmentTypeEnum.STOCKS: 'Ações',
+    InvestmentTypeEnum.FIXED_INCOME: 'Renda Fixa',
+    InvestmentTypeEnum.REAL_ESTATE: 'Fundos Imobiliários',
+    InvestmentTypeEnum.CRYPTO: 'Criptomoedas',
+    InvestmentTypeEnum.FUNDS: 'Fundos de Investimento',
+    InvestmentTypeEnum.OTHERS: 'Outros',
   };
 
-  final Map<InvestmentTypeEnum, IconData> _investmentIcons = {
-    InvestmentTypeEnum.STOCKS: Icons.trending_up,
-    InvestmentTypeEnum.FIXED_INCOME: Icons.account_balance,
-    InvestmentTypeEnum.REAL_ESTATE: Icons.home_work,
-    InvestmentTypeEnum.CRYPTO: Icons.currency_bitcoin,
-    InvestmentTypeEnum.FUNDS: Icons.pie_chart,
-    InvestmentTypeEnum.OTHERS: Icons.category,
-  };
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _quantityController.dispose();
+    _priceController.dispose();
+    super.dispose();
+  }
+
+  String _formatDate(DateTime date) {
+    return "\${date.year}-\${date.month.toString().padLeft(2, '0')}-\${date.day.toString().padLeft(2, '0')}";
+  }
+
+  void _addAsset() {
+    if (_formKey.currentState!.validate() && _selectedType != null && _selectedDate != null) {
+      final asset = AssetRegistrationModel(
+        name: _nameController.text,
+        quantity: double.tryParse(_quantityController.text) ?? 0.0,
+        purchasePrice: double.tryParse(_priceController.text) ?? 0.0,
+        purchaseDate: _formatDate(_selectedDate!),
+        type: _selectedType!,
+      );
+
+      setState(() {
+        _assets.add(asset);
+        _nameController.clear();
+        _quantityController.clear();
+        _priceController.clear();
+        _selectedType = null;
+        _selectedDate = null;
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Preencha todos os campos e selecione uma data/tipo.')));
+    }
+  }
 
   Future<void> _handleConfirm() async {
-    if (_selectedInvestments.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select at least one investment type.')),
-      );
+    if (_assets.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Adicione pelo menos um ativo para continuar.')));
       return;
     }
 
     setState(() => _isLoading = true);
     try {
-      await DI.investmentRepository.configureInvestments(_selectedInvestments.toList());
+      await DI.investmentRepository.configureInvestments(_assets);
       if (mounted) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const HomeScreen()),
-        );
+        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const HomeScreen()));
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to save investments: \${e.toString()}')),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Falha ao salvar investimentos: \${e.toString()}')));
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
   }
 
-  void _toggleInvestment(InvestmentTypeEnum type) {
-    setState(() {
-      if (_selectedInvestments.contains(type)) {
-        _selectedInvestments.remove(type);
-      } else {
-        _selectedInvestments.add(type);
-      }
-    });
+  Future<void> _selectDate() async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime.now(),
+      builder: (context, child) {
+        return Theme(
+          data: ThemeData.dark().copyWith(
+            colorScheme: const ColorScheme.dark(
+              primary: AppColors.neonCyan,
+              onPrimary: Colors.black,
+              surface: AppColors.spaceDark,
+              onSurface: Colors.white,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (picked != null) {
+      setState(() {
+        _selectedDate = picked;
+      });
+    }
+  }
+
+  Widget _buildTextField(TextEditingController controller, String label, TextInputType type) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16.0),
+      child: TextFormField(
+        controller: controller,
+        keyboardType: type,
+        style: const TextStyle(color: Colors.white),
+        decoration: InputDecoration(
+          labelText: label,
+          labelStyle: const TextStyle(color: Colors.white70),
+          filled: true,
+          fillColor: AppColors.spaceDark.withValues(alpha: 0.5),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: AppColors.goldenBorder.withValues(alpha: 0.3)),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: AppColors.goldenBorder.withValues(alpha: 0.3)),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: AppColors.neonCyan),
+          ),
+        ),
+        validator: (value) => value == null || value.isEmpty ? 'Campo obrigatório' : null,
+      ),
+    );
+  }
+
+  Widget _buildDropdown() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16.0),
+      child: DropdownButtonFormField<InvestmentTypeEnum>(
+        value: _selectedType,
+        dropdownColor: AppColors.spaceDark,
+        style: const TextStyle(color: Colors.white),
+        decoration: InputDecoration(
+          labelText: 'Tipo de Investimento',
+          labelStyle: const TextStyle(color: Colors.white70),
+          filled: true,
+          fillColor: AppColors.spaceDark.withValues(alpha: 0.5),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: AppColors.goldenBorder.withValues(alpha: 0.3)),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: AppColors.goldenBorder.withValues(alpha: 0.3)),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: AppColors.neonCyan),
+          ),
+        ),
+        items: InvestmentTypeEnum.values.map((type) {
+          return DropdownMenuItem(
+            value: type,
+            child: Text(_investmentLabels[type]!),
+          );
+        }).toList(),
+        onChanged: (val) => setState(() => _selectedType = val),
+      ),
+    );
+  }
+
+  Widget _buildDatePickerField() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16.0),
+      child: GestureDetector(
+        onTap: _selectDate,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+          decoration: BoxDecoration(
+            color: AppColors.spaceDark.withValues(alpha: 0.5),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: AppColors.goldenBorder.withValues(alpha: 0.3)),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                _selectedDate == null ? 'Data de Compra' : "\${_selectedDate!.day.toString().padLeft(2, '0')}/\${_selectedDate!.month.toString().padLeft(2, '0')}/\${_selectedDate!.year}",
+                style: TextStyle(color: _selectedDate == null ? Colors.white70 : Colors.white, fontSize: 16),
+              ),
+              const Icon(Icons.calendar_today, color: AppColors.neonCyan),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -76,7 +215,7 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: const Text('Investment Profile', style: TextStyle(color: Colors.white)),
+        title: const Text('Configuração de Ativos', style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
@@ -94,86 +233,144 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
           ),
         ),
         child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 24.0),
-                  child: Text(
-                    'What kinds of investments do you hold?',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: GridView.builder(
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 16,
-                      mainAxisSpacing: 16,
-                      childAspectRatio: 1.1,
-                    ),
-                    itemCount: InvestmentTypeEnum.values.length,
-                    itemBuilder: (context, index) {
-                      final type = InvestmentTypeEnum.values[index];
-                      final isSelected = _selectedInvestments.contains(type);
-                      return GestureDetector(
-                        onTap: () => _toggleInvestment(type),
-                        child: GlassCard(
-                          isAnimated: true,
-                          backgroundColor: isSelected ? AppColors.neonCyan.withValues(alpha: 0.2) : AppColors.spaceDark.withValues(alpha: 0.6),
-                          borderRadius: 20,
-                          borderColor: isSelected ? AppColors.neonCyan : AppColors.goldenBorder.withValues(alpha: 0.3),
-                          borderWidth: isSelected ? 2 : 1,
-                          boxShadow: isSelected
-                              ? [
-                                  BoxShadow(
-                                    color: AppColors.neonCyan.withValues(alpha: 0.3),
-                                    blurRadius: 10,
-                                    spreadRadius: 2,
-                                  )
-                                ]
-                              : [],
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                _investmentIcons[type],
-                                size: 40,
-                                color: isSelected ? Colors.white : Colors.white70,
-                              ),
-                              const SizedBox(height: 12),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                                child: Text(
-                                  _investmentLabels[type]!,
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: isSelected ? Colors.white : Colors.white70,
-                                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                const SizedBox(height: 16),
-                _buildConfirmButton(),
-                const SizedBox(height: 16),
-              ],
-            ),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final isWide = constraints.maxWidth > 800;
+              return Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: isWide
+                    ? Row(
+                        children: [
+                          Expanded(flex: 4, child: _buildLeftPanel()),
+                          const SizedBox(width: 32),
+                          Expanded(flex: 6, child: _buildRightPanel()),
+                        ],
+                      )
+                    : Column(
+                        children: [
+                          Expanded(child: _buildRightPanel()),
+                        ],
+                      ),
+              );
+            },
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLeftPanel() {
+    return GlassCard(
+      isAnimated: true,
+      backgroundColor: AppColors.spaceDark.withValues(alpha: 0.4),
+      borderRadius: 24,
+      borderColor: AppColors.neonCyan.withValues(alpha: 0.5),
+      borderWidth: 2,
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset('assets/images/auth_compass.png', height: 250),
+            const SizedBox(height: 32),
+            const Text(
+              'Monte seu Portfólio',
+              style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              child: Text(
+                'Registre seus ativos para que possamos monitorá-los e guiar a sua jornada financeira.',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.white70, fontSize: 16),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRightPanel() {
+    return GlassCard(
+      backgroundColor: AppColors.spaceDark.withValues(alpha: 0.6),
+      borderRadius: 24,
+      borderColor: AppColors.goldenBorder.withValues(alpha: 0.2),
+      borderWidth: 1,
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const Text(
+              'Adicionar Ativo',
+              style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 24),
+            Expanded(
+              child: SingleChildScrollView(
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      _buildDropdown(),
+                      _buildTextField(_nameController, 'Nome/Ticker (ex: PETR4)', TextInputType.text),
+                      Row(
+                        children: [
+                          Expanded(child: _buildTextField(_quantityController, 'Quantidade', const TextInputType.numberWithOptions(decimal: true))),
+                          const SizedBox(width: 16),
+                          Expanded(child: _buildTextField(_priceController, 'Preço Unitário (R\$)', const TextInputType.numberWithOptions(decimal: true))),
+                        ],
+                      ),
+                      _buildDatePickerField(),
+                      const SizedBox(height: 8),
+                      OutlinedButton.icon(
+                        icon: const Icon(Icons.add, color: AppColors.neonCyan),
+                        label: const Text('Adicionar à Lista', style: TextStyle(color: AppColors.neonCyan)),
+                        style: OutlinedButton.styleFrom(
+                          side: const BorderSide(color: AppColors.neonCyan),
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        ),
+                        onPressed: _addAsset,
+                      ),
+                      const SizedBox(height: 24),
+                      if (_assets.isNotEmpty) ...[
+                        const Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text('Ativos Registrados:', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                        ),
+                        const SizedBox(height: 12),
+                        ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: _assets.length,
+                          itemBuilder: (context, index) {
+                            final a = _assets[index];
+                            return ListTile(
+                              leading: const Icon(Icons.check_circle, color: AppColors.neonCyan),
+                              title: Text(a.name, style: const TextStyle(color: Colors.white)),
+                              subtitle: Text('\${a.quantity} cotas a R\$ \${a.purchasePrice}', style: const TextStyle(color: Colors.white70)),
+                              trailing: IconButton(
+                                icon: const Icon(Icons.delete, color: Colors.redAccent),
+                                onPressed: () {
+                                  setState(() {
+                                    _assets.removeAt(index);
+                                  });
+                                },
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            _buildConfirmButton(),
+          ],
         ),
       ),
     );
@@ -206,7 +403,7 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
             child: _isLoading
                 ? const SizedBox(height: 24, width: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
                 : const Text(
-                    'Confirm & Continue',
+                    'Confirmar e Continuar',
                     style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
                   ),
           ),

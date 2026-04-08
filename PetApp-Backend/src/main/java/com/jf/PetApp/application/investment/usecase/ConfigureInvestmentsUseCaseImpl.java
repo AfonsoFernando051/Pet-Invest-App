@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.jf.PetApp.core.domain.enums.InvestmentType;
+import com.jf.PetApp.infrastructure.controller.investment.dto.AssetRegistrationDto;
 import com.jf.PetApp.infrastructure.entity.InvestmentJpaEntity;
 import com.jf.PetApp.infrastructure.entity.UserJpaEntity;
 import com.jf.PetApp.infrastructure.repository.InvestmentRepository;
@@ -25,16 +25,20 @@ public class ConfigureInvestmentsUseCaseImpl implements ConfigureInvestmentsUseC
 
     @Override
     @Transactional
-    public void execute(String email, List<InvestmentType> types) {
+    public void execute(String email, List<AssetRegistrationDto> types) {
         UserJpaEntity user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("User not found for email: " + email));
 
         investmentRepository.deleteByUserEmail(email);
 
-        List<InvestmentJpaEntity> newEntities = types.stream().map(type -> {
+        List<InvestmentJpaEntity> newEntities = types.stream().map(dto -> {
             InvestmentJpaEntity entity = new InvestmentJpaEntity();
             entity.setUser(user);
-            entity.setType(type);
+            entity.setType(dto.type());
+            entity.setName(dto.name());
+            entity.setQuantity(dto.quantity());
+            entity.setPurchasePrice(dto.purchasePrice());
+            entity.setPurchaseDate(dto.purchaseDate());
             return entity;
         }).collect(Collectors.toList());
 
