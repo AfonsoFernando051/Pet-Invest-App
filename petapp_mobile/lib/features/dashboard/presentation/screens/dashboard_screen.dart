@@ -113,7 +113,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
                 ),
-                onTap: () {
+                onPressed: () {
                   Navigator.of(context).push(MaterialPageRoute(builder: (_) => const InvestmentConfigurationScreen()));
                 },
               )
