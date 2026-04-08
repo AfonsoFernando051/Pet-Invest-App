@@ -4,7 +4,7 @@ import com.jf.PetApp.core.domain.User;
 import com.jf.PetApp.core.domain.enums.PetSpecieEnum;
 import com.jf.PetApp.infrastructure.entity.UserJpaEntity;
 import com.jf.PetApp.infrastructure.repository.PetRepository;
-import com.jf.PetApp.infrastructure.repository.UserRepository;
+import com.jf.PetApp.application.user.port.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -20,9 +20,6 @@ import static org.mockito.Mockito.*;
 public class ConfigurePetUseCaseImplTest {
 
     @Mock
-    private PetRepository petRepository;
-
-    @Mock
     private UserRepository userRepository;
 
     @InjectMocks
@@ -36,14 +33,14 @@ public class ConfigurePetUseCaseImplTest {
     @Test
     void execute_WhenUserExists_ShouldSavePet() {
         String email = "test@test.com";
-        UserJpaEntity user = new UserJpaEntity();
+        User user = new User();
         user.setEmail(email);
 
-        when(userRepository.findByEmail(email)).thenReturn(Optional.of(user.toDomain()));
+        when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
 
         configurePetUseCase.execute(email, PetSpecieEnum.DOG);
 
-        verify(petRepository, times(1)).save(any());
+        verify(userRepository, times(1)).save(any());
     }
 
     @Test
@@ -53,6 +50,6 @@ public class ConfigurePetUseCaseImplTest {
         when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
 
         assertThrows(IllegalArgumentException.class, () -> configurePetUseCase.execute(email, PetSpecieEnum.DOG));
-        verify(petRepository, never()).save(any());
+        verify(userRepository, never()).save(any());
     }
 }

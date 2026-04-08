@@ -9,6 +9,7 @@ import '../../../pet/presentation/screens/pet_configuration_screen.dart';
 import 'custom_text_field.dart';
 import 'signup_action_button.dart';
 import 'already_have_account_button.dart';
+import '../../../../core/utils/auth_navigation_utils.dart';
 
 class SignupForm extends StatefulWidget {
   const SignupForm({super.key});
