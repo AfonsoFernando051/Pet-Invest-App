@@ -67,35 +67,6 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
       });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Preencha todos os campos e selecione uma data/tipo.')));
-    }
-  }
-
-  Future<void> _fetchQuote() async {
-    final ticker = _nameController.text.trim();
-    if (ticker.isEmpty) return;
-
-    setState(() => _isFetchingQuote = true);
-    try {
-      final quoteData = await DI.investmentRepository.fetchQuote(ticker);
-      if (quoteData != null && mounted) {
-        setState(() {
-          _priceController.text = quoteData['regularMarketPrice']?.toString() ?? '';
-          _nameController.text = ticker.toUpperCase();
-        });
-      } else {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Ativo não encontrado ou erro na busca.')));
-        }
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Erro ao buscar ativo.')));
-      }
-    } finally {
-      if (mounted) setState(() => _isFetchingQuote = false);
-    }
-  }
-
   Future<void> _handleConfirm() async {
     if (_assets.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Adicione pelo menos um ativo para continuar.')));
@@ -142,6 +113,98 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
         _selectedDate = picked;
       });
     }
+  }
+
+  Widget _buildAutocompleteField() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16.0),
+      child: Autocomplete<Map<String, dynamic>>(
+        optionsBuilder: (TextEditingValue textEditingValue) async {
+          if (textEditingValue.text.length < 2) {
+            return const Iterable<Map<String, dynamic>>.empty();
+          }
+          final results = await DI.investmentRepository.searchQuotes(textEditingValue.text);
+          return results;
+        },
+        displayStringForOption: (Map<String, dynamic> option) {
+          return option['symbol']?.toString() ?? option['stock']?.toString() ?? '';
+        },
+        onSelected: (Map<String, dynamic> selection) {
+          setState(() {
+            _nameController.text = selection['symbol']?.toString() ?? selection['stock']?.toString() ?? '';
+            _priceController.text = selection['regularMarketPrice']?.toString() ?? selection['close']?.toString() ?? '';
+          });
+        },
+        fieldViewBuilder: (context, controller, focusNode, onEditingComplete) {
+          controller.addListener(() {
+            _nameController.text = controller.text;
+          });
+
+          return TextFormField(
+            controller: controller,
+            focusNode: focusNode,
+            onEditingComplete: onEditingComplete,
+            style: const TextStyle(color: Colors.white),
+            decoration: InputDecoration(
+              labelText: 'Nome/Ticker (ex: PETR4)',
+              labelStyle: const TextStyle(color: Colors.white70),
+              filled: true,
+              fillColor: AppColors.spaceDark.withValues(alpha: 0.5),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: AppColors.goldenBorder.withValues(alpha: 0.3)),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: AppColors.goldenBorder.withValues(alpha: 0.3)),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: const BorderSide(color: AppColors.neonCyan),
+              ),
+            ),
+            validator: (value) => value == null || value.isEmpty ? 'Campo obrigatório' : null,
+          );
+        },
+        optionsViewBuilder: (context, onSelected, options) {
+          return Align(
+            alignment: Alignment.topLeft,
+            child: Material(
+              color: Colors.transparent,
+              elevation: 4.0,
+              child: Container(
+                margin: const EdgeInsets.only(top: 8),
+                constraints: const BoxConstraints(maxHeight: 250, maxWidth: 300),
+                decoration: BoxDecoration(
+                  color: AppColors.spaceDark.withValues(alpha: 0.95),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppColors.neonCyan.withValues(alpha: 0.5)),
+                ),
+                child: ListView.builder(
+                  padding: EdgeInsets.zero,
+                  shrinkWrap: true,
+                  itemCount: options.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    final option = options.elementAt(index);
+                    final symbol = option['symbol'] ?? option['stock'] ?? '';
+                    final name = option['shortName'] ?? option['name'] ?? '';
+                    return ListTile(
+                      title: Text(
+                        "$symbol - $name",
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                      onTap: () {
+                        onSelected(option);
+                      },
+                    );
+                  },
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
   }
 
   Widget _buildTextField(TextEditingController controller, String label, TextInputType type, {Widget? suffixIcon}) {
@@ -346,20 +409,7 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
                   child: Column(
                     children: [
                       _buildDropdown(),
-                      _buildTextField(
-                        _nameController, 
-                        'Nome/Ticker (ex: PETR4)', 
-                        TextInputType.text,
-                        suffixIcon: _isFetchingQuote 
-                            ? const Padding(
-                                padding: EdgeInsets.all(12), 
-                                child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.neonCyan))
-                              )
-                            : IconButton(
-                                icon: const Icon(Icons.search, color: AppColors.neonCyan),
-                                onPressed: _fetchQuote,
-                              ),
-                      ),
+                      _buildAutocompleteField(),
                       Row(
                         children: [
                           Expanded(child: _buildTextField(_quantityController, 'Qtd.', const TextInputType.numberWithOptions(decimal: true))),

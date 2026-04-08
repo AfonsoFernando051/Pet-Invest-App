@@ -14,4 +14,8 @@ class InvestmentRepository {
   Future<Map<String, dynamic>?> fetchQuote(String ticker) async {
     return await remoteDataSource.fetchQuote(ticker);
   }
+
+  Future<List<Map<String, dynamic>>> searchQuotes(String query) async {
+    return await remoteDataSource.searchQuotes(query);
+  }
 }

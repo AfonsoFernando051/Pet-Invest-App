@@ -18,6 +18,7 @@ import com.jf.PetApp.infrastructure.controller.investment.dto.AssetRegistrationD
 import com.jf.PetApp.application.investment.port.ExternalInvestmentApiPort;
 import com.jf.PetApp.application.investment.dto.AssetQuoteResponse;
 import java.util.Optional;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/investments")
@@ -47,5 +48,10 @@ public class InvestmentController {
         Optional<AssetQuoteResponse> quoteOpt = externalInvestmentApiPort.getQuote(ticker);
         return quoteOpt.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<AssetQuoteResponse>> searchQuotes(@RequestParam String query) {
+        return ResponseEntity.ok(externalInvestmentApiPort.searchQuotes(query));
     }
 }

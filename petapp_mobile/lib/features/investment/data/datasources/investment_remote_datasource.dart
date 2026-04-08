@@ -30,4 +30,17 @@ class InvestmentRemoteDataSource {
     }
     return null;
   }
+
+  Future<List<Map<String, dynamic>>> searchQuotes(String query) async {
+    try {
+      final response = await apiClient.get('/api/investments/search?query=$query');
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        return data.cast<Map<String, dynamic>>();
+      }
+    } catch (e) {
+      // return empty array on failure
+    }
+    return [];
+  }
 }

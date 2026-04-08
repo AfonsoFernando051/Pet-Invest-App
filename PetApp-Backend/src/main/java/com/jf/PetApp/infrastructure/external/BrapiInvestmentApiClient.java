@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.client.HttpClientErrorException;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Optional;
 
@@ -59,6 +60,39 @@ public class BrapiInvestmentApiClient implements ExternalInvestmentApiPort {
         } catch (Exception e) {
             e.printStackTrace();
             return Optional.empty();
+        }
+    }
+
+    @Override
+    public List<AssetQuoteResponse> searchQuotes(String query) {
+        try {
+            // we can use search without a token
+            String url = String.format("https://brapi.dev/api/quote/list?search=%s", query);
+            Map<String, Object> response = restTemplate.getForObject(url, Map.class);
+            
+            List<AssetQuoteResponse> resultList = new ArrayList<>();
+            if (response != null && response.containsKey("stocks")) {
+                List<Map<String, Object>> stocks = (List<Map<String, Object>>) response.get("stocks");
+                if (stocks != null) {
+                    for (Map<String, Object> stock : stocks) {
+                        String symbol = (String) stock.getOrDefault("stock", "");
+                        String name = (String) stock.getOrDefault("name", "");
+                        
+                        Object priceObj = stock.get("close");
+                        Double price = null;
+                        if (priceObj instanceof Number) {
+                            price = ((Number) priceObj).doubleValue();
+                        }
+                        
+                        resultList.add(new AssetQuoteResponse(symbol, name, price, "BRL"));
+                    }
+                }
+            }
+            return resultList;
+        } catch (Exception e) {
+            System.err.println("Error fetching search list from Brapi");
+            e.printStackTrace();
+            return new ArrayList<>();
         }
     }
 }
