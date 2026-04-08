@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
 import 'package:petapp_mobile/core/di/dependency_injection.dart';
-import 'package:petapp_mobile/features/home/presentation/screens/home_screen.dart';
+import 'package:petapp_mobile/features/dashboard/presentation/screens/dashboard_screen.dart';
 import 'package:petapp_mobile/features/investment/data/models/investment_type_enum.dart';
 import 'package:petapp_mobile/features/investment/data/models/asset_registration_model.dart';
 import 'package:petapp_mobile/core/widgets/glass_card.dart';
@@ -80,7 +80,7 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
     try {
       await DI.investmentRepository.configureInvestments(_assets);
       if (mounted) {
-        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const HomeScreen()));
+        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const DashboardScreen()));
       }
     } catch (e) {
       if (mounted) {

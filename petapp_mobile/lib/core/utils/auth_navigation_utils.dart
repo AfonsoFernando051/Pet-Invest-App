@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:petapp_mobile/core/di/dependency_injection.dart';
-import 'package:petapp_mobile/features/home/presentation/screens/home_screen.dart';
+import 'package:petapp_mobile/features/dashboard/presentation/screens/dashboard_screen.dart';
 import 'package:petapp_mobile/features/onboarding/presentation/screens/onboarding_screen.dart';
 import 'package:petapp_mobile/features/pet/presentation/screens/pet_configuration_screen.dart';
 
@@ -27,7 +27,7 @@ class AuthNavigationUtils {
       );
     } else {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const HomeScreen()),
+        MaterialPageRoute(builder: (_) => const DashboardScreen()),
       );
     }
   }
