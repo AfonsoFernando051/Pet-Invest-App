@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/glass_card.dart';
+import '../../../../core/di/dependency_injection.dart';
+import '../../../auth/presentation/screens/login_screen.dart';
 import '../../../investment/presentation/screens/investment_configuration_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -23,8 +25,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [
-          IconButton(icon: const Icon(Icons.person_outline, color: Colors.white70), onPressed: () {}),
           IconButton(icon: const Icon(Icons.search, color: Colors.white70), onPressed: () {}),
+          IconButton(
+            icon: const Icon(Icons.logout, color: AppColors.neonPurple), 
+            onPressed: () async {
+              await DI.authRepository.logout();
+              if (context.mounted) {
+                Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const LoginScreen()));
+              }
+            }
+          ),
           const SizedBox(width: 8),
         ],
       ),
@@ -36,32 +46,90 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
         ),
         child: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Column(
-              children: [
-                _buildPetShowcase(),
-                const SizedBox(height: 16),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(flex: 5, child: SizedBox(height: 250, child: _buildRpgAttributes())),
-                    const SizedBox(width: 16),
-                    Expanded(flex: 6, child: SizedBox(height: 250, child: _buildAccountOverview())),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                _buildActionButtons(),
-                const SizedBox(height: 16),
-                _buildRecentTransactions(),
-                const SizedBox(height: 32),
-              ],
-            ),
+          child: IndexedStack(
+            index: _selectedIndex,
+            children: [
+              _buildHomeContent(),
+              _buildWalletContent(),
+              _buildAnalyticsContent(),
+              _buildProfileContent(),
+            ],
           ),
         ),
       ),
       bottomNavigationBar: _buildBottomNav(),
     );
+  }
+
+  // --- Screens ---
+  Widget _buildHomeContent() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Column(
+        children: [
+          _buildPetShowcase(),
+          const SizedBox(height: 16),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(flex: 5, child: SizedBox(height: 250, child: _buildRpgAttributes())),
+              const SizedBox(width: 16),
+              Expanded(flex: 6, child: SizedBox(height: 250, child: _buildAccountOverview())),
+            ],
+          ),
+          const SizedBox(height: 16),
+          _buildActionButtons(),
+          const SizedBox(height: 16),
+          _buildRecentTransactions(),
+          const SizedBox(height: 32),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWalletContent() {
+    return Center(
+      child: GlassCard(
+        backgroundColor: AppColors.spaceDark.withValues(alpha: 0.6),
+        borderColor: AppColors.neonCyan.withValues(alpha: 0.3),
+        borderRadius: 24,
+        borderWidth: 1,
+        child: Padding(
+          padding: const EdgeInsets.all(32.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.account_balance_wallet, size: 64, color: AppColors.neonCyan),
+              const SizedBox(height: 16),
+              const Text('Minha Carteira', style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
+              const Text('Seus ativos ficarão aqui.', style: TextStyle(color: Colors.white70, fontSize: 14)),
+              const SizedBox(height: 24),
+              ElevatedButton.icon(
+                icon: const Icon(Icons.add, color: Colors.white),
+                label: const Text('Adicionar Novo Ativo', style: TextStyle(color: Colors.white)),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF8A2BE2),
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                ),
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(builder: (_) => const InvestmentConfigurationScreen()));
+                },
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAnalyticsContent() {
+    return const Center(child: Text('Ambiente de Análise de Ações - Em Breve!', style: TextStyle(color: AppColors.neonCyan, fontSize: 16)));
+  }
+
+  Widget _buildProfileContent() {
+    return const Center(child: Text('Perfil do Investidor e Opções - Em Breve!', style: TextStyle(color: Color(0xFFFF007F), fontSize: 16)));
   }
 
   // --- Top Tab Bar ---
