@@ -13,15 +13,38 @@ class DashboardScreen extends StatefulWidget {
   State<DashboardScreen> createState() => _DashboardScreenState();
 }
 
-class _DashboardScreenState extends State<DashboardScreen> {
+class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProviderStateMixin {
   int _selectedIndex = 0; // Início is selected
   String _petAsset = 'assets/images/generated_dog.png';
   bool _isLoadingPet = true;
 
+  late AnimationController _animationController;
+  late Animation<double> _breatheAnimation;
+  late Animation<double> _floatAnimation;
+
   @override
   void initState() {
     super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 3),
+    )..repeat(reverse: true);
+
+    _breatheAnimation = Tween<double>(begin: 0.98, end: 1.02).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    );
+
+    _floatAnimation = Tween<double>(begin: -5.0, end: 5.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    );
+
     _fetchMyPet();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
   }
 
   Future<void> _fetchMyPet() async {
@@ -226,64 +249,82 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
             const SizedBox(height: 24),
             // The pet image in a "dome" effect
-            Stack(
-              alignment: Alignment.center,
-              children: [
-                // Glowing background
-                Container(
-                  width: 200,
-                  height: 200,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(color: AppColors.neonCyan.withValues(alpha: 0.2), blurRadius: 40, spreadRadius: 20)
-                    ],
-                  ),
-                ),
-                // "Dome" gradient
-                Container(
-                  width: 240,
-                  height: 280,
-                  decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.vertical(top: Radius.circular(120), bottom: Radius.circular(30)),
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.white.withValues(alpha: 0.1),
-                        Colors.transparent,
-                        AppColors.neonCyan.withValues(alpha: 0.05),
-                      ],
+            AnimatedBuilder(
+              animation: _animationController,
+              builder: (context, child) {
+                return Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    // Glowing background
+                    Container(
+                      width: 200,
+                      height: 200,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.neonCyan.withValues(alpha: 0.15 + (_animationController.value * 0.15)), 
+                            blurRadius: 40 + (_animationController.value * 20), 
+                            spreadRadius: 10 + (_animationController.value * 10)
+                          )
+                        ],
+                      ),
                     ),
-                    border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
-                  ),
-                ),
-                // Pet Image
-                Positioned(
-                  bottom: 20,
-                  child: _isLoadingPet 
-                  ? const CircularProgressIndicator(color: AppColors.neonCyan)
-                  : Image.asset(
-                    _petAsset, 
-                    height: 220, 
-                    fit: BoxFit.contain,
-                    errorBuilder: (context, error, stackTrace) => const Icon(Icons.pets, size: 100, color: Colors.white70),
-                  ),
-                ),
-                // Dome Base
-                Positioned(
-                  bottom: 0,
-                  child: Container(
-                    width: 260,
-                    height: 20,
-                    decoration: BoxDecoration(
-                      color: AppColors.spaceDark,
-                      borderRadius: BorderRadius.circular(10),
-                      boxShadow: [BoxShadow(color: AppColors.neonCyan.withValues(alpha: 0.5), blurRadius: 10, spreadRadius: 1)]
+                    // "Dome" gradient
+                    Container(
+                      width: 240,
+                      height: 280,
+                      decoration: BoxDecoration(
+                        borderRadius: const BorderRadius.vertical(top: Radius.circular(120), bottom: Radius.circular(30)),
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.white.withValues(alpha: 0.1),
+                            Colors.transparent,
+                            AppColors.neonCyan.withValues(alpha: 0.05 + (_animationController.value * 0.05)),
+                          ],
+                        ),
+                        border: Border.all(color: Colors.white.withValues(alpha: 0.1 + (_animationController.value * 0.1))),
+                      ),
                     ),
-                  ),
-                )
-              ],
+                    // Pet Image
+                    Positioned(
+                      bottom: 20 + _floatAnimation.value,
+                      child: Transform.scale(
+                        scale: _breatheAnimation.value,
+                        child: _isLoadingPet 
+                        ? const CircularProgressIndicator(color: AppColors.neonCyan)
+                        : Image.asset(
+                          _petAsset, 
+                          height: 220, 
+                          fit: BoxFit.contain,
+                          errorBuilder: (context, error, stackTrace) => const Icon(Icons.pets, size: 100, color: Colors.white70),
+                        ),
+                      ),
+                    ),
+                    // Dome Base
+                    Positioned(
+                      bottom: 0,
+                      child: Container(
+                        width: 260,
+                        height: 20,
+                        decoration: BoxDecoration(
+                          color: AppColors.spaceDark,
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.neonCyan.withValues(alpha: 0.3 + (_animationController.value * 0.3)), 
+                              blurRadius: 10 + (_animationController.value * 5), 
+                              spreadRadius: 1
+                            )
+                          ]
+                        ),
+                      ),
+                    )
+                  ],
+                );
+              }
             ),
           ],
         ),
