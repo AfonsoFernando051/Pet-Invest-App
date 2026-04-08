@@ -5,6 +5,8 @@ import 'package:petapp_mobile/features/onboarding/data/datasources/onboarding_re
 import 'package:petapp_mobile/features/onboarding/data/repositories/onboarding_repository.dart';
 import 'package:petapp_mobile/features/pet/data/datasources/pet_remote_datasource.dart';
 import 'package:petapp_mobile/features/pet/data/repositories/pet_repository.dart';
+import 'package:petapp_mobile/features/investment/data/datasources/investment_remote_datasource.dart';
+import 'package:petapp_mobile/features/investment/data/repositories/investment_repository.dart';
 
 class DI {
   static final ApiClient _apiClient = ApiClient();
@@ -27,4 +29,9 @@ class DI {
   // Not `final` so tests can replace it with a mock repository.
   static PetRepository petRepository =
       PetRepository(remoteDataSource: _petRemoteDataSource);
+
+  static final InvestmentRemoteDataSource _investmentRemoteDataSource =
+      InvestmentRemoteDataSource(apiClient: _apiClient);
+  static InvestmentRepository investmentRepository =
+      InvestmentRepository(remoteDataSource: _investmentRemoteDataSource);
 }

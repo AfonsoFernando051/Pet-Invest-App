@@ -26,7 +26,7 @@ public class PetController {
 
     @PostMapping("/configure")
     public ResponseEntity<Void> configurePet(@RequestBody ConfigurePetRequestDTO request) {
-        String email = resolveCurrentUserEmail();
+        String email = com.jf.PetApp.core.security.SecurityUtils.getCurrentUserEmail();
         try {
             PetSpecieEnum specie = PetSpecieEnum.valueOf(request.specie().toUpperCase());
             configurePetUseCase.execute(email, specie);
@@ -38,29 +38,9 @@ public class PetController {
 
     @GetMapping("/status")
     public ResponseEntity<PetStatusResponseDTO> getStatus() {
-        String email = resolveCurrentUserEmail();
+        String email = com.jf.PetApp.core.security.SecurityUtils.getCurrentUserEmail();
         boolean hasPet = getPetStatusUseCase.execute(email);
         return ResponseEntity.ok(new PetStatusResponseDTO(hasPet));
-    }
-
-    private String resolveCurrentUserEmail() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            throw new ResponseStatusException(org.springframework.http.HttpStatus.UNAUTHORIZED, "Not authenticated");
-        }
-
-        Object principal = authentication.getPrincipal();
-        if (principal instanceof User domainUser) {
-            return domainUser.getEmail();
-        }
-
-        if (principal instanceof UserDetails userDetails) {
-            return userDetails.getUsername();
-        } else if (principal instanceof String principalString) {
-            return principalString;
-        }
-
-        throw new ResponseStatusException(org.springframework.http.HttpStatus.UNAUTHORIZED, "User identity not available");
     }
 
     public record ConfigurePetRequestDTO(String specie) {}

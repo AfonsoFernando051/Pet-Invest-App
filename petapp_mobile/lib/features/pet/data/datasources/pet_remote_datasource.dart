@@ -10,7 +10,7 @@ class PetRemoteDataSource {
 
   Future<void> configurePet(PetSpecieEnum specie) async {
     final response = await apiClient.post(
-      '/pets/configure',
+      '/api/pets/configure',
       {'specie': specie.name},
     );
     
@@ -20,7 +20,7 @@ class PetRemoteDataSource {
   }
 
   Future<bool> getPetStatus() async {
-    final response = await apiClient.get('/pets/status');
+    final response = await apiClient.get('/api/pets/status');
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       return data['hasPet'] as bool;
