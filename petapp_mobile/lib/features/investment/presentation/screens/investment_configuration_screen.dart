@@ -67,6 +67,9 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
       });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Preencha todos os campos e selecione uma data/tipo.')));
+    }
+  }
+
   Future<void> _handleConfirm() async {
     if (_assets.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Adicione pelo menos um ativo para continuar.')));
