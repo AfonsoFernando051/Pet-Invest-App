@@ -2,9 +2,9 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
 import 'package:petapp_mobile/core/di/dependency_injection.dart';
-import 'package:petapp_mobile/features/home/presentation/screens/home_screen.dart';
 import 'package:petapp_mobile/features/pet/data/models/pet_specie_enum.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:petapp_mobile/features/investment/presentation/screens/investment_configuration_screen.dart';
 
 class PetConfigurationScreen extends StatefulWidget {
   const PetConfigurationScreen({super.key});
@@ -61,7 +61,7 @@ class _PetConfigurationScreenState extends State<PetConfigurationScreen> with Si
       await DI.petRepository.configurePet(_selectedSpecie);
       if (mounted) {
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const HomeScreen()),
+          MaterialPageRoute(builder: (_) => const InvestmentConfigurationScreen()),
         );
       }
     } catch (e) {

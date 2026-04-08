@@ -1,5 +1,6 @@
 package com.jf.PetApp.core.domain;
 
-public interface Investment {
-	
+import com.jf.PetApp.core.domain.enums.InvestmentType;
+
+public record Investment(String id, String userEmail, InvestmentType type) {
 }
