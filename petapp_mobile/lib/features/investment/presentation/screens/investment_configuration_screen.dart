@@ -43,7 +43,7 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
   }
 
   String _formatDate(DateTime date) {
-    return "\${date.year}-\${date.month.toString().padLeft(2, '0')}-\${date.day.toString().padLeft(2, '0')}";
+    return "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
   }
 
   void _addAsset() {
@@ -83,7 +83,7 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Falha ao salvar investimentos: \${e.toString()}')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Falha ao salvar investimentos: ${e.toString()}')));
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -152,6 +152,7 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
       padding: const EdgeInsets.only(bottom: 16.0),
       child: DropdownButtonFormField<InvestmentTypeEnum>(
         value: _selectedType,
+        isExpanded: true,
         dropdownColor: AppColors.spaceDark,
         style: const TextStyle(color: Colors.white),
         decoration: InputDecoration(
@@ -175,7 +176,10 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
         items: InvestmentTypeEnum.values.map((type) {
           return DropdownMenuItem(
             value: type,
-            child: Text(_investmentLabels[type]!),
+            child: Text(
+              _investmentLabels[type]!,
+              overflow: TextOverflow.ellipsis,
+            ),
           );
         }).toList(),
         onChanged: (val) => setState(() => _selectedType = val),
@@ -198,9 +202,12 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                _selectedDate == null ? 'Data de Compra' : "\${_selectedDate!.day.toString().padLeft(2, '0')}/\${_selectedDate!.month.toString().padLeft(2, '0')}/\${_selectedDate!.year}",
-                style: TextStyle(color: _selectedDate == null ? Colors.white70 : Colors.white, fontSize: 16),
+              Expanded(
+                child: Text(
+                  _selectedDate == null ? 'Data de Compra' : "${_selectedDate!.day.toString().padLeft(2, '0')}/${_selectedDate!.month.toString().padLeft(2, '0')}/${_selectedDate!.year}",
+                  style: TextStyle(color: _selectedDate == null ? Colors.white70 : Colors.white, fontSize: 16),
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
               const Icon(Icons.calendar_today, color: AppColors.neonCyan),
             ],
@@ -246,11 +253,7 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
                           Expanded(flex: 6, child: _buildRightPanel()),
                         ],
                       )
-                    : Column(
-                        children: [
-                          Expanded(child: _buildRightPanel()),
-                        ],
-                      ),
+                    : _buildRightPanel(),
               );
             },
           ),
@@ -270,11 +273,12 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset('assets/images/auth_compass.png', height: 250),
+            Image.asset('assets/images/fox_compass.png', height: 250),
             const SizedBox(height: 32),
             const Text(
               'Monte seu Portfólio',
               style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
             const Padding(
@@ -298,15 +302,15 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
       borderColor: AppColors.goldenBorder.withValues(alpha: 0.2),
       borderWidth: 1,
       child: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const Text(
               'Adicionar Ativo',
-              style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+              style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
             Expanded(
               child: SingleChildScrollView(
                 child: Form(
@@ -317,16 +321,16 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
                       _buildTextField(_nameController, 'Nome/Ticker (ex: PETR4)', TextInputType.text),
                       Row(
                         children: [
-                          Expanded(child: _buildTextField(_quantityController, 'Quantidade', const TextInputType.numberWithOptions(decimal: true))),
-                          const SizedBox(width: 16),
-                          Expanded(child: _buildTextField(_priceController, 'Preço Unitário (R\$)', const TextInputType.numberWithOptions(decimal: true))),
+                          Expanded(child: _buildTextField(_quantityController, 'Qtd.', const TextInputType.numberWithOptions(decimal: true))),
+                          const SizedBox(width: 8),
+                          Expanded(child: _buildTextField(_priceController, 'Preço (R\$)', const TextInputType.numberWithOptions(decimal: true))),
                         ],
                       ),
                       _buildDatePickerField(),
                       const SizedBox(height: 8),
                       OutlinedButton.icon(
                         icon: const Icon(Icons.add, color: AppColors.neonCyan),
-                        label: const Text('Adicionar à Lista', style: TextStyle(color: AppColors.neonCyan)),
+                        label: const Text('Adicionar', style: TextStyle(color: AppColors.neonCyan)),
                         style: OutlinedButton.styleFrom(
                           side: const BorderSide(color: AppColors.neonCyan),
                           padding: const EdgeInsets.symmetric(vertical: 16),
@@ -334,13 +338,13 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
                         ),
                         onPressed: _addAsset,
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 16),
                       if (_assets.isNotEmpty) ...[
                         const Align(
                           alignment: Alignment.centerLeft,
-                          child: Text('Ativos Registrados:', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                          child: Text('Registrados:', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 8),
                         ListView.builder(
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
@@ -348,9 +352,18 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
                           itemBuilder: (context, index) {
                             final a = _assets[index];
                             return ListTile(
+                              contentPadding: const EdgeInsets.all(0),
                               leading: const Icon(Icons.check_circle, color: AppColors.neonCyan),
-                              title: Text(a.name, style: const TextStyle(color: Colors.white)),
-                              subtitle: Text('\${a.quantity} cotas a R\$ \${a.purchasePrice}', style: const TextStyle(color: Colors.white70)),
+                              title: Text(
+                                a.name, 
+                                style: const TextStyle(color: Colors.white),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              subtitle: Text(
+                                '${a.quantity} cotas a R\$ ${a.purchasePrice}', 
+                                style: const TextStyle(color: Colors.white70),
+                                overflow: TextOverflow.ellipsis,
+                              ),
                               trailing: IconButton(
                                 icon: const Icon(Icons.delete, color: Colors.redAccent),
                                 onPressed: () {
@@ -378,14 +391,14 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
 
   Widget _buildConfirmButton() {
     return Container(
-      height: 56,
+      height: 50,
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           colors: [AppColors.neonPurple, AppColors.neonCyan],
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
         ),
-        borderRadius: BorderRadius.circular(28),
+        borderRadius: BorderRadius.circular(25),
         boxShadow: [
           BoxShadow(
             color: AppColors.neonPurple.withValues(alpha: 0.4),
@@ -397,14 +410,14 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(28),
+          borderRadius: BorderRadius.circular(25),
           onTap: _isLoading ? null : _handleConfirm,
           child: Center(
             child: _isLoading
-                ? const SizedBox(height: 24, width: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
                 : const Text(
                     'Confirmar e Continuar',
-                    style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                    style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
                   ),
           ),
         ),
