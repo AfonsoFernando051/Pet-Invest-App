@@ -2,8 +2,11 @@ package com.jf.PetApp.infrastructure.controller.pet;
 
 import com.jf.PetApp.application.pet.usecase.ConfigurePetUseCase;
 import com.jf.PetApp.application.pet.usecase.GetPetStatusUseCase;
+import com.jf.PetApp.application.pet.usecase.GetMyPetUseCase;
 import com.jf.PetApp.core.domain.User;
+import com.jf.PetApp.core.domain.Pet;
 import com.jf.PetApp.core.domain.enums.PetSpecieEnum;
+import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -18,10 +21,12 @@ public class PetController {
 
     private final ConfigurePetUseCase configurePetUseCase;
     private final GetPetStatusUseCase getPetStatusUseCase;
+    private final GetMyPetUseCase getMyPetUseCase;
 
-    public PetController(ConfigurePetUseCase configurePetUseCase, GetPetStatusUseCase getPetStatusUseCase) {
+    public PetController(ConfigurePetUseCase configurePetUseCase, GetPetStatusUseCase getPetStatusUseCase, GetMyPetUseCase getMyPetUseCase) {
         this.configurePetUseCase = configurePetUseCase;
         this.getPetStatusUseCase = getPetStatusUseCase;
+        this.getMyPetUseCase = getMyPetUseCase;
     }
 
     @PostMapping("/configure")
@@ -43,6 +48,18 @@ public class PetController {
         return ResponseEntity.ok(new PetStatusResponseDTO(hasPet));
     }
 
+    @GetMapping("/my-pet")
+    public ResponseEntity<PetDetailResponseDTO> getMyPet() {
+        String email = com.jf.PetApp.core.security.SecurityUtils.getCurrentUserEmail();
+        Optional<Pet> petOpt = getMyPetUseCase.execute(email);
+        if (petOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        Pet pet = petOpt.get();
+        return ResponseEntity.ok(new PetDetailResponseDTO(pet.getSpecie().name(), pet.getName(), pet.getHealth()));
+    }
+
     public record ConfigurePetRequestDTO(String specie) {}
     public record PetStatusResponseDTO(boolean hasPet) {}
+    public record PetDetailResponseDTO(String specie, String name, int health) {}
 }

@@ -27,4 +27,12 @@ class PetRemoteDataSource {
     }
     return false;
   }
+
+  Future<Map<String, dynamic>?> getMyPet() async {
+    final response = await apiClient.get('/api/pets/my-pet');
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body) as Map<String, dynamic>;
+    }
+    return null;
+  }
 }

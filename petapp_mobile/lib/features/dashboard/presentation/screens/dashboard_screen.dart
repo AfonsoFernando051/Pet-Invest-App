@@ -15,6 +15,31 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   int _selectedIndex = 0; // Início is selected
+  String _petAsset = 'assets/images/generated_dog.png';
+  bool _isLoadingPet = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchMyPet();
+  }
+
+  Future<void> _fetchMyPet() async {
+    try {
+      final petData = await DI.petRepository.getMyPet();
+      if (petData != null && mounted) {
+        final specie = (petData['specie'] as String).toLowerCase();
+        setState(() {
+          _petAsset = 'assets/images/generated_$specie.png';
+          _isLoadingPet = false;
+        });
+      } else {
+        if (mounted) setState(() => _isLoadingPet = false);
+      }
+    } catch (e) {
+      if (mounted) setState(() => _isLoadingPet = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -236,8 +261,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 // Pet Image
                 Positioned(
                   bottom: 20,
-                  child: Image.asset(
-                    'assets/images/generated_dog.png', 
+                  child: _isLoadingPet 
+                  ? const CircularProgressIndicator(color: AppColors.neonCyan)
+                  : Image.asset(
+                    _petAsset, 
                     height: 220, 
                     fit: BoxFit.contain,
                     errorBuilder: (context, error, stackTrace) => const Icon(Icons.pets, size: 100, color: Colors.white70),
