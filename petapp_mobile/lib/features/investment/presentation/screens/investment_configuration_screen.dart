@@ -3,6 +3,7 @@ import 'package:petapp_mobile/core/constants/app_colors.dart';
 import 'package:petapp_mobile/core/di/dependency_injection.dart';
 import 'package:petapp_mobile/features/home/presentation/screens/home_screen.dart';
 import 'package:petapp_mobile/features/investment/data/models/investment_type_enum.dart';
+import 'package:petapp_mobile/core/widgets/glass_card.dart';
 
 class InvestmentConfigurationScreen extends StatefulWidget {
   const InvestmentConfigurationScreen({super.key});
@@ -124,25 +125,21 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
                       final isSelected = _selectedInvestments.contains(type);
                       return GestureDetector(
                         onTap: () => _toggleInvestment(type),
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 300),
-                          decoration: BoxDecoration(
-                            color: isSelected ? AppColors.neonCyan.withValues(alpha: 0.2) : AppColors.spaceDark.withValues(alpha: 0.6),
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                              color: isSelected ? AppColors.neonCyan : AppColors.goldenBorder.withValues(alpha: 0.3),
-                              width: isSelected ? 2 : 1,
-                            ),
-                            boxShadow: isSelected
-                                ? [
-                                    BoxShadow(
-                                      color: AppColors.neonCyan.withValues(alpha: 0.3),
-                                      blurRadius: 10,
-                                      spreadRadius: 2,
-                                    )
-                                  ]
-                                : [],
-                          ),
+                        child: GlassCard(
+                          isAnimated: true,
+                          backgroundColor: isSelected ? AppColors.neonCyan.withValues(alpha: 0.2) : AppColors.spaceDark.withValues(alpha: 0.6),
+                          borderRadius: 20,
+                          borderColor: isSelected ? AppColors.neonCyan : AppColors.goldenBorder.withValues(alpha: 0.3),
+                          borderWidth: isSelected ? 2 : 1,
+                          boxShadow: isSelected
+                              ? [
+                                  BoxShadow(
+                                    color: AppColors.neonCyan.withValues(alpha: 0.3),
+                                    blurRadius: 10,
+                                    spreadRadius: 2,
+                                  )
+                                ]
+                              : [],
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [

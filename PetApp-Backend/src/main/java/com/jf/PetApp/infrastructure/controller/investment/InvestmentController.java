@@ -26,7 +26,7 @@ public class InvestmentController {
 
     @PostMapping("/configure")
     public ResponseEntity<Void> configureInvestments(@RequestBody ConfigureInvestmentsRequestDTO request) {
-        String email = resolveCurrentUserEmail();
+        String email = com.jf.PetApp.core.security.SecurityUtils.getCurrentUserEmail();
         try {
             List<InvestmentType> types = request.investments().stream()
                 .map(inv -> InvestmentType.valueOf(inv.toUpperCase()))
@@ -37,26 +37,6 @@ public class InvestmentController {
         } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(org.springframework.http.HttpStatus.BAD_REQUEST, "Invalid investment type");
         }
-    }
-
-    private String resolveCurrentUserEmail() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            throw new ResponseStatusException(org.springframework.http.HttpStatus.UNAUTHORIZED, "Not authenticated");
-        }
-
-        Object principal = authentication.getPrincipal();
-        if (principal instanceof User domainUser) {
-            return domainUser.getEmail();
-        }
-
-        if (principal instanceof UserDetails userDetails) {
-            return userDetails.getUsername();
-        } else if (principal instanceof String principalString) {
-            return principalString;
-        }
-
-        throw new ResponseStatusException(org.springframework.http.HttpStatus.UNAUTHORIZED, "User identity not available");
     }
 
     public record ConfigureInvestmentsRequestDTO(List<String> investments) {}

@@ -5,6 +5,7 @@ import 'package:petapp_mobile/core/di/dependency_injection.dart';
 import 'package:petapp_mobile/features/pet/data/models/pet_specie_enum.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:petapp_mobile/features/investment/presentation/screens/investment_configuration_screen.dart';
+import 'package:petapp_mobile/core/widgets/glass_card.dart';
 
 class PetConfigurationScreen extends StatefulWidget {
   const PetConfigurationScreen({super.key});
@@ -132,20 +133,15 @@ class _PetConfigurationScreenState extends State<PetConfigurationScreen> with Si
   }
 
   Widget _buildLeftPanel() {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.spaceDark.withValues(alpha: 0.6),
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppColors.goldenBorder.withValues(alpha: 0.5), width: 1.5),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.3),
-            blurRadius: 10,
-            spreadRadius: 2,
-          )
-        ]
-      ),
+    return GlassCard(
       padding: const EdgeInsets.all(20),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withValues(alpha: 0.3),
+          blurRadius: 10,
+          spreadRadius: 2,
+        )
+      ],
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -327,19 +323,15 @@ class _PetConfigurationScreenState extends State<PetConfigurationScreen> with Si
   }
 
   Widget _buildRightPanel() {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.spaceDark.withValues(alpha: 0.6),
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppColors.neonCyan.withValues(alpha: 0.3), width: 1.5),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.neonCyan.withValues(alpha: 0.1),
-            blurRadius: 15,
-            spreadRadius: 2,
-          )
-        ]
-      ),
+    return GlassCard(
+      borderColor: AppColors.neonCyan.withValues(alpha: 0.3),
+      boxShadow: [
+        BoxShadow(
+          color: AppColors.neonCyan.withValues(alpha: 0.1),
+          blurRadius: 15,
+          spreadRadius: 2,
+        )
+      ],
       child: Stack(
         children: [
           // Background decorative chart

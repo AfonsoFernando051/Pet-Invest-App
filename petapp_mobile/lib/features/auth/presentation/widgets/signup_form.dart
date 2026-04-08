@@ -60,28 +60,7 @@ class _SignupFormState extends State<SignupForm> {
       // Auto-login since register doesn't return an accessToken
       await DI.authRepository.login(email, password);
 
-      final status = await DI.onboardingRepository.getStatus();
-      if (mounted) {
-        if (!status.hasAnswered) {
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (_) => const OnboardingScreen()),
-          );
-          return;
-        }
-
-        final hasPet = await DI.petRepository.getPetStatus();
-        if (mounted) {
-          if (!hasPet) {
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (_) => const PetConfigurationScreen()),
-            );
-          } else {
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (_) => const HomeScreen()),
-            );
-          }
-        }
-      }
+      await AuthNavigationUtils.handlePostAuthRedirect(context);
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
