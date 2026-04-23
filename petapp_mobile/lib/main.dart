@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:petapp_mobile/core/di/dependency_injection.dart';
 import 'package:petapp_mobile/features/auth/presentation/screens/login_screen.dart';
-import 'package:petapp_mobile/features/home/presentation/screens/home_screen.dart';
+import 'package:petapp_mobile/features/dashboard/presentation/screens/dashboard_screen.dart';
 import 'package:petapp_mobile/features/onboarding/presentation/screens/onboarding_screen.dart';
 import 'package:petapp_mobile/features/pet/presentation/screens/pet_configuration_screen.dart';
 
@@ -47,7 +47,7 @@ class MyApp extends StatelessWidget {
           }
 
           final route = snapshot.data;
-          if (route == StartRoute.home) return const HomeScreen();
+          if (route == StartRoute.home) return const DashboardScreen();
           if (route == StartRoute.petConfig) return const PetConfigurationScreen();
           if (route == StartRoute.onboarding) return const OnboardingScreen();
           return const LoginScreen();

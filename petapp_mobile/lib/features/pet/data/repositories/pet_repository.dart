@@ -13,4 +13,8 @@ class PetRepository {
   Future<bool> getPetStatus() async {
     return await remoteDataSource.getPetStatus();
   }
+
+  Future<Map<String, dynamic>?> getMyPet() async {
+    return await remoteDataSource.getMyPet();
+  }
 }
