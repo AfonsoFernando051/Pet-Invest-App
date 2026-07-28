@@ -7,6 +7,8 @@ import 'package:petapp_mobile/features/pet/data/datasources/pet_remote_datasourc
 import 'package:petapp_mobile/features/pet/data/repositories/pet_repository.dart';
 import 'package:petapp_mobile/features/investment/data/datasources/investment_remote_datasource.dart';
 import 'package:petapp_mobile/features/investment/data/repositories/investment_repository.dart';
+import 'package:petapp_mobile/features/settings/data/datasources/settings_remote_datasource.dart';
+import 'package:petapp_mobile/features/settings/data/repositories/settings_repository.dart';
 
 class DI {
   static final ApiClient _apiClient = ApiClient();
@@ -34,4 +36,9 @@ class DI {
       InvestmentRemoteDataSource(apiClient: _apiClient);
   static InvestmentRepository investmentRepository =
       InvestmentRepository(remoteDataSource: _investmentRemoteDataSource);
+
+  static final SettingsRemoteDataSource _settingsRemoteDataSource =
+      SettingsRemoteDataSource(apiClient: _apiClient);
+  static SettingsRepository settingsRepository =
+      SettingsRepository(remoteDataSource: _settingsRemoteDataSource);
 }

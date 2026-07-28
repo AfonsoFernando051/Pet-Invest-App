@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_strings.dart';
 import '../../../../core/di/dependency_injection.dart';
+import '../../../../core/utils/game_snack.dart';
+import '../../../../core/utils/translator.dart';
 import '../../../dashboard/presentation/screens/dashboard_screen.dart';
 import '../../../pet/presentation/screens/pet_configuration_screen.dart';
 import '../../data/models/question_model.dart';
@@ -32,9 +35,7 @@ class _OnboardingFormState extends State<OnboardingForm> {
     for (final q in questions) {
       final selected = _selectedOptionByQuestionId[q.id];
       if (selected == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please answer all questions')),
-        );
+        GameSnack.show(context, Translator.translate(AppStrings.pleaseAnswerAllQuestions), isError: true);
         return;
       }
       selectedOptionIds.add(selected);
@@ -59,8 +60,10 @@ class _OnboardingFormState extends State<OnboardingForm> {
       }
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Onboarding failed: ${e.toString()}')),
+      GameSnack.show(
+        context,
+        '${Translator.translate(AppStrings.onboardingFailed)}: ${e.toString()}',
+        isError: true,
       );
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
@@ -83,7 +86,7 @@ class _OnboardingFormState extends State<OnboardingForm> {
             height: 300,
             child: Center(
               child: Text(
-                'Failed to load questions: ${snapshot.error}',
+                '${Translator.translate(AppStrings.failedToLoadQuestions)}: ${snapshot.error}',
                 style: const TextStyle(color: Colors.white),
               )
             ),
@@ -91,10 +94,10 @@ class _OnboardingFormState extends State<OnboardingForm> {
         }
         final questions = snapshot.data ?? [];
         if (questions.isEmpty) {
-          return const SizedBox(
+          return SizedBox(
             height: 300,
             child: Center(
-              child: Text('No questions available.', style: TextStyle(color: Colors.white))
+              child: Text(Translator.translate(AppStrings.noQuestionsAvailable), style: const TextStyle(color: Colors.white))
             ),
           );
         }

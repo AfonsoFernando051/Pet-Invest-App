@@ -17,9 +17,14 @@ void main() {
       expect(Translator.translate(AppStrings.welcomeBack), "Welcome back");
     });
 
-    test('returns key itself if language is unsupported', () {
+    test('translates key to Spanish when language changes', () {
       Translator.currentLanguage = 'es';
-      expect(Translator.translate(AppStrings.welcomeBack), AppStrings.welcomeBack);
+      expect(Translator.translate(AppStrings.welcomeBack), "Bienvenido de nuevo");
+    });
+
+    test('falls back to default language if language is unsupported', () {
+      Translator.currentLanguage = 'fr';
+      expect(Translator.translate(AppStrings.welcomeBack), "Bem-vindo de volta");
     });
 
     test('returns key itself if translation for key is missing', () {

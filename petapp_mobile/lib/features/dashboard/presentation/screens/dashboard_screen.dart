@@ -5,6 +5,7 @@ import '../../../../core/widgets/glass_card.dart';
 import '../../../../core/di/dependency_injection.dart';
 import '../../../auth/presentation/screens/login_screen.dart';
 import '../../../investment/presentation/screens/investment_configuration_screen.dart';
+import '../../../settings/presentation/screens/settings_screen.dart';
 import '../widgets/pet_showcase.dart';
 import '../widgets/rpg_attributes.dart';
 import '../widgets/account_overview.dart';
@@ -105,6 +106,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
           IconButton(
             icon: const Icon(Icons.search, color: Colors.white70),
             onPressed: () {},
+          ),
+          IconButton(
+            icon: const Icon(Icons.settings_outlined, color: Colors.white70),
+            tooltip: 'Configurações',
+            onPressed: () {
+              Navigator.of(context).push(_fadeRoute(const SettingsScreen()));
+            },
           ),
           IconButton(
             icon: const Icon(Icons.logout, color: AppColors.neonPurple),
@@ -328,9 +336,26 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Configurações e conquistas\nem breve.',
+                'Conquistas em breve.\nGerencie idioma e conta nas configurações.',
                 textAlign: TextAlign.center,
                 style: TextStyle(color: AppColors.subtleText, fontSize: 14),
+              ),
+              const SizedBox(height: 24),
+              OutlinedButton.icon(
+                icon: const Icon(Icons.settings_outlined, color: AppColors.neonPink),
+                label: const Text(
+                  'Configurações',
+                  style: TextStyle(color: AppColors.neonPink, fontWeight: FontWeight.bold),
+                ),
+                style: OutlinedButton.styleFrom(
+                  side: const BorderSide(color: AppColors.neonPink),
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                ),
+                onPressed: () {
+                  HapticFeedback.selectionClick();
+                  Navigator.of(context).push(_fadeRoute(const SettingsScreen()));
+                },
               ),
             ],
           ),

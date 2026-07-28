@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:petapp_mobile/core/network/api_client.dart';
 import 'package:petapp_mobile/core/constants/api_constants.dart';
+import 'package:petapp_mobile/core/utils/translator.dart';
 import 'package:petapp_mobile/features/onboarding/data/models/onboarding_status_model.dart';
 import 'package:petapp_mobile/features/onboarding/data/models/question_model.dart';
 
@@ -12,7 +13,9 @@ class OnboardingRemoteDataSource {
   OnboardingRemoteDataSource({required this.apiClient});
 
   Future<List<QuestionModel>> getQuestions() async {
-    final response = await apiClient.get(ApiConstants.onboardingQuestionsEndpoint);
+    final response = await apiClient.get(
+      '${ApiConstants.onboardingQuestionsEndpoint}?lang=${Translator.currentLanguage}',
+    );
     return _parseQuestions(response);
   }
 

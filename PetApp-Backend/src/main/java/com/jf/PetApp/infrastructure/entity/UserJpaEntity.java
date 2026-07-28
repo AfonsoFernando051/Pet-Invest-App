@@ -39,6 +39,9 @@ public class UserJpaEntity {
     @Column(name = "investor_profile")
     private InvestorProfile investorProfile;
 
+    @Column(name = "preferred_language")
+    private String preferredLanguage;
+
     @Enumerated(EnumType.STRING)
     private RoleEnum role;
 
@@ -60,7 +63,8 @@ public class UserJpaEntity {
         entity.isActive = user.isActive();
         entity.hasAnsweredOnboarding = user.hasAnsweredOnboarding();
         entity.investorProfile = user.getInvestorProfile();
-        
+        entity.preferredLanguage = user.getPreferredLanguage();
+
         if (user.getPet() != null) {
             entity.pet = PetJpaEntity.fromDomain(user.getPet());
             entity.pet.setUser(entity);
@@ -79,7 +83,8 @@ public class UserJpaEntity {
         user.setActive(isActive);
         user.setHasAnsweredOnboarding(hasAnsweredOnboarding);
         user.setInvestorProfile(investorProfile);
-        
+        user.setPreferredLanguage(preferredLanguage);
+
         if (pet != null) {
             user.setPet(pet.toDomain(user));
         }

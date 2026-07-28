@@ -1,7 +1,10 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
+import 'package:petapp_mobile/core/constants/app_strings.dart';
 import 'package:petapp_mobile/core/di/dependency_injection.dart';
+import 'package:petapp_mobile/core/utils/game_snack.dart';
+import 'package:petapp_mobile/core/utils/translator.dart';
 import 'package:petapp_mobile/features/pet/data/models/pet_specie_enum.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:petapp_mobile/features/investment/presentation/screens/investment_configuration_screen.dart';
@@ -67,8 +70,10 @@ class _PetConfigurationScreenState extends State<PetConfigurationScreen> with Si
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to save pet: ${e.toString()}')),
+        GameSnack.show(
+          context,
+          '${Translator.translate(AppStrings.failedToSavePet)}: ${e.toString()}',
+          isError: true,
         );
       }
     } finally {
@@ -81,7 +86,7 @@ class _PetConfigurationScreenState extends State<PetConfigurationScreen> with Si
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: const Text('PET Profile', style: TextStyle(color: Colors.white)),
+        title: Text(Translator.translate(AppStrings.petProfileTitle), style: const TextStyle(color: Colors.white)),
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
@@ -161,9 +166,9 @@ class _PetConfigurationScreenState extends State<PetConfigurationScreen> with Si
           const SizedBox(height: 20),
           _buildPetSelector(),
           const SizedBox(height: 16),
-          _buildDropdown('Main Goal: Reação to Drop', _selectedGoal, (v) => setState(() => _selectedGoal = v!)),
+          _buildDropdown('Meta Principal', _selectedGoal, (v) => setState(() => _selectedGoal = v!)),
           const SizedBox(height: 12),
-          _buildDropdown('Time Horizon, Market Action', _selectedHorizon, (v) => setState(() => _selectedHorizon = v!)),
+          _buildDropdown('Horizonte de Tempo', _selectedHorizon, (v) => setState(() => _selectedHorizon = v!)),
           const SizedBox(height: 24),
           _buildConfirmButton(),
         ],
@@ -276,13 +281,13 @@ class _PetConfigurationScreenState extends State<PetConfigurationScreen> with Si
         children: [
           Row(
             children: [
-              Icon(title.contains('Goal') ? Icons.track_changes : Icons.access_time, color: Colors.white70, size: 20),
+              Icon(title.contains('Meta') ? Icons.track_changes : Icons.access_time, color: Colors.white70, size: 20),
               const SizedBox(width: 12),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)),
-                  Text('Goal: $value', style: const TextStyle(color: Colors.white70, fontSize: 12)),
+                  Text(value, style: const TextStyle(color: Colors.white70, fontSize: 12)),
                 ],
               ),
             ],

@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
 import 'package:petapp_mobile/core/di/dependency_injection.dart';
+import 'package:petapp_mobile/core/utils/translator.dart';
 import 'package:petapp_mobile/features/auth/presentation/screens/login_screen.dart';
 import 'package:petapp_mobile/features/dashboard/presentation/screens/dashboard_screen.dart';
 import 'package:petapp_mobile/features/onboarding/presentation/screens/onboarding_screen.dart';
 import 'package:petapp_mobile/features/pet/presentation/screens/pet_configuration_screen.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Translator.load();
   runApp(const MyApp());
 }
 
@@ -38,39 +41,44 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final outfitTextTheme = GoogleFonts.outfitTextTheme(ThemeData.dark().textTheme);
 
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData.dark().copyWith(
-        textTheme: outfitTextTheme,
-        scaffoldBackgroundColor: AppColors.spaceDark,
-        colorScheme: const ColorScheme.dark(
-          primary: AppColors.neonCyan,
-          secondary: AppColors.neonPurple,
-          surface: AppColors.spaceBlue,
-        ),
-        snackBarTheme: SnackBarThemeData(
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          backgroundColor: AppColors.spaceBlue,
-          contentTextStyle: GoogleFonts.outfit(
-            color: Colors.white,
-            fontWeight: FontWeight.w600,
+    // Rebuilds the whole app when the user switches language in Settings,
+    // since screens read Translator.translate() directly at build time.
+    return ValueListenableBuilder<String>(
+      valueListenable: Translator.languageNotifier,
+      builder: (context, _, __) => MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData.dark().copyWith(
+          textTheme: outfitTextTheme,
+          scaffoldBackgroundColor: AppColors.spaceDark,
+          colorScheme: const ColorScheme.dark(
+            primary: AppColors.neonCyan,
+            secondary: AppColors.neonPurple,
+            surface: AppColors.spaceBlue,
+          ),
+          snackBarTheme: SnackBarThemeData(
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            backgroundColor: AppColors.spaceBlue,
+            contentTextStyle: GoogleFonts.outfit(
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
-      ),
-      home: FutureBuilder<StartRoute>(
-        future: _getStartRoute(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const _SplashScreen();
-          }
+        home: FutureBuilder<StartRoute>(
+          future: _getStartRoute(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const _SplashScreen();
+            }
 
-          final route = snapshot.data;
-          if (route == StartRoute.home) return const DashboardScreen();
-          if (route == StartRoute.petConfig) return const PetConfigurationScreen();
-          if (route == StartRoute.onboarding) return const OnboardingScreen();
-          return const LoginScreen();
-        },
+            final route = snapshot.data;
+            if (route == StartRoute.home) return const DashboardScreen();
+            if (route == StartRoute.petConfig) return const PetConfigurationScreen();
+            if (route == StartRoute.onboarding) return const OnboardingScreen();
+            return const LoginScreen();
+          },
+        ),
       ),
     );
   }

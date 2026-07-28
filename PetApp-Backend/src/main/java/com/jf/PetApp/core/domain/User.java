@@ -55,6 +55,11 @@ public class User {
 	 */
 	InvestorProfile investorProfile;
 
+	/**
+	 * The user's preferred UI/content language (e.g. "pt", "en", "es"). Defaults to "pt".
+	 */
+	String preferredLanguage = "pt";
+
 	public Long getId() {
 		return id;
 	}
@@ -135,6 +140,14 @@ public class User {
 		this.investorProfile = investorProfile;
 	}
 
+	public String getPreferredLanguage() {
+		return preferredLanguage;
+	}
+
+	public void setPreferredLanguage(String preferredLanguage) {
+		this.preferredLanguage = preferredLanguage;
+	}
+
 	public static User create(String username, String email, String password, RoleEnum role) {
 		User user = new User();
 		user.setUsername(username);
@@ -144,6 +157,7 @@ public class User {
 		user.setActive(true);
 		user.setHasAnsweredOnboarding(false);
 		user.setInvestorProfile(null);
+		user.setPreferredLanguage("pt");
 		return user;
 	}
 

@@ -30,10 +30,21 @@ class ApiClient {
   Future<http.Response> get(String endpoint) async {
     final headers = await _getHeaders();
     final url = Uri.parse('${ApiConstants.baseUrl}$endpoint');
-    
+
     return _client.get(
       url,
       headers: headers,
+    );
+  }
+
+  Future<http.Response> put(String endpoint, dynamic body) async {
+    final headers = await _getHeaders();
+    final url = Uri.parse('${ApiConstants.baseUrl}$endpoint');
+
+    return _client.put(
+      url,
+      headers: headers,
+      body: jsonEncode(body),
     );
   }
 }

@@ -1,6 +1,7 @@
 package com.jf.PetApp.infrastructure.controller.onboarding;
 
 import com.jf.PetApp.application.onboarding.usecase.CalculateInvestorProfileUseCase;
+import com.jf.PetApp.application.translation.service.TranslationCacheService;
 import com.jf.PetApp.application.user.port.UserRepository;
 import com.jf.PetApp.core.domain.assessment.InvestorProfile;
 import com.jf.PetApp.core.domain.assessment.UserAssessment;
@@ -23,24 +24,28 @@ public class OnboardingController {
     private final QuestionRepository questionRepository;
     private final CalculateInvestorProfileUseCase calculateInvestorProfileUseCase;
     private final UserRepository userRepository;
+    private final TranslationCacheService translationCacheService;
 
     public OnboardingController(
             QuestionRepository questionRepository,
             CalculateInvestorProfileUseCase calculateInvestorProfileUseCase,
-            UserRepository userRepository) {
+            UserRepository userRepository,
+            TranslationCacheService translationCacheService) {
         this.questionRepository = questionRepository;
         this.calculateInvestorProfileUseCase = calculateInvestorProfileUseCase;
         this.userRepository = userRepository;
+        this.translationCacheService = translationCacheService;
     }
 
     @GetMapping("/questions")
-    public ResponseEntity<List<QuestionResponseDTO>> getQuestions() {
+    public ResponseEntity<List<QuestionResponseDTO>> getQuestions(
+            @RequestParam(defaultValue = TranslationCacheService.SOURCE_LANGUAGE) String lang) {
         List<QuestionResponseDTO> responses = questionRepository.findAll().stream()
                 .map(q -> new QuestionResponseDTO(
                         q.id(),
-                        q.text(),
+                        translationCacheService.translate(q.text(), lang),
                         q.options().stream()
-                                .map(o -> new OptionResponseDTO(o.id(), o.text()))
+                                .map(o -> new OptionResponseDTO(o.id(), translationCacheService.translate(o.text(), lang)))
                                 .collect(Collectors.toList())
                 ))
                 .collect(Collectors.toList());
