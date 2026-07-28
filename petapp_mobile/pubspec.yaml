@@ -39,6 +39,7 @@ dependencies:
   fl_chart: ^1.2.0
   sensors_plus: ^5.0.1
   google_fonts: ^6.2.1
+  lottie: ^3.3.3
 
 dev_dependencies:
   flutter_test:
@@ -79,6 +80,9 @@ flutter:
   assets:
     - assets/images/
     - assets/anim/
+    - assets/mascot/animations/
+    - assets/mascot/evolutions/
+    - assets/mascot/accessories/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

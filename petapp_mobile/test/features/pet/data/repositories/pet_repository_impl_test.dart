@@ -1,15 +1,15 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:petapp_mobile/core/network/api_client.dart';
 import 'package:petapp_mobile/features/pet/data/datasources/pet_remote_datasource.dart';
 import 'package:petapp_mobile/features/pet/data/models/pet_specie_enum.dart';
-import 'package:petapp_mobile/features/pet/domain/repositories/pet_repository.dart';
 import 'package:petapp_mobile/features/pet/data/repositories/pet_repository_impl.dart';
 
 // Mock class
 class MockPetRemoteDataSource extends PetRemoteDataSource {
   bool getStatusCalled = false;
   bool configurePetCalled = false;
-  
-  MockPetRemoteDataSource() : super(apiClient: throw UnimplementedError("Mock should override methods"));
+
+  MockPetRemoteDataSource() : super(apiClient: ApiClient());
 
   @override
   Future<bool> getPetStatus() async {

@@ -4,7 +4,10 @@ import 'package:petapp_mobile/features/auth/data/repositories/auth_repository.da
 import 'package:petapp_mobile/features/onboarding/data/datasources/onboarding_remote_datasource.dart';
 import 'package:petapp_mobile/features/onboarding/data/repositories/onboarding_repository.dart';
 import 'package:petapp_mobile/features/pet/data/datasources/pet_remote_datasource.dart';
-import 'package:petapp_mobile/features/pet/data/repositories/pet_repository.dart';
+import 'package:petapp_mobile/features/pet/data/repositories/pet_repository_impl.dart';
+import 'package:petapp_mobile/features/pet/domain/repositories/pet_repository.dart';
+import 'package:petapp_mobile/features/pet/data/repositories/mascot_repository_impl.dart';
+import 'package:petapp_mobile/features/pet/domain/repositories/mascot_repository.dart';
 import 'package:petapp_mobile/features/investment/data/datasources/investment_remote_datasource.dart';
 import 'package:petapp_mobile/features/investment/data/repositories/investment_repository.dart';
 import 'package:petapp_mobile/features/settings/data/datasources/settings_remote_datasource.dart';
@@ -30,7 +33,10 @@ class DI {
       PetRemoteDataSource(apiClient: _apiClient);
   // Not `final` so tests can replace it with a mock repository.
   static PetRepository petRepository =
-      PetRepository(remoteDataSource: _petRemoteDataSource);
+      PetRepositoryImpl(remoteDataSource: _petRemoteDataSource);
+
+  // Not `final` so tests can replace it with a mock repository.
+  static MascotRepository mascotRepository = MascotRepositoryImpl();
 
   static final InvestmentRemoteDataSource _investmentRemoteDataSource =
       InvestmentRemoteDataSource(apiClient: _apiClient);
