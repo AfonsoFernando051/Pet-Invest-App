@@ -68,7 +68,9 @@ Examples include:
 - Rankings
 - Daily objectives
 - Unlockable content
-
+- Pet evolution and customization
+- Daily streaks
+- Virtual currency and collectibles
 ---
 
 ## Simplicity
@@ -124,6 +126,7 @@ Pet Invest App IS:
 - a gamified experience
 - an investment simulator
 - a financial learning tool
+- a companion-driven learning journey
 
 This distinction should always be respected.
 
@@ -139,6 +142,7 @@ The user should feel:
 - confident
 - progressing
 - engaged
+- emotionally connected to their Pet companion
 
 The application should reduce fear around investing.
 
@@ -271,3 +275,48 @@ Every decision should answer the following question:
 "Does this make learning investments more enjoyable, intuitive, and motivating?"
 
 If the answer is no, the solution should be reconsidered.
+
+---
+
+# The Pet Companion System
+
+## Emotional Core of the App
+
+The Pet is the central companion of the user's educational journey and the defining element of Pet Invest App.
+
+It serves as a visual and emotional reflection of the user's progress, consistency, and financial growth.
+
+The Pet is not just an aesthetic mascot. It is the core driver of daily engagement, empathy, and retention.
+
+---
+
+## Companion Mechanics
+
+### Visual Progression
+As the user completes educational missions, maintains daily streaks, and grows their simulated portfolio, the Pet evolves.
+
+Leveling up the Pet directly represents leveling up the user's financial literacy.
+
+### Space-Themed Habitat
+Aligning with the application's futuristic and space-inspired visual identity, the Pet inhabits an evolving virtual environment (e.g., a spaceship, an exoplanet, or a futuristic space station).
+
+Users can spend virtual currency earned through learning to unlock:
+- Custom skins and space outfits for the Pet
+- Habitat upgrades and futuristic decorations
+- Collectible badges and unique accessories
+
+### Dynamic Feedback & Empathy
+The Pet reacts dynamically to the user's actions and the simulated market environment:
+
+- Celebrates completed missions, level-ups, and simulated dividend payouts.
+- Encourages consistency when a daily learning streak is at risk.
+- Acts as a friendly guide during complex financial explanations.
+- Comforts and educates the user during simulated market downturns.
+
+---
+
+## Safe Learning Environment
+
+To maintain a positive and fear-free learning experience, the Pet will never "die," degrade, or severely penalize the user due to poor simulated investment choices or market volatility.
+
+Mistakes in the investment simulator are treated as learning opportunities. When a simulated portfolio drops, the Pet's role is to calmly explain concepts like diversification, patience, and market cycles in a supportive and approachable way.
