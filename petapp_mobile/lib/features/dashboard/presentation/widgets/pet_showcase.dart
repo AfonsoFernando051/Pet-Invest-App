@@ -37,8 +37,7 @@ class _PetShowcaseState extends State<PetShowcase> with TickerProviderStateMixin
 
   // Accelerometer
   StreamSubscription<AccelerometerEvent>? _accelerometerSubscription;
-  double _parallaxX = 0;
-  double _parallaxY = 0;
+  final ValueNotifier<Offset> _parallax = ValueNotifier(Offset.zero);
 
   @override
   void initState() {
@@ -93,12 +92,13 @@ class _PetShowcaseState extends State<PetShowcase> with TickerProviderStateMixin
     try {
       _accelerometerSubscription =
           accelerometerEventStream().listen((AccelerometerEvent event) {
-        if (mounted) {
-          setState(() {
-            _parallaxX = (event.x * -3.0).clamp(-20.0, 20.0);
-            _parallaxY = (event.y * 3.0).clamp(-20.0, 20.0);
-          });
-        }
+        // Updates the ValueNotifier directly instead of setState() so only
+        // the parallax AnimatedBuilder subtree rebuilds, not the whole
+        // blurred GlassCard tree, on every sensor tick.
+        _parallax.value = Offset(
+          (event.x * -3.0).clamp(-20.0, 20.0),
+          (event.y * 3.0).clamp(-20.0, 20.0),
+        );
       });
     } catch (e) {
       debugPrint('Accelerometer not available: $e');
@@ -112,6 +112,7 @@ class _PetShowcaseState extends State<PetShowcase> with TickerProviderStateMixin
     _floatController.dispose();
     _glowController.dispose();
     _feedController.dispose();
+    _parallax.dispose();
     super.dispose();
   }
 
@@ -266,12 +267,13 @@ class _PetShowcaseState extends State<PetShowcase> with TickerProviderStateMixin
                         _breatheController,
                         _floatController,
                         _feedController,
+                        _parallax,
                       ]),
                       builder: (context, child) {
                         return Transform.translate(
                           offset: Offset(
-                            _parallaxX,
-                            _parallaxY + _floatAnimation.value + _feedAnimation.value,
+                            _parallax.value.dx,
+                            _parallax.value.dy + _floatAnimation.value + _feedAnimation.value,
                           ),
                           child: Transform.scale(
                             scaleY: _breatheAnimation.value,
