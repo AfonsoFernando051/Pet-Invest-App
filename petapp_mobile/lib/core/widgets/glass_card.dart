@@ -1,6 +1,10 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
 
+/// A real glassmorphism card with BackdropFilter blur.
+/// All content placed on top of the nebula background will now correctly
+/// show frosted-glass depth instead of a plain translucent rectangle.
 class GlassCard extends StatelessWidget {
   final Widget child;
   final EdgeInsetsGeometry? padding;
@@ -27,31 +31,30 @@ class GlassCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final decoration = BoxDecoration(
-      color: backgroundColor ?? AppColors.spaceDark.withValues(alpha: 0.6),
-      borderRadius: BorderRadius.circular(borderRadius),
-      border: Border.all(
-        color: borderColor ?? AppColors.goldenBorder.withValues(alpha: 0.5),
-        width: borderWidth,
+    final effectiveBg = backgroundColor ?? AppColors.spaceDark.withValues(alpha: 0.55);
+    final effectiveBorder = borderColor ?? AppColors.goldenBorder.withValues(alpha: 0.5);
+    final radius = BorderRadius.circular(borderRadius);
+
+    final inner = ClipRRect(
+      borderRadius: radius,
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
+        child: Container(
+          padding: padding,
+          decoration: BoxDecoration(
+            color: effectiveBg,
+            borderRadius: radius,
+            border: Border.all(color: effectiveBorder, width: borderWidth),
+            boxShadow: boxShadow,
+          ),
+          child: child,
+        ),
       ),
-      boxShadow: boxShadow,
     );
 
-    if (isAnimated) {
-      return AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        padding: padding,
-        margin: margin,
-        decoration: decoration,
-        child: child,
-      );
+    if (margin != null) {
+      return Container(margin: margin, child: inner);
     }
-    
-    return Container(
-      padding: padding,
-      margin: margin,
-      decoration: decoration,
-      child: child,
-    );
+    return inner;
   }
 }

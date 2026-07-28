@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
 import 'package:petapp_mobile/core/di/dependency_injection.dart';
+import 'package:petapp_mobile/core/utils/game_snack.dart';
 import 'package:petapp_mobile/features/dashboard/presentation/screens/dashboard_screen.dart';
 import 'package:petapp_mobile/features/investment/data/models/investment_type_enum.dart';
 import 'package:petapp_mobile/features/investment/data/models/asset_registration_model.dart';
@@ -66,13 +67,13 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
         _selectedDate = null;
       });
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Preencha todos os campos e selecione uma data/tipo.')));
+      GameSnack.show(context, 'Preencha todos os campos e selecione uma data/tipo.', isError: true);
     }
   }
 
   Future<void> _handleConfirm() async {
     if (_assets.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Adicione pelo menos um ativo para continuar.')));
+      GameSnack.show(context, 'Adicione pelo menos um ativo para continuar.', isError: true);
       return;
     }
 
@@ -84,7 +85,7 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Falha ao salvar investimentos: ${e.toString()}')));
+        GameSnack.show(context, 'Falha ao salvar investimentos: ${e.toString()}', isError: true);
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -155,15 +156,15 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
               fillColor: AppColors.spaceDark.withValues(alpha: 0.5),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: AppColors.goldenBorder.withValues(alpha: 0.3)),
+                borderSide: BorderSide(color: AppColors.neonCyan.withValues(alpha: 0.5)),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: AppColors.goldenBorder.withValues(alpha: 0.3)),
+                borderSide: BorderSide(color: AppColors.neonCyan.withValues(alpha: 0.4)),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: AppColors.neonCyan),
+                borderSide: const BorderSide(color: AppColors.neonCyan, width: 1.5),
               ),
             ),
             validator: (value) => value == null || value.isEmpty ? 'Campo obrigatório' : null,
@@ -225,15 +226,15 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
           fillColor: AppColors.spaceDark.withValues(alpha: 0.5),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: AppColors.goldenBorder.withValues(alpha: 0.3)),
+            borderSide: BorderSide(color: AppColors.neonCyan.withValues(alpha: 0.5)),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: AppColors.goldenBorder.withValues(alpha: 0.3)),
+            borderSide: BorderSide(color: AppColors.neonCyan.withValues(alpha: 0.4)),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: AppColors.neonCyan),
+            borderSide: const BorderSide(color: AppColors.neonCyan, width: 1.5),
           ),
         ),
         validator: (value) => value == null || value.isEmpty ? 'Campo obrigatório' : null,
@@ -256,15 +257,15 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
           fillColor: AppColors.spaceDark.withValues(alpha: 0.5),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: AppColors.goldenBorder.withValues(alpha: 0.3)),
+            borderSide: BorderSide(color: AppColors.neonCyan.withValues(alpha: 0.5)),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: AppColors.goldenBorder.withValues(alpha: 0.3)),
+            borderSide: BorderSide(color: AppColors.neonCyan.withValues(alpha: 0.4)),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: AppColors.neonCyan),
+            borderSide: const BorderSide(color: AppColors.neonCyan, width: 1.5),
           ),
         ),
         items: InvestmentTypeEnum.values.map((type) {
@@ -291,7 +292,7 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
           decoration: BoxDecoration(
             color: AppColors.spaceDark.withValues(alpha: 0.5),
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.goldenBorder.withValues(alpha: 0.3)),
+            border: Border.all(color: AppColors.neonCyan.withValues(alpha: 0.4)),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -459,7 +460,7 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
                                 overflow: TextOverflow.ellipsis,
                               ),
                               trailing: IconButton(
-                                icon: const Icon(Icons.delete, color: Colors.redAccent),
+                                icon: const Icon(Icons.delete, color: AppColors.negativeRed),
                                 onPressed: () {
                                   setState(() {
                                     _assets.removeAt(index);
