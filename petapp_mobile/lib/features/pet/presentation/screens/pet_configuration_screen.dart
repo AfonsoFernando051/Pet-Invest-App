@@ -188,7 +188,14 @@ class _PetConfigurationScreenState extends State<PetConfigurationScreen> with Si
               width: 250,
               height: 250,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(32),
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: [
+                    AppColors.neonCyan.withValues(alpha: 0.18),
+                    AppColors.spaceDark.withValues(alpha: 0.05),
+                  ],
+                ),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
                 boxShadow: [
                   BoxShadow(
                     color: AppColors.neonCyan.withValues(alpha: 0.15 + (_animationController.value * 0.1)),
@@ -201,10 +208,11 @@ class _PetConfigurationScreenState extends State<PetConfigurationScreen> with Si
                     spreadRadius: 5 * _animationController.value,
                   )
                 ],
-                image: DecorationImage(
-                  image: AssetImage('assets/images/generated_${_selectedSpecie.name.toLowerCase()}.png'),
-                  fit: BoxFit.cover,
-                ),
+              ),
+              padding: const EdgeInsets.all(20),
+              child: Image.asset(
+                'assets/images/generated_${_selectedSpecie.name.toLowerCase()}.png',
+                fit: BoxFit.contain,
               ),
             ),
           ),
