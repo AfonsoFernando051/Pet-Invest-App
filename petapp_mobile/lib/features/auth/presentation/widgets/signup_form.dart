@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/utils/translator.dart';
+import '../../../../core/utils/game_snack.dart';
 import '../../../../core/di/dependency_injection.dart';
 import '../../../home/presentation/screens/home_screen.dart';
 import '../../../onboarding/presentation/screens/onboarding_screen.dart';
@@ -41,16 +42,12 @@ class _SignupFormState extends State<SignupForm> {
     final confirmPassword = _confirmPasswordController.text;
 
     if (name.isEmpty || email.isEmpty || password.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill in required fields')),
-      );
+      GameSnack.show(context, 'Preencha todos os campos obrigatórios.', isError: true);
       return;
     }
 
     if (password != confirmPassword) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Passwords do not match')),
-      );
+      GameSnack.show(context, 'As senhas não coincidem.', isError: true);
       return;
     }
 
@@ -64,8 +61,10 @@ class _SignupFormState extends State<SignupForm> {
       await AuthNavigationUtils.handlePostAuthRedirect(context);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Registration failed: ${e.toString().replaceAll('Exception: ', '')}')),
+        GameSnack.show(
+          context,
+          'Cadastro falhou: ${e.toString().replaceAll('Exception: ', '')}',
+          isError: true,
         );
       }
     } finally {

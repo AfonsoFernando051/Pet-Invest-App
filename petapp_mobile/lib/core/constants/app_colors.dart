@@ -4,25 +4,36 @@ class AppColors {
   AppColors._();
 
   // Space theme backgrounds
-  static const Color spaceDark = Color(0xFF0A0A1A);
-  static const Color spaceBlue = Color(0xFF101835);
+  static const Color spaceDark   = Color(0xFF0A0A1A);
+  static const Color spaceBlue   = Color(0xFF101835);
   static const Color spacePurple = Color(0xFF1A0B2E);
-  static const Color backgroundLight = Color(0xFF6A11CB); // Kept for compatibility
-  static const Color backgroundMedium = Color(0xFF2C5364); // Kept for compatibility
-  static const Color backgroundDark = Color(0xFF0F2027); // Kept for compatibility
-  
+
+  // Legacy compatibility
+  static const Color backgroundLight  = Color(0xFF6A11CB);
+  static const Color backgroundMedium = Color(0xFF2C5364);
+  static const Color backgroundDark   = Color(0xFF0F2027);
+
   static const Color primaryButton = Colors.deepPurple;
-  
+
   static final Color white10 = Colors.white.withValues(alpha: 0.1);
   static final Color white20 = Colors.white.withValues(alpha: 0.2);
   static const Color white54 = Colors.white54;
   static const Color white70 = Colors.white70;
-  static const Color white = Colors.white;
+  static const Color white   = Colors.white;
 
-  // Neon theme colors
-  static const Color neonCyan = Color(0xFF00E5FF);
-  static const Color neonPurple = Color(0xFFB388FF);
-  static const Color neonBlue = Color(0xFF2979FF);
-  static const Color neonPink = Color(0xFFFF2A85);
+  // Neon palette — primary brand colors
+  static const Color neonCyan   = Color(0xFF00E5FF);
+  static const Color neonPurple = Color(0xFFC5ABFF); // brightened for AA contrast
+  static const Color neonViolet = Color(0xFF8A2BE2); // replaces all inline 0xFF8A2BE2
+  static const Color neonBlue   = Color(0xFF2979FF);
+  static const Color neonPink   = Color(0xFFFF2A85);
   static const Color goldenBorder = Color(0xFFFFD54F);
+
+  // Semantic / state colors — themed, NOT generic Material defaults
+  static const Color positiveGreen = Color(0xFF00E676); // neon green
+  static const Color negativeRed   = Color(0xFFFF1744); // vivid red
+  static const Color warningAmber  = Color(0xFFFFAB40); // alert amber
+
+  // Subdued text — better contrast than Colors.white70 on dark glass
+  static const Color subtleText = Color(0xFFCBCDD8);
 }

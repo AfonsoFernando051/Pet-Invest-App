@@ -52,7 +52,7 @@ class LoginCard extends StatelessWidget {
                           child: Image.asset(
                             'assets/images/magic_fox.jpg',
                             width: double.infinity,
-                            fit: BoxFit.fitWidth, 
+                            fit: BoxFit.fitWidth,
                             filterQuality: FilterQuality.high,
                             errorBuilder: (context, error, stackTrace) {
                               return Container(
@@ -64,10 +64,18 @@ class LoginCard extends StatelessWidget {
                           ),
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(24, 380, 24, 32),
-                        child: const LoginForm(),
+                      // Responsive: form starts below the image (340px card width, aspect ~1.2)
+                      LayoutBuilder(
+                        builder: (context, constraints) {
+                          // fox image is fitWidth on a 340px card: width=340, natural ratio ~0.78h
+                          final imageH = constraints.maxWidth * 0.78;
+                          return Padding(
+                            padding: EdgeInsets.fromLTRB(24, imageH * 0.75, 24, 32),
+                            child: const LoginForm(),
+                          );
+                        },
                       ),
+
                     ],
                   ),
                 ),

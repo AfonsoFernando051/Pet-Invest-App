@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../investment/presentation/screens/investment_configuration_screen.dart';
 
@@ -10,40 +11,54 @@ class ActionButtons extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
+        // Primary CTA — Alimentar / Investir
         Expanded(
-          child: _buildGradientButton(
-            'Alimentar', 
-            'Investir', 
-            Icons.pets, 
-            [const Color(0xFF8A2BE2), const Color(0xFFFF007F)],
+          child: _buildPrimaryButton(
+            context,
+            title: 'Alimentar',
+            subtitle: 'Investir',
+            icon: Icons.pets,
+            colors: [AppColors.neonViolet, AppColors.neonPink],
+            shadowColor: AppColors.neonPink,
             onTap: () {
+              HapticFeedback.mediumImpact();
               Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const InvestmentConfigurationScreen()),
+                _fadeRoute(const InvestmentConfigurationScreen()),
               );
             },
           ),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: 10),
+
+        // Secondary CTA — Treinar / Analisar
         Expanded(
-          child: _buildGradientButton(
-            'Treinar', 
-            'Analisar', 
-            Icons.menu_book, 
-            [const Color(0xFF8A2BE2), const Color(0xFFFF007F)],
+          child: _buildSecondaryButton(
+            context,
+            title: 'Treinar',
+            subtitle: 'Analisar',
+            icon: Icons.menu_book_outlined,
             onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Análise de Ativos em construção...')));
+              HapticFeedback.lightImpact();
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Análise de Ativos em construção...')),
+              );
             },
           ),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: 10),
+
+        // Tertiary CTA — Missões / Metas (outlined)
         Expanded(
-          child: _buildGradientButton(
-            'Missões', 
-            'Metas', 
-            Icons.flag, 
-            [const Color(0xFF8A2BE2), AppColors.neonCyan],
+          child: _buildTertiaryButton(
+            context,
+            title: 'Missões',
+            subtitle: 'Metas',
+            icon: Icons.flag_outlined,
             onTap: () {
-               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Sistema de Missões em breve!')));
+              HapticFeedback.lightImpact();
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Sistema de Missões em breve!')),
+              );
             },
           ),
         ),
@@ -51,37 +66,156 @@ class ActionButtons extends StatelessWidget {
     );
   }
 
-  Widget _buildGradientButton(String title, String subtitle, IconData icon, List<Color> colors, {VoidCallback? onTap}) {
+  // ── Primary — filled gradient, large shadow ──────────────────────────────
+  Widget _buildPrimaryButton(
+    BuildContext context, {
+    required String title,
+    required String subtitle,
+    required IconData icon,
+    required List<Color> colors,
+    required Color shadowColor,
+    VoidCallback? onTap,
+  }) {
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(24),
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
+        borderRadius: BorderRadius.circular(20),
+        child: Ink(
           decoration: BoxDecoration(
             gradient: LinearGradient(colors: colors),
-            borderRadius: BorderRadius.circular(24),
+            borderRadius: BorderRadius.circular(20),
             boxShadow: [
-              BoxShadow(color: colors.last.withValues(alpha: 0.5), blurRadius: 8, spreadRadius: 1)
-            ]
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, color: Colors.white, size: 24),
-              const SizedBox(width: 8),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
-                  Text(subtitle, style: const TextStyle(color: Colors.white70, fontSize: 10)),
-                ],
-              )
+              BoxShadow(
+                color: shadowColor.withValues(alpha: 0.55),
+                blurRadius: 14,
+                spreadRadius: 2,
+                offset: const Offset(0, 4),
+              ),
             ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 4),
+            child: _buttonContent(icon, title, subtitle),
           ),
         ),
       ),
+    );
+  }
+
+  // ── Secondary — cooler gradient, smaller shadow ──────────────────────────
+  Widget _buildSecondaryButton(
+    BuildContext context, {
+    required String title,
+    required String subtitle,
+    required IconData icon,
+    VoidCallback? onTap,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(20),
+        child: Ink(
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [AppColors.spaceBlue, AppColors.neonViolet],
+            ),
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.neonViolet.withValues(alpha: 0.35),
+                blurRadius: 8,
+                offset: const Offset(0, 3),
+              ),
+            ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 4),
+            child: _buttonContent(icon, title, subtitle),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ── Tertiary — outlined, no fill ─────────────────────────────────────────
+  Widget _buildTertiaryButton(
+    BuildContext context, {
+    required String title,
+    required String subtitle,
+    required IconData icon,
+    VoidCallback? onTap,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 4),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: AppColors.neonCyan.withValues(alpha: 0.55),
+              width: 1.5,
+            ),
+            color: AppColors.neonCyan.withValues(alpha: 0.06),
+          ),
+          child: _buttonContent(icon, title, subtitle),
+        ),
+      ),
+    );
+  }
+
+  Widget _buttonContent(IconData icon, String title, String subtitle) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(icon, color: Colors.white, size: 22),
+        const SizedBox(width: 6),
+        Flexible(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+              Text(
+                subtitle,
+                style: const TextStyle(
+                  color: AppColors.subtleText,
+                  fontSize: 12,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Route _fadeRoute(Widget page) {
+    return PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) => page,
+      transitionsBuilder: (context, animation, secondaryAnimation, child) => FadeTransition(
+        opacity: animation,
+        child: SlideTransition(
+          position: Tween(
+            begin: const Offset(0, 0.04),
+            end: Offset.zero,
+          ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOut)),
+          child: child,
+        ),
+      ),
+      transitionDuration: const Duration(milliseconds: 350),
     );
   }
 }
