@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/utils/translator.dart';
+import '../../../../core/widgets/game_button.dart';
 
 class SignupActionButton extends StatelessWidget {
   final VoidCallback? onPressed;
@@ -15,31 +16,13 @@ class SignupActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton(
-        onPressed: isLoading ? null : onPressed,
-        style: ElevatedButton.styleFrom(
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          backgroundColor: AppColors.primaryButton,
-        ),
-        child: isLoading
-            ? const SizedBox(
-                width: 20,
-                height: 20,
-                child: CircularProgressIndicator(
-                  color: Colors.white,
-                  strokeWidth: 2,
-                ),
-              )
-            : Text(
-                Translator.translate(AppStrings.signupButton),
-                style: const TextStyle(color: Colors.white),
-              ),
-      ),
+    return GameButton(
+      label: Translator.translate(AppStrings.signupButton),
+      onPressed: onPressed,
+      isLoading: isLoading,
+      pulse: true,
+      borderRadius: 16,
+      colors: const [AppColors.neonViolet, AppColors.neonPink],
     );
   }
 }

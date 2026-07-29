@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:petapp_mobile/core/utils/translator.dart';
 import 'package:petapp_mobile/core/di/dependency_injection.dart';
+import 'package:petapp_mobile/core/widgets/game_button.dart';
 import 'package:petapp_mobile/features/auth/data/repositories/auth_repository.dart';
 import 'package:petapp_mobile/features/auth/presentation/widgets/signup_card.dart';
 import 'package:petapp_mobile/features/auth/presentation/widgets/custom_text_field.dart';
@@ -73,8 +74,10 @@ void main() {
       await tester.enterText(confirmPasswordField, 'password123');
       await tester.pump();
 
-      // Tap the signup button, it should be the first ElevatedButton
-      final signupBtn = find.byType(ElevatedButton).first;
+      // Tap the signup button — a `GameButton` (premium gradient/glow CTA)
+      // since the plain `ElevatedButton` it used to wrap was retired in
+      // favor of the shared button component used across the app.
+      final signupBtn = find.byType(GameButton).first;
       await tester.tap(signupBtn);
       
       await tester.pump(); // UI updates with loading state

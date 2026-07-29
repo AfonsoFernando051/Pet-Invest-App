@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/widgets/cosmic_background.dart';
 import '../../../../core/widgets/glass_card.dart';
 import '../../../../core/di/dependency_injection.dart';
 import '../../../auth/presentation/screens/login_screen.dart';
 import '../../../pet/presentation/mascot/controllers/mascot_controller.dart';
+import '../../../portfolio/domain/entities/achievement.dart';
 import '../../../portfolio/presentation/controllers/portfolio_controller.dart';
 import '../../../portfolio/presentation/screens/missions_screen.dart';
 import '../../../portfolio/presentation/screens/passive_income_screen.dart';
 import '../../../portfolio/presentation/screens/portfolio_screen.dart';
+import '../../../portfolio/presentation/widgets/achievement_celebration_overlay.dart';
 import '../../../portfolio/presentation/widgets/asset_allocation_card.dart';
 import '../../../portfolio/presentation/widgets/hero_summary_section.dart';
 import '../../../portfolio/presentation/widgets/shared/error_banner.dart';
@@ -33,6 +36,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
   late final MascotController _mascotController;
   late final PortfolioController _portfolioController;
 
+  // Newly-unlocked achievements awaiting their celebration overlay (see
+  // `PortfolioController.newlyUnlocked`) — previously these unlocked
+  // completely silently, with no on-screen reward moment at all.
+  List<Achievement> _celebrating = [];
+
   @override
   void initState() {
     super.initState();
@@ -47,7 +55,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
     _portfolioController.loadAll();
   }
 
-  void _onPortfolioChanged() => setState(() {});
+  void _onPortfolioChanged() {
+    setState(() {
+      if (_portfolioController.newlyUnlocked.isNotEmpty) {
+        _celebrating = _portfolioController.newlyUnlocked;
+        _portfolioController.clearNewlyUnlocked();
+      }
+    });
+  }
 
   @override
   void dispose() {
@@ -57,21 +72,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
     super.dispose();
   }
 
-  // Shared background for all tabs
+  // Shared background for all tabs — slow drift + twinkling stars so the
+  // space theme reads as alive rather than a static wallpaper.
   Widget _buildBackground({required Widget child}) {
-    return Stack(
-      fit: StackFit.expand,
-      children: [
-        // Nebula image, darkened so content pops
-        Image.asset(
-          'assets/images/bg_nebula.png',
-          fit: BoxFit.cover,
-          color: Colors.black.withValues(alpha: 0.48),
-          colorBlendMode: BlendMode.darken,
-        ),
-        child,
-      ],
-    );
+    return CosmicBackground(child: child);
   }
 
   // ── Page route helper ─────────────────────────────────────────────────────
@@ -157,19 +161,28 @@ class _DashboardScreenState extends State<DashboardScreen> {
           const SizedBox(width: 8),
         ],
       ),
-      body: _buildBackground(
-        child: SafeArea(
-          child: IndexedStack(
-            index: _selectedIndex,
-            children: [
-              _buildHomeContent(),
-              _buildWalletContent(),
-              _buildPassiveIncomeContent(),
-              _buildMissionsContent(),
-              _buildProfileContent(),
-            ],
+      body: Stack(
+        children: [
+          _buildBackground(
+            child: SafeArea(
+              child: IndexedStack(
+                index: _selectedIndex,
+                children: [
+                  _buildHomeContent(),
+                  _buildWalletContent(),
+                  _buildPassiveIncomeContent(),
+                  _buildMissionsContent(),
+                  _buildProfileContent(),
+                ],
+              ),
+            ),
           ),
-        ),
+          if (_celebrating.isNotEmpty)
+            AchievementCelebrationOverlay(
+              achievements: _celebrating,
+              onDismiss: () => setState(() => _celebrating = []),
+            ),
+        ],
       ),
       bottomNavigationBar: _buildBottomNav(),
     );

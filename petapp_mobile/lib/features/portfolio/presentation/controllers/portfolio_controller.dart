@@ -48,6 +48,17 @@ class PortfolioController extends ChangeNotifier {
   List<AllocationSlice> allocation = [];
   Map<String, DateTime> _unlockedAchievements = {};
 
+  /// Achievements that became unlocked on the *most recent* `loadAll()` call
+  /// — i.e. genuinely new this session, not just "unlocked at some point in
+  /// the past" (see `_evaluateGamification`, which diffs against what was
+  /// already persisted before recomputing). The UI shows a celebration for
+  /// these, then calls [clearNewlyUnlocked].
+  List<Achievement> newlyUnlocked = [];
+
+  void clearNewlyUnlocked() {
+    newlyUnlocked = [];
+  }
+
   HistoryRange selectedRange = HistoryRange.m3;
   InvestmentTypeEnum? selectedAssetFilter;
   List<HistoryPoint> chartPoints = [];
@@ -190,8 +201,16 @@ class PortfolioController extends ChangeNotifier {
 
   Future<void> _evaluateGamification() async {
     final currentStats = stats;
+    final alreadyUnlocked = await _achievementsRepository.loadUnlocked();
     final qualifiedNow = AchievementCatalog.qualifiedIds(currentStats);
+    final newIds = qualifiedNow.difference(alreadyUnlocked.keys.toSet());
+
     _unlockedAchievements = await _achievementsRepository.unlockAll(qualifiedNow);
+    if (newIds.isNotEmpty) {
+      newlyUnlocked = AchievementCatalog.resolve(_unlockedAchievements)
+          .where((a) => newIds.contains(a.id))
+          .toList();
+    }
 
     final totalXp = AchievementCatalog.totalXpFor(_unlockedAchievements.keys.toSet());
     await _mascotController?.evaluateEvolution(summary.currentValue, totalXp);

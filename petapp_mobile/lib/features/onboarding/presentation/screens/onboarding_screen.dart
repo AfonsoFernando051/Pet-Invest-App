@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
+import 'package:petapp_mobile/core/widgets/cosmic_background.dart';
 import 'package:petapp_mobile/features/onboarding/presentation/widgets/onboarding_form.dart';
 
 class OnboardingScreen extends StatelessWidget {
@@ -30,17 +31,8 @@ class OnboardingScreen extends StatelessWidget {
           },
         ),
       ),
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          // Darkened nebula background — consistent with dashboard
-          Image.asset(
-            'assets/images/bg_nebula.png',
-            fit: BoxFit.cover,
-            color: Colors.black.withValues(alpha: 0.48),
-            colorBlendMode: BlendMode.darken,
-          ),
-          SafeArea(
+      body: CosmicBackground(
+        child: SafeArea(
             child: Center(
               child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
@@ -100,7 +92,6 @@ class OnboardingScreen extends StatelessWidget {
           ),
         ),
       ),
-        ],
       ),
     );
   }

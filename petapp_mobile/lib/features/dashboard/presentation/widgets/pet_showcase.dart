@@ -28,12 +28,16 @@ class _PetShowcaseState extends State<PetShowcase> with TickerProviderStateMixin
   late AnimationController _floatController;
   late AnimationController _glowController;
   late AnimationController _feedController;
+  late AnimationController _cardFloatController;
+  late AnimationController _personalityController;
 
   // Animations
   late Animation<double> _breatheAnimation;
   late Animation<double> _floatAnimation;
   late Animation<double> _glowAnimation;
   late Animation<double> _feedAnimation;
+  late Animation<double> _cardFloatAnimation;
+  late Animation<double> _personalityAnimation;
 
   // Accelerometer
   StreamSubscription<AccelerometerEvent>? _accelerometerSubscription;
@@ -86,6 +90,29 @@ class _PetShowcaseState extends State<PetShowcase> with TickerProviderStateMixin
         weight: 50,
       ),
     ]).animate(_feedController);
+
+    // Whole-panel gentle float — a slower, independent cycle from the pet's
+    // own breathing/floating so the two layers don't move in lockstep (which
+    // would read as fake/robotic rather than dimensional).
+    _cardFloatController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 4200),
+    )..repeat(reverse: true);
+    _cardFloatAnimation = Tween<double>(begin: -3.0, end: 3.0).animate(
+      CurvedAnimation(parent: _cardFloatController, curve: Curves.easeInOutSine),
+    );
+
+    // Idle "personality" tilt — a stand-in for blink/tail-wag, which would
+    // need rigged or Lottie art per evolution stage that doesn't exist yet
+    // (see `assets/mascot/animations/`, currently empty). A slow head-tilt
+    // wiggle on a static image still reads as "alive" without new assets.
+    _personalityController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 4600),
+    )..repeat(reverse: true);
+    _personalityAnimation = Tween<double>(begin: -0.035, end: 0.035).animate(
+      CurvedAnimation(parent: _personalityController, curve: Curves.easeInOutSine),
+    );
   }
 
   void _initAccelerometer() {
@@ -112,6 +139,8 @@ class _PetShowcaseState extends State<PetShowcase> with TickerProviderStateMixin
     _floatController.dispose();
     _glowController.dispose();
     _feedController.dispose();
+    _cardFloatController.dispose();
+    _personalityController.dispose();
     _parallax.dispose();
     super.dispose();
   }
@@ -154,93 +183,137 @@ class _PetShowcaseState extends State<PetShowcase> with TickerProviderStateMixin
 
   @override
   Widget build(BuildContext context) {
-    return GlassCard(
-      backgroundColor: AppColors.spaceDark.withValues(alpha: 0.4),
-      borderColor: _currentAuraColor.withValues(alpha: 0.3),
-      borderWidth: 1,
-      borderRadius: 24,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 16),
-        child: Column(
-          children: [
-            // ── Stat bars with real fill ───────────────────────────────────
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildStatBar(
-                      Icons.favorite_border,
-                      [const Color(0xFFFF007F), AppColors.neonViolet],
-                      value: _health,
-                      label: 'HP',
-                    ),
-                    const SizedBox(height: 12),
-                    _buildStatBar(
-                      Icons.sentiment_satisfied,
-                      [AppColors.neonViolet, AppColors.neonCyan],
-                      value: _mood,
-                      label: 'Mood',
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
+    // The pet is positioned to overflow ~22px past the card's bottom edge
+    // (see the `Positioned` below) so it reads as standing in front of the
+    // panel rather than sealed inside it. `Stack` doesn't count that
+    // overflow toward its own size, so a trailing spacer reserves the room
+    // for it — otherwise whatever follows this widget in a `Column` would
+    // collide with the pet's feet.
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _buildCardAndPet(),
+        const SizedBox(height: 22),
+      ],
+    );
+  }
 
-            // ── Animated pet display ───────────────────────────────────────
-            GestureDetector(
-              onTap: _triggerAction,
-              child: Stack(
-                alignment: Alignment.center,
+  Widget _buildCardAndPet() {
+    return Stack(
+      clipBehavior: Clip.none,
+      alignment: Alignment.bottomCenter,
+      children: [
+        AnimatedBuilder(
+          animation: _cardFloatController,
+          builder: (context, child) {
+            return Transform.translate(offset: Offset(0, _cardFloatAnimation.value), child: child);
+          },
+          child: GlassCard(
+            backgroundColor: AppColors.spaceDark.withValues(alpha: 0.5),
+            borderColor: _currentAuraColor.withValues(alpha: 0.3),
+            borderWidth: 1,
+            borderRadius: 24,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 16),
+              child: Column(
                 children: [
-                  // Aura glow dome
-                  AnimatedBuilder(
-                    animation: _glowController,
-                    builder: (context, child) {
-                      return Container(
-                        width: 220,
-                        height: 220,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: _currentAuraColor.withValues(alpha: _glowAnimation.value),
-                              blurRadius: 50 + (_glowAnimation.value * 20),
-                              spreadRadius: 10,
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-
-                  // Glass energy cylinder
-                  Container(
-                    width: 240,
-                    height: 280,
-                    decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.vertical(
-                        top: Radius.circular(120),
-                        bottom: Radius.circular(30),
-                      ),
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Colors.white.withValues(alpha: 0.05),
-                          Colors.transparent,
-                          _currentAuraColor.withValues(alpha: 0.1),
+                  // ── Stat bars with real fill ───────────────────────────────────
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildStatBar(
+                            Icons.favorite_border,
+                            [const Color(0xFFFF007F), AppColors.neonViolet],
+                            value: _health,
+                            label: 'HP',
+                          ),
+                          const SizedBox(height: 12),
+                          _buildStatBar(
+                            Icons.sentiment_satisfied,
+                            [AppColors.neonViolet, AppColors.neonCyan],
+                            value: _mood,
+                            label: 'Mood',
+                          ),
                         ],
                       ),
-                      border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
-                    ),
+                    ],
                   ),
+                  const SizedBox(height: 24),
 
-                  // Pedestal
+                  // ── Backdrop: glow dome + glass energy cylinder ────────────────
+                  // (the pet itself renders as a sibling below, slightly
+                  // overlapping this card's bottom edge — see the outer
+                  // Positioned — instead of being fully trapped inside it.)
+                  Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      AnimatedBuilder(
+                        animation: _glowController,
+                        builder: (context, child) {
+                          return Container(
+                            width: 220,
+                            height: 220,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: _currentAuraColor.withValues(alpha: _glowAnimation.value),
+                                  blurRadius: 50 + (_glowAnimation.value * 20),
+                                  spreadRadius: 10,
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                      Container(
+                        width: 240,
+                        height: 200,
+                        decoration: BoxDecoration(
+                          borderRadius: const BorderRadius.vertical(
+                            top: Radius.circular(120),
+                            bottom: Radius.circular(30),
+                          ),
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.white.withValues(alpha: 0.05),
+                              Colors.transparent,
+                              _currentAuraColor.withValues(alpha: 0.1),
+                            ],
+                          ),
+                          border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+
+        // ── Pedestal + pet — a sibling of the card, anchored to poke past
+        // its bottom edge so the mascot reads as standing in front of the
+        // panel rather than sealed inside it.
+        Positioned(
+          bottom: -22,
+          left: 0,
+          right: 0,
+          child: GestureDetector(
+            onTap: _triggerAction,
+            child: SizedBox(
+              height: 280,
+              child: Stack(
+                alignment: Alignment.center,
+                clipBehavior: Clip.none,
+                children: [
                   Positioned(
-                    bottom: 10,
+                    bottom: 32,
                     child: Container(
                       width: 260,
                       height: 24,
@@ -258,15 +331,14 @@ class _PetShowcaseState extends State<PetShowcase> with TickerProviderStateMixin
                       ),
                     ),
                   ),
-
-                  // Pet (parallax + breathing + floating + jumping)
                   Positioned(
-                    bottom: 25,
+                    bottom: 47,
                     child: AnimatedBuilder(
                       animation: Listenable.merge([
                         _breatheController,
                         _floatController,
                         _feedController,
+                        _personalityController,
                         _parallax,
                       ]),
                       builder: (context, child) {
@@ -275,29 +347,32 @@ class _PetShowcaseState extends State<PetShowcase> with TickerProviderStateMixin
                             _parallax.value.dx,
                             _parallax.value.dy + _floatAnimation.value + _feedAnimation.value,
                           ),
-                          child: Transform.scale(
-                            scaleY: _breatheAnimation.value,
-                            scaleX: 1.0 + (1.0 - _breatheAnimation.value),
-                            child: _isLoadingPet
-                                ? const SizedBox(
-                                    height: 220,
-                                    child: Center(
-                                      child: CircularProgressIndicator(
-                                        color: AppColors.neonCyan,
-                                        strokeWidth: 2,
+                          child: Transform.rotate(
+                            angle: _personalityAnimation.value,
+                            child: Transform.scale(
+                              scaleY: _breatheAnimation.value,
+                              scaleX: 1.0 + (1.0 - _breatheAnimation.value),
+                              child: _isLoadingPet
+                                  ? const SizedBox(
+                                      height: 220,
+                                      child: Center(
+                                        child: CircularProgressIndicator(
+                                          color: AppColors.neonCyan,
+                                          strokeWidth: 2,
+                                        ),
+                                      ),
+                                    )
+                                  : Image.asset(
+                                      _petAsset,
+                                      height: 220,
+                                      fit: BoxFit.contain,
+                                      errorBuilder: (_, __, ___) => const Icon(
+                                        Icons.pets,
+                                        size: 100,
+                                        color: Colors.white70,
                                       ),
                                     ),
-                                  )
-                                : Image.asset(
-                                    _petAsset,
-                                    height: 220,
-                                    fit: BoxFit.contain,
-                                    errorBuilder: (_, __, ___) => const Icon(
-                                      Icons.pets,
-                                      size: 100,
-                                      color: Colors.white70,
-                                    ),
-                                  ),
+                            ),
                           ),
                         );
                       },
@@ -306,9 +381,9 @@ class _PetShowcaseState extends State<PetShowcase> with TickerProviderStateMixin
                 ],
               ),
             ),
-          ],
+          ),
         ),
-      ),
+      ],
     );
   }
 

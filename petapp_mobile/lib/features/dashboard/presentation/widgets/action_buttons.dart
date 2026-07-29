@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/widgets/game_button.dart';
 import '../../../investment/presentation/screens/investment_configuration_screen.dart';
 
 class ActionButtons extends StatelessWidget {
@@ -19,9 +20,8 @@ class ActionButtons extends StatelessWidget {
             subtitle: 'Investir',
             icon: Icons.pets,
             colors: [AppColors.neonViolet, AppColors.neonPink],
-            shadowColor: AppColors.neonPink,
             onTap: () {
-              HapticFeedback.mediumImpact();
+              // GameButton already fires haptic feedback on tap.
               Navigator.of(context).push(
                 _fadeRoute(const InvestmentConfigurationScreen()),
               );
@@ -66,39 +66,24 @@ class ActionButtons extends StatelessWidget {
     );
   }
 
-  // ── Primary — filled gradient, large shadow ──────────────────────────────
+  // ── Primary — GameButton chrome (gradient/glow/pulse/press) ─────────────
   Widget _buildPrimaryButton(
     BuildContext context, {
     required String title,
     required String subtitle,
     required IconData icon,
     required List<Color> colors,
-    required Color shadowColor,
     VoidCallback? onTap,
   }) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(20),
-        child: Ink(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(colors: colors),
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: shadowColor.withValues(alpha: 0.55),
-                blurRadius: 14,
-                spreadRadius: 2,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 4),
-            child: _buttonContent(icon, title, subtitle),
-          ),
-        ),
+    return GameButton.custom(
+      onPressed: onTap,
+      colors: colors,
+      pulse: true,
+      height: 64,
+      borderRadius: 20,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 4),
+        child: _buttonContent(icon, title, subtitle),
       ),
     );
   }

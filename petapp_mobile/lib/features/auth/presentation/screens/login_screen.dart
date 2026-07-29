@@ -9,6 +9,7 @@ class LoginScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Scaffold(
       body: Stack(
+        fit: StackFit.expand,
         children: [
           LoginBackground(),
           LoginCard(),
