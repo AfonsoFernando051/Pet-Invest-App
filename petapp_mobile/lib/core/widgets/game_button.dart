@@ -28,13 +28,20 @@ class GameButton extends StatefulWidget {
   /// Same gradient/glow/press/pulse chrome, but with fully custom content —
   /// for CTAs that need more than an icon+label (e.g. a title+subtitle quick
   /// action) without duplicating this widget's animation logic.
+  ///
+  /// [height] defaults to `null` here (content-sized) rather than the fixed
+  /// 56 the label/icon mode uses — custom content's natural height varies
+  /// (a single line vs. an icon+title+subtitle block), and a fixed height
+  /// would either clip taller content or leave dead space around shorter
+  /// content. `Center` gives its child loose constraints, so a too-small
+  /// fixed height here would silently overflow rather than shrink content.
   const GameButton.custom({
     super.key,
     required Widget this.child,
     required this.onPressed,
     this.colors = const [AppColors.neonViolet, AppColors.neonPink],
     this.pulse = false,
-    this.height = 56,
+    this.height,
     this.borderRadius = 20,
     this.expand = true,
   })  : label = null,
@@ -52,7 +59,7 @@ class GameButton extends StatefulWidget {
   /// Reserve `true` for the single most important CTA on a screen.
   final bool pulse;
   final bool isLoading;
-  final double height;
+  final double? height;
   final double borderRadius;
   final bool expand;
 

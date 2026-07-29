@@ -79,7 +79,6 @@ class ActionButtons extends StatelessWidget {
       onPressed: onTap,
       colors: colors,
       pulse: true,
-      height: 64,
       borderRadius: 20,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 4),
