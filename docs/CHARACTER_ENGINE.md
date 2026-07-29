@@ -53,10 +53,11 @@ So, like `MARKET_EVENTS_ENGINE.md`, this document does two things:
 
 ### Reference concept art already exists — and is richer than the brief assumed
 
-`assets/pets/{dog,cat,wolf,fox,bear,lion}.png` (not currently loaded by any code — `pet_showcase.dart` and
-`pet_repository_impl.dart` instead use the single-pose `assets/images/generated_*.png` renders) are full
-concept-art style sheets, one per species, and they are the actual design bible this document's enums are
-now built against:
+`assets/pets/{dog,cat,wolf,fox,bear,lion}.png` are full concept-art style sheets, one per species, and they
+are the actual design bible this document's enums are built against. They are **now partially sliced** —
+see [Sliced assets](#sliced-assets) below — into the individual files `CharacterAssetLoader` resolves;
+`pet_showcase.dart`/`pet_repository_impl.dart` still separately use the single-pose
+`assets/images/generated_*.png` renders, untouched by this pass.
 
 - A **25-expression grid** per species (NEUTRAL, HAPPY, VERY HAPPY, LAUGHING, CURIOUS, THINKING,
   DETERMINED, CONFIDENT, PROUD, EXCITED, MOTIVATED, SURPRISED, CONFUSED, EMBARRASSED, SAD, CRYING,
@@ -78,6 +79,34 @@ now built against:
   angel wings, hero cape, etc.) that already overlap heavily with `PetAccessoryId` — not touched in this
   pass, but a natural next slicing target.
 
+### Sliced assets
+
+Cropped directly from `assets/pets/{cat,wolf,fox,bear,leon}.png` (script-assisted: row/column boundaries
+detected from pixel density gaps, background removed via flood-fill from each corner, not hand-traced) into
+`assets/characters/<species>/{expressions,poses}/`:
+
+- **Expressions**: every labeled face in each species' grid — 24 for cat/wolf/lion, 23 for fox (no
+  `motivated`), 21 for bear (no `love`, `motivated`, `confident`, `playful` — that sheet's grid has fewer
+  columns). Filenames match `CharacterEmotion.name` exactly, so `CharacterAssetLoader.expressionPaths`
+  resolves them with no mapping table.
+- **Poses**: the 7 states actually reachable today — `idle`, `sleep`, `think`, `celebrate`, `victory`,
+  `jump`, `wave` (achievement/mission/evolution reactions, tap/double-tap/drag) — cropped from each
+  species' "GAMEPLAY POSES" grid. The other 12 `PetAnimationState` values (walk, run, sit, layDown, eat,
+  drink, dance, stretch, lookUp, lookDown, laugh, happy) are visible in the same sheets but weren't sliced
+  since nothing in the app triggers them yet; slicing is cheap to extend once something does.
+- **DOG is deliberately not sliced.** `assets/pets/dog.png` has an analogous face grid but — unlike the
+  other five — **no printed text labels**, and its layout doesn't match the other sheets' column order.
+  Mapping its faces to `CharacterEmotion` values would be visual guesswork with no way to verify it, and a
+  silently-wrong expression (e.g. showing `angry` when the code asked for `confident`) is worse than
+  showing none. DOG keeps conveying emotion via `EmotionVisualProfile`'s aura/breathe retinting only, same
+  as every species did before this pass.
+- **The expression face renders as a small corner badge, not a face swap.** Once a real per-species pose
+  PNG resolves (all 7 sliced states, for the 5 sliced species), that pose already has its own face baked
+  in — overlaying a second, bigger expression face on top of it would compete with it rather than
+  complement it. `_ExpressionLayer` therefore renders as a small circular badge pinned to the upper-right
+  corner (mirrors how mobile games show a separate emote/mood bubble rather than replacing the character's
+  face), not a large centered overlay.
+
 ### The honest gaps
 
 - **No client-side LLM/TTS/speech SDK.** The Mentor chat's LLM call is server-side only
@@ -85,18 +114,19 @@ now built against:
   interface shapes (Phase 0 adds these as unimplemented seams — see below).
 - **No lip-sync art or rig.** These are flat 2D concept renders, not a rigged mouth layer — lip sync still
   needs either a real rig or a discrete mouth-shape sprite set per species, neither of which exists yet.
-- **The concept sheets still aren't sliced into individual assets.** `assets/mascot/animations/`,
-  `assets/mascot/evolutions/` and the newly-scaffolded `assets/characters/<species>/{poses,expressions}/`
-  (see [Asset conventions](#asset-conventions) below) all still contain only `.gitkeep` — `CharacterEmotion`/
-  `PetAnimationState`/`IdleVariant`'s `assetKey`s point at files that don't exist yet, so `CharacterWidget`
-  still renders via its PNG/icon fallback chain today. The enums/paths are named correctly *in advance* of
-  that slicing work, via `CharacterAssetLoader`.
+- **No Lottie animation for any pose, for any species.** The sliced pose art is a single static frame per
+  state (that's all the reference sheets have) — `CharacterAssetLoader.posePaths` still lists a
+  `.json` Lottie candidate first for when a real animated export exists, ahead of the static PNG.
+- **12 of 19 `PetAnimationState` values, and every state/expression for DOG, still fall through to the
+  pre-existing evolution-stage PNG chain** — `assets/mascot/evolutions/` and `assets/mascot/animations/`
+  still contain only `.gitkeep`. `CharacterWidget` renders via that fallback chain unchanged for those.
 - **Two disconnected pet renderers.** `PetShowcase` (dashboard) and `CharacterWidget`
   (`RpgIntegrationCard`) are independent widgets with independent `AnimationController`s and independent
   data fetches; `RpgIntegrationCard.showPetVisual` exists specifically to avoid showing both mascots at
-  once. This pass does **not** merge them (see below) — `PetShowcase` shows the user's real species image
-  today, and `CharacterWidget`'s per-species art doesn't exist yet, so merging now would be a visible
-  regression, not an improvement.
+  once. This pass does **not** merge them — `PetShowcase` shows the user's real species image today via
+  `generated_*.png`, a different (also real, also single-pose) asset than the newly-sliced `poses/idle.png`
+  `CharacterWidget` now shows; merging the two widgets is still separate follow-up work, now more viable
+  than before but not done here.
 - **No historical portfolio series or dividend feed client-side.** Same gap `MARKET_EVENTS_ENGINE.md`
   already documented. `CharacterEventType.portfolioAllTimeHigh`, `.portfolioSignificantDrop` and
   `.dividendReceived` are declared in code but **not published** until that data exists — never simulate a
@@ -121,7 +151,10 @@ sourcing):
   parallax — since it's pure visual feedback, not a Character Engine state change.
 - **AssetLoader** — `CharacterAssetLoader`: a pure, stateless path resolver (no caching, no I/O — see
   [Asset conventions](#asset-conventions)) that `CharacterWidget` consumes via nested `errorBuilder`s, the
-  same graceful-degradation pattern the fallback chain already used pre-species-art.
+  same graceful-degradation pattern the fallback chain already used pre-species-art. As of
+  [Sliced assets](#sliced-assets), it resolves to *real* per-species art for cat/wolf/fox/bear/lion's 7
+  reachable poses and (for cat/wolf/fox/lion) 24 expressions / (bear) 21 / (fox) 23 — DOG still falls
+  through to the pre-existing evolution PNG chain, by design (see above).
 - **Behavior Controller** — `IdleBehaviorController`: while (and only while) the mascot is `idle`, swaps to
   a new random `IdleVariant` (breathing / blinking / stretch / sit / layDown / lookUp / lookDown / think /
   wave / eat / drink / dance — the idle-appropriate subset of the reference sheets' named poses, see
@@ -170,16 +203,18 @@ concrete need for it), camera/AR/vision, multiple pets, mini-games.
 `CharacterAssetLoader` (`presentation/character/asset/character_asset_loader.dart`) is the single place
 that knows these paths — nothing else should hardcode them:
 
-- **Poses**: `assets/characters/<species>/poses/<PetAnimationState.name>.json` — a species-specific Lottie
-  export. Falls back to the shared `assets/mascot/animations/<state>.json`, then the existing evolution-
-  stage PNG chain. `<species>` is `PetSpecieEnum.name.toLowerCase()` (`dog`, `cat`, `wolf`, `fox`, `bear`,
-  `lion` — **not** `leon`, the existing reference sheet's filename typo).
+- **Poses**: `assets/characters/<species>/poses/<PetAnimationState.name>.json` (species-specific Lottie,
+  not authored yet) → `.../poses/<state>.png` (species-specific static frame — **real for
+  cat/wolf/fox/bear/lion's 7 reachable states**, see [Sliced assets](#sliced-assets)) → the shared
+  `assets/mascot/animations/<state>.json` → the existing evolution-stage PNG chain. `<species>` is
+  `PetSpecieEnum.name.toLowerCase()` (`dog`, `cat`, `wolf`, `fox`, `bear`, `lion` — **not** `leon`, the
+  reference sheet's filename typo).
 - **Expressions**: `assets/characters/<species>/expressions/<CharacterEmotion.name>.png` — a species-
-  specific static face. No shared fallback; if missing, `CharacterWidget` simply renders no expression
-  overlay and keeps conveying emotion via `EmotionVisualProfile`'s aura/breathe retinting alone.
-- Both folder trees exist today (`assets/characters/{dog,cat,wolf,fox,bear,lion}/{poses,expressions}/`,
-  declared in `pubspec.yaml`) but contain only `.gitkeep` — dropping a correctly-named file into either
-  makes it appear automatically, with zero code changes.
+  specific static face, **real for cat/wolf/fox/bear/lion**. No shared fallback; if missing (every emotion
+  for DOG, and the handful of emotions each of the other 5 sheets doesn't label), `CharacterWidget` renders
+  no expression badge and keeps conveying emotion via `EmotionVisualProfile`'s aura/breathe retinting alone.
+- Both folder trees exist for all 6 species (declared in `pubspec.yaml`); DOG's remain `.gitkeep`-only by
+  design. Dropping a correctly-named file into either makes it appear automatically, zero code changes.
 - Evolution art is **not** duplicated under `assets/characters/` — `assets/mascot/evolutions/
   <PetEvolutionStage.name>.png` remains the one location for it (per-species evolution naming is still the
   Phase 2+ gap noted above).
@@ -224,9 +259,11 @@ never as a generic assistant. `SpeechController` picks a TTS provider (Google TT
 surprised); natural movement, not perfect sync, per the brief. This phase is also when the
 `assets/pets/*.png` reference sheets get sliced into the individual files under `assets/characters/
 <species>/{poses,expressions}/` and `assets/mascot/evolutions/` that `CharacterAssetLoader`/
-`PetEvolutionStage` already point at (see [Asset conventions](#asset-conventions)), and when the
-`PetShowcase`/`CharacterWidget` merge becomes viable (blocked on that slicing, not on new art — concept art
-for every non-dog species already exists, it just isn't cut into individual files yet).
+`PetEvolutionStage` already point at (see [Asset conventions](#asset-conventions)) — expressions and 7
+reachable poses are already sliced for cat/wolf/fox/bear/lion (see [Sliced assets](#sliced-assets)); this
+phase covers the rest: the remaining 12 `PetAnimationState` values, DOG (needs a labeled reference sheet
+first, or a manual mapping someone can actually verify), and turning the static poses into real animation.
+This phase is also when the `PetShowcase`/`CharacterWidget` merge becomes viable.
 
 ### Phase 3+ — Vision, AR, multiplayer
 
@@ -243,4 +280,7 @@ mini-games — genuinely new systems, sequenced only after Phase 1/2 prove the c
 - Manual: open the dashboard tab, leave the app idle 30–60s and confirm the mascot's tilt visibly varies;
   trigger an achievement unlock and confirm a species-flavored speech bubble line appears alongside the
   existing celebration overlay; double-tap/long-press/drag the mascot in `RpgIntegrationCard` and confirm
-  each produces a distinct reaction.
+  each produces a distinct reaction. For a non-dog species (configure one via `PetRepository.configurePet`
+  or the pet-configuration screen), confirm the mascot now actually renders the sliced species art (not the
+  generic dog fallback) for idle/sleep/think/celebrate/victory/jump/wave, and that the small mood badge in
+  the upper-right corner shows a real species-specific face instead of nothing.

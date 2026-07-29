@@ -321,19 +321,33 @@ class _BaseMascotLayer extends StatelessWidget {
   Widget build(BuildContext context) {
     final mascotSize = size * 0.9;
     final candidates = _kAssetLoader.posePaths(species, state);
-    return _lottieChain(candidates, 0, mascotSize);
+    return _poseChain(candidates, 0, mascotSize);
   }
 
-  Widget _lottieChain(List<String> paths, int index, double mascotSize) {
+  /// Tries each candidate in order — Lottie for `.json`, a static image for
+  /// `.png` (the sliced species pose art has no animation, just a single
+  /// frame) — falling back to the evolution-stage PNG chain once none
+  /// resolve.
+  Widget _poseChain(List<String> paths, int index, double mascotSize) {
     if (index >= paths.length) {
       return _EvolutionFallback(stage: stage, size: mascotSize);
     }
-    return Lottie.asset(
-      paths[index],
+    final path = paths[index];
+    if (path.endsWith('.json')) {
+      return Lottie.asset(
+        path,
+        width: mascotSize,
+        height: mascotSize,
+        fit: BoxFit.contain,
+        errorBuilder: (context, error, stackTrace) => _poseChain(paths, index + 1, mascotSize),
+      );
+    }
+    return Image.asset(
+      path,
       width: mascotSize,
       height: mascotSize,
       fit: BoxFit.contain,
-      errorBuilder: (context, error, stackTrace) => _lottieChain(paths, index + 1, mascotSize),
+      errorBuilder: (context, error, stackTrace) => _poseChain(paths, index + 1, mascotSize),
     );
   }
 }
@@ -368,10 +382,17 @@ class _EvolutionFallback extends StatelessWidget {
   }
 }
 
-/// The species-specific face for the current emotion, layered near the top
-/// of the mascot. Renders nothing until the species' `expressions` folder
-/// (see `CharacterAssetLoader`) actually has files — today that's every
-/// species, so this is a no-op overlay, wired ahead of the art existing.
+/// A small "mood badge" showing the species-specific face for the current
+/// emotion, pinned to the mascot's upper-right corner. Deliberately a small
+/// corner badge rather than a large overlay on the mascot's own face: the
+/// base pose art (`_BaseMascotLayer`) already has its own baked-in
+/// expression once a real per-species pose PNG resolves, so stacking a
+/// second, bigger face on top of it would double up/compete rather than
+/// complement it. Renders nothing until the species' `expressions` folder
+/// (see `CharacterAssetLoader`) has the matching file — today that's every
+/// emotion for DOG (no labeled reference art to slice, see
+/// docs/CHARACTER_ENGINE.md), so DOG keeps conveying emotion via
+/// `EmotionVisualProfile`'s aura/breathe retinting alone.
 class _ExpressionLayer extends StatelessWidget {
   const _ExpressionLayer({
     required this.species,
@@ -387,18 +408,25 @@ class _ExpressionLayer extends StatelessWidget {
   Widget build(BuildContext context) {
     final candidates = _kAssetLoader.expressionPaths(species, emotion);
     return Align(
-      alignment: const Alignment(0, -0.3),
+      alignment: const Alignment(0.85, -0.8),
       child: _imageChain(candidates, 0),
     );
   }
 
   Widget _imageChain(List<String> paths, int index) {
     if (index >= paths.length) return const SizedBox.shrink();
-    return Image.asset(
-      paths[index],
-      width: size * 0.45,
-      fit: BoxFit.contain,
-      errorBuilder: (context, error, stackTrace) => _imageChain(paths, index + 1),
+    return ClipOval(
+      child: Container(
+        width: size * 0.3,
+        height: size * 0.3,
+        color: Colors.white.withValues(alpha: 0.9),
+        padding: EdgeInsets.all(size * 0.015),
+        child: Image.asset(
+          paths[index],
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) => _imageChain(paths, index + 1),
+        ),
+      ),
     );
   }
 }

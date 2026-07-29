@@ -8,11 +8,12 @@ void main() {
   const loader = CharacterAssetLoader();
 
   group('posePaths', () {
-    test('prefers the species-specific Lottie path over the shared one', () {
+    test('prefers species Lottie, then species PNG, then the shared Lottie', () {
       final paths = loader.posePaths(PetSpecieEnum.FOX, PetAnimationState.idle);
 
       expect(paths, [
         'assets/characters/fox/poses/idle.json',
+        'assets/characters/fox/poses/idle.png',
         'assets/mascot/animations/idle.json',
       ]);
     });
@@ -21,6 +22,7 @@ void main() {
       final paths = loader.posePaths(PetSpecieEnum.LION, PetAnimationState.celebrate);
 
       expect(paths.first, 'assets/characters/lion/poses/celebrate.json');
+      expect(paths[1], 'assets/characters/lion/poses/celebrate.png');
     });
   });
 
