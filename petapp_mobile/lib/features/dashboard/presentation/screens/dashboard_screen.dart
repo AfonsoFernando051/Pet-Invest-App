@@ -4,17 +4,14 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/glass_card.dart';
 import '../../../../core/di/dependency_injection.dart';
 import '../../../auth/presentation/screens/login_screen.dart';
-import '../../../investment/presentation/screens/investment_configuration_screen.dart';
 import '../../../pet/presentation/mascot/controllers/mascot_controller.dart';
-import '../../../portfolio/domain/services/insight_generator.dart';
 import '../../../portfolio/presentation/controllers/portfolio_controller.dart';
+import '../../../portfolio/presentation/screens/missions_screen.dart';
+import '../../../portfolio/presentation/screens/passive_income_screen.dart';
 import '../../../portfolio/presentation/screens/portfolio_screen.dart';
 import '../../../portfolio/presentation/widgets/asset_allocation_card.dart';
 import '../../../portfolio/presentation/widgets/hero_summary_section.dart';
-import '../../../portfolio/presentation/widgets/insights_section.dart';
-import '../../../portfolio/presentation/widgets/missions_achievements_section.dart';
-import '../../../portfolio/presentation/widgets/passive_income_card.dart';
-import '../../../portfolio/presentation/widgets/rpg_integration_card.dart';
+import '../../../portfolio/presentation/widgets/shared/error_banner.dart';
 import '../../../portfolio/presentation/widgets/wealth_evolution_card.dart';
 import '../../../settings/presentation/screens/settings_screen.dart';
 import '../widgets/pet_showcase.dart';
@@ -167,7 +164,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
             children: [
               _buildHomeContent(),
               _buildWalletContent(),
-              _buildAnalyticsContent(),
+              _buildPassiveIncomeContent(),
+              _buildMissionsContent(),
               _buildProfileContent(),
             ],
           ),
@@ -221,16 +219,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
       return const Center(child: CircularProgressIndicator(color: AppColors.neonCyan));
     }
 
-    final stats = _portfolioController.stats;
-    final insights = InsightGenerator.generate(
-      stats,
-      onOpenAllocation: () => setState(() => _selectedIndex = 1),
-      onOpenConfigure: () {
-        HapticFeedback.mediumImpact();
-        Navigator.of(context).push(_fadeRoute(const InvestmentConfigurationScreen()));
-      },
-    );
-
     return RefreshIndicator(
       color: AppColors.neonCyan,
       backgroundColor: AppColors.spaceBlue,
@@ -242,7 +230,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             if (_portfolioController.error != null) ...[
-              _buildErrorBanner(_portfolioController.error!),
+              ErrorBanner(onRetry: _portfolioController.refresh),
               const SizedBox(height: 12),
             ],
             const PetShowcase(),
@@ -265,50 +253,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             _buildSectionLabel('AÇÕES RÁPIDAS'),
             const SizedBox(height: 8),
             const ActionButtons(),
-            const SizedBox(height: 16),
-
-            RpgIntegrationCard(controller: _mascotController, stats: stats, showPetVisual: false),
-            const SizedBox(height: 16),
-
-            InsightsSection(insights: insights),
-            const SizedBox(height: 16),
-
-            PassiveIncomeCard(estimate: _portfolioController.passiveIncome),
-            const SizedBox(height: 16),
-
-            MissionsAchievementsSection(
-              missions: _portfolioController.missions,
-              achievements: _portfolioController.achievements,
-            ),
             const SizedBox(height: 32),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildErrorBanner(String error) {
-    return GlassCard(
-      backgroundColor: AppColors.negativeRed.withValues(alpha: 0.1),
-      borderColor: AppColors.negativeRed.withValues(alpha: 0.4),
-      borderRadius: 14,
-      borderWidth: 1,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-        child: Row(
-          children: [
-            const Icon(Icons.satellite_alt, color: AppColors.negativeRed, size: 18),
-            const SizedBox(width: 10),
-            const Expanded(
-              child: Text(
-                'Não foi possível atualizar seu portfólio. Puxe para atualizar.',
-                style: TextStyle(color: Colors.white, fontSize: 12),
-              ),
-            ),
-            IconButton(
-              icon: const Icon(Icons.refresh, color: AppColors.negativeRed, size: 18),
-              onPressed: _portfolioController.refresh,
-            ),
           ],
         ),
       ),
@@ -332,7 +277,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return PortfolioScreen(controller: _portfolioController);
   }
 
-  // ── Analytics ─────────────────────────────────────────────────────────────
+  // ── Proventos / Passive Income ────────────────────────────────────────────
+  Widget _buildPassiveIncomeContent() {
+    return PassiveIncomeScreen(controller: _portfolioController);
+  }
+
+  // ── Missões / Gamification hub ───────────────────────────────────────────
+  Widget _buildMissionsContent() {
+    return MissionsScreen(controller: _portfolioController, mascotController: _mascotController);
+  }
+
+  // ── Analytics (hidden from navigation for now — kept for a future tab) ───
+  // ignore: unused_element
   Widget _buildAnalyticsContent() {
     return Center(
       child: GlassCard(
@@ -457,8 +413,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
             label: 'Carteira',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.auto_graph),
-            label: 'Análise',
+            icon: Icon(Icons.payments_outlined),
+            activeIcon: Icon(Icons.payments),
+            label: 'Proventos',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.flag_outlined),
+            activeIcon: Icon(Icons.flag),
+            label: 'Missões',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.manage_accounts_outlined),
