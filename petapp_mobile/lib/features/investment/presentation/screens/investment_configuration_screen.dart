@@ -2,9 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
 import 'package:petapp_mobile/core/di/dependency_injection.dart';
 import 'package:petapp_mobile/core/utils/game_snack.dart';
+import 'package:petapp_mobile/core/widgets/game_button.dart';
 import 'package:petapp_mobile/features/dashboard/presentation/screens/dashboard_screen.dart';
 import 'package:petapp_mobile/features/investment/data/models/investment_type_enum.dart';
 import 'package:petapp_mobile/features/investment/data/models/asset_registration_model.dart';
+import 'package:petapp_mobile/features/investment/domain/services/pending_portfolio_stats_builder.dart';
+import 'package:petapp_mobile/features/investment/presentation/widgets/added_asset_tile.dart';
+import 'package:petapp_mobile/features/investment/presentation/widgets/investment_type_selector.dart';
+import 'package:petapp_mobile/features/investment/presentation/widgets/live_portfolio_summary_card.dart';
+import 'package:petapp_mobile/features/investment/presentation/widgets/pet_companion_card.dart';
+import 'package:petapp_mobile/features/investment/presentation/widgets/portfolio_progress_bar.dart';
+import 'package:petapp_mobile/features/investment/presentation/widgets/ticker_suggestion_tile.dart';
+import 'package:petapp_mobile/features/investment/presentation/widgets/unlockable_rewards_card.dart';
+import 'package:petapp_mobile/features/portfolio/domain/entities/portfolio_stats.dart';
 import 'package:petapp_mobile/core/widgets/glass_card.dart';
 
 class InvestmentConfigurationScreen extends StatefulWidget {
@@ -17,24 +27,39 @@ class InvestmentConfigurationScreen extends StatefulWidget {
 class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationScreen> {
   final List<AssetRegistrationModel> _assets = [];
   bool _isLoading = false;
-  bool _isFetchingQuote = false;
+
+  /// Index being edited (see `_editAsset`) — when set, the next successful
+  /// `_addAsset` re-inserts at this position instead of appending, so
+  /// editing doesn't reorder the list.
+  int? _editingIndex;
+
+  /// Achievements already unlocked in previous sessions, loaded once so the
+  /// live summary only counts genuinely *new* rewards this session would
+  /// grant — not ones the user already has.
+  Set<String> _alreadyUnlockedIds = {};
 
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _quantityController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
-  
+
   InvestmentTypeEnum? _selectedType;
   DateTime? _selectedDate;
 
-  final Map<InvestmentTypeEnum, String> _investmentLabels = {
-    InvestmentTypeEnum.STOCKS: 'Ações',
-    InvestmentTypeEnum.FIXED_INCOME: 'Renda Fixa',
-    InvestmentTypeEnum.REAL_ESTATE: 'Fundos Imobiliários',
-    InvestmentTypeEnum.CRYPTO: 'Criptomoedas',
-    InvestmentTypeEnum.FUNDS: 'Fundos de Investimento',
-    InvestmentTypeEnum.OTHERS: 'Outros',
-  };
+  static const int _starterPortfolioTarget = 3;
+
+  PortfolioStats get _pendingStats => PendingPortfolioStatsBuilder.build(_assets);
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAchievementBaseline();
+  }
+
+  Future<void> _loadAchievementBaseline() async {
+    final unlocked = await DI.achievementsRepository.loadUnlocked();
+    if (mounted) setState(() => _alreadyUnlockedIds = unlocked.keys.toSet());
+  }
 
   @override
   void dispose() {
@@ -48,6 +73,8 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
     return "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
   }
 
+  String _formatNum(double value) => value.truncateToDouble() == value ? value.toInt().toString() : value.toString();
+
   void _addAsset() {
     if (_formKey.currentState!.validate() && _selectedType != null && _selectedDate != null) {
       final asset = AssetRegistrationModel(
@@ -58,17 +85,83 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
         type: _selectedType!,
       );
 
+      final wasEditing = _editingIndex != null;
+
       setState(() {
-        _assets.add(asset);
+        if (_editingIndex != null) {
+          _assets.insert(_editingIndex!.clamp(0, _assets.length), asset);
+          _editingIndex = null;
+        } else {
+          _assets.add(asset);
+        }
         _nameController.clear();
         _quantityController.clear();
         _priceController.clear();
         _selectedType = null;
         _selectedDate = null;
       });
+
+      if (!wasEditing) _showAddFeedback(_assets.length);
     } else {
       GameSnack.show(context, 'Preencha todos os campos e selecione uma data/tipo.', isError: true);
     }
+  }
+
+  void _showAddFeedback(int newCount) {
+    if (newCount == 1) {
+      GameSnack.showWithHaptic(
+        context,
+        '🎉 Primeiro investimento adicionado! Você começou sua jornada.',
+        isSuccess: true,
+      );
+    } else if (newCount == _starterPortfolioTarget) {
+      GameSnack.showWithHaptic(
+        context,
+        '🚀 Portfólio inicial completo! Você está pronto para continuar.',
+        isSuccess: true,
+      );
+    } else {
+      GameSnack.showWithHaptic(context, '✨ Ativo adicionado! Seu portfólio está crescendo.', isSuccess: true);
+    }
+  }
+
+  void _editAsset(int index) {
+    final asset = _assets[index];
+    setState(() {
+      _editingIndex = index;
+      _assets.removeAt(index);
+      _nameController.text = asset.name;
+      _quantityController.text = _formatNum(asset.quantity);
+      _priceController.text = _formatNum(asset.purchasePrice);
+      _selectedType = asset.type;
+      _selectedDate = DateTime.tryParse(asset.purchaseDate);
+    });
+  }
+
+  void _removeAsset(int index) {
+    setState(() {
+      _assets.removeAt(index);
+      if (_editingIndex != null && _editingIndex! >= index) {
+        _editingIndex = null;
+      }
+    });
+  }
+
+  void _reorderAssets(int oldIndex, int newIndex) {
+    setState(() {
+      if (newIndex > oldIndex) newIndex -= 1;
+      final item = _assets.removeAt(oldIndex);
+      _assets.insert(newIndex, item);
+    });
+  }
+
+  String get _confirmLabel {
+    if (_assets.isEmpty) return 'Adicione um ativo para continuar';
+    if (_assets.length < _starterPortfolioTarget) {
+      final plural = _assets.length == 1 ? 'ativo adicionado' : 'ativos adicionados';
+      return 'Continuar (${_assets.length} $plural)';
+    }
+    return 'Portfólio Pronto ✓';
   }
 
   Future<void> _handleConfirm() async {
@@ -178,28 +271,27 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
               elevation: 4.0,
               child: Container(
                 margin: const EdgeInsets.only(top: 8),
-                constraints: const BoxConstraints(maxHeight: 250, maxWidth: 300),
+                constraints: const BoxConstraints(maxHeight: 280, maxWidth: 320),
                 decoration: BoxDecoration(
-                  color: AppColors.spaceDark.withValues(alpha: 0.95),
-                  borderRadius: BorderRadius.circular(12),
+                  color: AppColors.spaceDark.withValues(alpha: 0.97),
+                  borderRadius: BorderRadius.circular(14),
                   border: Border.all(color: AppColors.neonCyan.withValues(alpha: 0.5)),
                 ),
                 child: ListView.builder(
-                  padding: EdgeInsets.zero,
+                  padding: const EdgeInsets.symmetric(vertical: 4),
                   shrinkWrap: true,
                   itemCount: options.length,
                   itemBuilder: (BuildContext context, int index) {
                     final option = options.elementAt(index);
-                    final symbol = option['symbol'] ?? option['stock'] ?? '';
-                    final name = option['shortName'] ?? option['name'] ?? '';
-                    return ListTile(
-                      title: Text(
-                        "$symbol - $name",
-                        style: const TextStyle(color: Colors.white),
-                      ),
-                      onTap: () {
-                        onSelected(option);
-                      },
+                    final symbol = (option['symbol'] ?? option['stock'] ?? '').toString();
+                    final name = (option['shortName'] ?? option['name'] ?? '').toString();
+                    final priceRaw = option['regularMarketPrice'] ?? option['close'];
+                    final price = priceRaw is num ? priceRaw.toDouble() : double.tryParse(priceRaw?.toString() ?? '');
+                    return TickerSuggestionTile(
+                      symbol: symbol,
+                      name: name,
+                      price: price,
+                      onTap: () => onSelected(option),
                     );
                   },
                 ),
@@ -242,46 +334,6 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
     );
   }
 
-  Widget _buildDropdown() {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16.0),
-      child: DropdownButtonFormField<InvestmentTypeEnum>(
-        value: _selectedType,
-        isExpanded: true,
-        dropdownColor: AppColors.spaceDark,
-        style: const TextStyle(color: Colors.white),
-        decoration: InputDecoration(
-          labelText: 'Tipo de Investimento',
-          labelStyle: const TextStyle(color: Colors.white70),
-          filled: true,
-          fillColor: AppColors.spaceDark.withValues(alpha: 0.5),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: AppColors.neonCyan.withValues(alpha: 0.5)),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: AppColors.neonCyan.withValues(alpha: 0.4)),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: AppColors.neonCyan, width: 1.5),
-          ),
-        ),
-        items: InvestmentTypeEnum.values.map((type) {
-          return DropdownMenuItem(
-            value: type,
-            child: Text(
-              _investmentLabels[type]!,
-              overflow: TextOverflow.ellipsis,
-            ),
-          );
-        }).toList(),
-        onChanged: (val) => setState(() => _selectedType = val),
-      ),
-    );
-  }
-
   Widget _buildDatePickerField() {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
@@ -299,7 +351,9 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
             children: [
               Expanded(
                 child: Text(
-                  _selectedDate == null ? 'Data de Compra' : "${_selectedDate!.day.toString().padLeft(2, '0')}/${_selectedDate!.month.toString().padLeft(2, '0')}/${_selectedDate!.year}",
+                  _selectedDate == null
+                      ? 'Data de Compra'
+                      : "${_selectedDate!.day.toString().padLeft(2, '0')}/${_selectedDate!.month.toString().padLeft(2, '0')}/${_selectedDate!.year}",
                   style: TextStyle(color: _selectedDate == null ? Colors.white70 : Colors.white, fontSize: 16),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -317,7 +371,7 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: const Text('Configuração de Ativos', style: TextStyle(color: Colors.white)),
+        title: const Text('Portfólio Inicial', style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
@@ -342,13 +396,22 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
                 padding: const EdgeInsets.all(24.0),
                 child: isWide
                     ? Row(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           Expanded(flex: 4, child: _buildLeftPanel()),
                           const SizedBox(width: 32),
                           Expanded(flex: 6, child: _buildRightPanel()),
                         ],
                       )
-                    : _buildRightPanel(),
+                    : SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            SizedBox(height: 520, child: _buildLeftPanel()),
+                            const SizedBox(height: 16),
+                            SizedBox(height: 720, child: _buildRightPanel()),
+                          ],
+                        ),
+                      ),
               );
             },
           ),
@@ -358,31 +421,44 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
   }
 
   Widget _buildLeftPanel() {
+    final stats = _pendingStats;
+
     return GlassCard(
       isAnimated: true,
       backgroundColor: AppColors.spaceDark.withValues(alpha: 0.4),
       borderRadius: 24,
       borderColor: AppColors.neonCyan.withValues(alpha: 0.5),
       borderWidth: 2,
-      child: Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(vertical: 8),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Image.asset('assets/images/fox_compass.png', height: 250),
-            const SizedBox(height: 32),
             const Text(
               'Monte seu Portfólio',
-              style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold),
+              style: TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 8),
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
-                'Registre seus ativos para que possamos monitorá-los e guiar a sua jornada financeira.',
+                'Cada grande investidor começou com um único investimento. Sua jornada financeira começa agora.',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.white70, fontSize: 16),
+                style: TextStyle(color: Colors.white70, fontSize: 14, height: 1.4),
               ),
+            ),
+            const SizedBox(height: 20),
+            PetCompanionCard(assetCount: _assets.length),
+            const SizedBox(height: 24),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: UnlockableRewardsCard(stats: stats),
+            ),
+            const SizedBox(height: 20),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: PortfolioProgressBar(assetCount: _assets.length, target: _starterPortfolioTarget),
             ),
           ],
         ),
@@ -391,6 +467,8 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
   }
 
   Widget _buildRightPanel() {
+    final stats = _pendingStats;
+
     return GlassCard(
       backgroundColor: AppColors.spaceDark.withValues(alpha: 0.6),
       borderRadius: 24,
@@ -412,109 +490,104 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
                   key: _formKey,
                   child: Column(
                     children: [
-                      _buildDropdown(),
+                      InvestmentTypeSelector(
+                        selected: _selectedType,
+                        onChanged: (type) => setState(() => _selectedType = type),
+                      ),
+                      const SizedBox(height: 16),
                       _buildAutocompleteField(),
                       Row(
                         children: [
-                          Expanded(child: _buildTextField(_quantityController, 'Qtd.', const TextInputType.numberWithOptions(decimal: true))),
+                          Expanded(
+                            child: _buildTextField(
+                              _quantityController,
+                              'Qtd.',
+                              const TextInputType.numberWithOptions(decimal: true),
+                            ),
+                          ),
                           const SizedBox(width: 8),
-                          Expanded(child: _buildTextField(_priceController, 'Preço (R\$)', const TextInputType.numberWithOptions(decimal: true))),
+                          Expanded(
+                            child: _buildTextField(
+                              _priceController,
+                              'Preço (R\$)',
+                              const TextInputType.numberWithOptions(decimal: true),
+                            ),
+                          ),
                         ],
                       ),
                       _buildDatePickerField(),
-                      const SizedBox(height: 8),
-                      OutlinedButton.icon(
-                        icon: const Icon(Icons.add, color: AppColors.neonCyan),
-                        label: const Text('Adicionar', style: TextStyle(color: AppColors.neonCyan)),
-                        style: OutlinedButton.styleFrom(
-                          side: const BorderSide(color: AppColors.neonCyan),
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                        ),
+                      const SizedBox(height: 4),
+                      GameButton(
+                        label: _editingIndex != null ? 'Salvar Alteração' : 'Adicionar Ativo',
+                        icon: _editingIndex != null ? Icons.check : Icons.add,
+                        colors: const [AppColors.spaceBlue, AppColors.neonCyan],
+                        height: 52,
                         onPressed: _addAsset,
                       ),
+                      const SizedBox(height: 20),
+                      LivePortfolioSummaryCard(stats: stats, alreadyUnlockedIds: _alreadyUnlockedIds),
                       const SizedBox(height: 16),
                       if (_assets.isNotEmpty) ...[
                         const Align(
                           alignment: Alignment.centerLeft,
-                          child: Text('Registrados:', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                          child: Text(
+                            'Ativos Adicionados',
+                            style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold),
+                          ),
                         ),
-                        const SizedBox(height: 8),
-                        ListView.builder(
+                        const SizedBox(height: 10),
+                        ReorderableListView.builder(
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
                           itemCount: _assets.length,
+                          onReorder: _reorderAssets,
                           itemBuilder: (context, index) {
-                            final a = _assets[index];
-                            return ListTile(
-                              contentPadding: const EdgeInsets.all(0),
-                              leading: const Icon(Icons.check_circle, color: AppColors.neonCyan),
-                              title: Text(
-                                a.name, 
-                                style: const TextStyle(color: Colors.white),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              subtitle: Text(
-                                '${a.quantity} cotas a R\$ ${a.purchasePrice}', 
-                                style: const TextStyle(color: Colors.white70),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              trailing: IconButton(
-                                icon: const Icon(Icons.delete, color: AppColors.negativeRed),
-                                onPressed: () {
-                                  setState(() {
-                                    _assets.removeAt(index);
-                                  });
-                                },
-                              ),
+                            final asset = _assets[index];
+                            return AddedAssetTile(
+                              key: ObjectKey(asset),
+                              index: index,
+                              asset: asset,
+                              onEdit: () => _editAsset(index),
+                              onRemove: () => _removeAsset(index),
                             );
                           },
                         ),
-                      ],
+                      ] else
+                        Container(
+                          padding: const EdgeInsets.all(14),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.04),
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          child: const Row(
+                            children: [
+                              Icon(Icons.lightbulb_outline, color: AppColors.goldenBorder, size: 18),
+                              SizedBox(width: 10),
+                              Expanded(
+                                child: Text(
+                                  'Dica: você pode registrar compras antigas — a data de compra ajuda a calcular seu retorno real.',
+                                  style: TextStyle(color: AppColors.subtleText, fontSize: 12),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                     ],
                   ),
                 ),
               ),
             ),
             const SizedBox(height: 16),
-            _buildConfirmButton(),
+            GameButton(
+              label: _confirmLabel,
+              icon: _assets.isNotEmpty ? Icons.arrow_forward : null,
+              iconTrailing: true,
+              isLoading: _isLoading,
+              pulse: _assets.isNotEmpty,
+              height: 56,
+              onPressed: _assets.isEmpty ? null : _handleConfirm,
+            ),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildConfirmButton() {
-    return Container(
-      height: 50,
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [AppColors.neonPurple, AppColors.neonCyan],
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
-        ),
-        borderRadius: BorderRadius.circular(25),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.neonPurple.withValues(alpha: 0.4),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(25),
-          onTap: _isLoading ? null : _handleConfirm,
-          child: Center(
-            child: _isLoading
-                ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                : const Text(
-                    'Confirmar e Continuar',
-                    style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
-                  ),
-          ),
         ),
       ),
     );
