@@ -4,13 +4,21 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/glass_card.dart';
 import '../../../../core/di/dependency_injection.dart';
 import '../../../auth/presentation/screens/login_screen.dart';
+import '../../../investment/presentation/screens/investment_configuration_screen.dart';
+import '../../../pet/presentation/mascot/controllers/mascot_controller.dart';
+import '../../../portfolio/domain/services/insight_generator.dart';
+import '../../../portfolio/presentation/controllers/portfolio_controller.dart';
 import '../../../portfolio/presentation/screens/portfolio_screen.dart';
+import '../../../portfolio/presentation/widgets/asset_allocation_card.dart';
+import '../../../portfolio/presentation/widgets/hero_summary_section.dart';
+import '../../../portfolio/presentation/widgets/insights_section.dart';
+import '../../../portfolio/presentation/widgets/missions_achievements_section.dart';
+import '../../../portfolio/presentation/widgets/passive_income_card.dart';
+import '../../../portfolio/presentation/widgets/rpg_integration_card.dart';
+import '../../../portfolio/presentation/widgets/wealth_evolution_card.dart';
 import '../../../settings/presentation/screens/settings_screen.dart';
 import '../widgets/pet_showcase.dart';
-import '../widgets/rpg_attributes.dart';
-import '../widgets/account_overview.dart';
 import '../widgets/action_buttons.dart';
-import '../widgets/recent_transactions.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -21,6 +29,36 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   int _selectedIndex = 0;
+
+  // Shared across the Início (Home) and Carteira (Portfolio) tabs so both
+  // reflect the same real holdings/summary/allocation data and a single
+  // in-flight load — no duplicate fetches, no drift between tabs.
+  late final MascotController _mascotController;
+  late final PortfolioController _portfolioController;
+
+  @override
+  void initState() {
+    super.initState();
+    _mascotController = MascotController(repository: DI.mascotRepository);
+    _portfolioController = PortfolioController(
+      repository: DI.portfolioRepository,
+      achievementsRepository: DI.achievementsRepository,
+      mascotController: _mascotController,
+    );
+    _mascotController.loadProfile();
+    _portfolioController.addListener(_onPortfolioChanged);
+    _portfolioController.loadAll();
+  }
+
+  void _onPortfolioChanged() => setState(() {});
+
+  @override
+  void dispose() {
+    _portfolioController.removeListener(_onPortfolioChanged);
+    _portfolioController.dispose();
+    _mascotController.dispose();
+    super.dispose();
+  }
 
   // Shared background for all tabs
   Widget _buildBackground({required Widget child}) {
@@ -172,41 +210,107 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  // ── Home ──────────────────────────────────────────────────────────────────
+  // ── Home: the app's executive dashboard ──────────────────────────────────
+  // Charts, allocation, insights, passive income and gamification all live
+  // here now — Carteira (Portfolio) is holdings-management only. Both tabs
+  // share `_portfolioController`/`_mascotController` so they always agree.
   Widget _buildHomeContent() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          const PetShowcase(),
-          const SizedBox(height: 8),
+    if (_portfolioController.isLoading &&
+        _portfolioController.holdings.isEmpty &&
+        _portfolioController.error == null) {
+      return const Center(child: CircularProgressIndicator(color: AppColors.neonCyan));
+    }
 
-          _buildSectionLabel('STATUS DO EXPLORADOR'),
-          const SizedBox(height: 8),
+    final stats = _portfolioController.stats;
+    final insights = InsightGenerator.generate(
+      stats,
+      onOpenAllocation: () => setState(() => _selectedIndex = 1),
+      onOpenConfigure: () {
+        HapticFeedback.mediumImpact();
+        Navigator.of(context).push(_fadeRoute(const InvestmentConfigurationScreen()));
+      },
+    );
 
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
-              Expanded(flex: 4, child: SizedBox(height: 270, child: RpgAttributes())),
-              SizedBox(width: 12),
-              Expanded(flex: 5, child: SizedBox(height: 270, child: AccountOverview())),
+    return RefreshIndicator(
+      color: AppColors.neonCyan,
+      backgroundColor: AppColors.spaceBlue,
+      onRefresh: _portfolioController.refresh,
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (_portfolioController.error != null) ...[
+              _buildErrorBanner(_portfolioController.error!),
+              const SizedBox(height: 12),
             ],
-          ),
-          const SizedBox(height: 16),
+            const PetShowcase(),
+            const SizedBox(height: 16),
 
-          _buildSectionLabel('AÇÕES RÁPIDAS'),
-          const SizedBox(height: 8),
+            _buildSectionLabel('RESUMO DO PORTFÓLIO'),
+            const SizedBox(height: 8),
+            HeroSummarySection(controller: _portfolioController),
+            const SizedBox(height: 16),
 
-          const ActionButtons(),
-          const SizedBox(height: 16),
+            WealthEvolutionCard(controller: _portfolioController),
+            const SizedBox(height: 16),
 
-          _buildSectionLabel('ÚLTIMAS MISSÕES'),
-          const SizedBox(height: 8),
+            AssetAllocationCard(
+              allocation: _portfolioController.allocation,
+              totalValue: _portfolioController.summary.currentValue,
+            ),
+            const SizedBox(height: 16),
 
-          const RecentTransactions(),
-          const SizedBox(height: 32),
-        ],
+            _buildSectionLabel('AÇÕES RÁPIDAS'),
+            const SizedBox(height: 8),
+            const ActionButtons(),
+            const SizedBox(height: 16),
+
+            RpgIntegrationCard(controller: _mascotController, stats: stats, showPetVisual: false),
+            const SizedBox(height: 16),
+
+            InsightsSection(insights: insights),
+            const SizedBox(height: 16),
+
+            PassiveIncomeCard(estimate: _portfolioController.passiveIncome),
+            const SizedBox(height: 16),
+
+            MissionsAchievementsSection(
+              missions: _portfolioController.missions,
+              achievements: _portfolioController.achievements,
+            ),
+            const SizedBox(height: 32),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildErrorBanner(String error) {
+    return GlassCard(
+      backgroundColor: AppColors.negativeRed.withValues(alpha: 0.1),
+      borderColor: AppColors.negativeRed.withValues(alpha: 0.4),
+      borderRadius: 14,
+      borderWidth: 1,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        child: Row(
+          children: [
+            const Icon(Icons.satellite_alt, color: AppColors.negativeRed, size: 18),
+            const SizedBox(width: 10),
+            const Expanded(
+              child: Text(
+                'Não foi possível atualizar seu portfólio. Puxe para atualizar.',
+                style: TextStyle(color: Colors.white, fontSize: 12),
+              ),
+            ),
+            IconButton(
+              icon: const Icon(Icons.refresh, color: AppColors.negativeRed, size: 18),
+              onPressed: _portfolioController.refresh,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -225,7 +329,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   // ── Wallet / Portfolio ───────────────────────────────────────────────────
   Widget _buildWalletContent() {
-    return const PortfolioScreen();
+    return PortfolioScreen(controller: _portfolioController);
   }
 
   // ── Analytics ─────────────────────────────────────────────────────────────

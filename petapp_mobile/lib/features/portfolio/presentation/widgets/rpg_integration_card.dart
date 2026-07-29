@@ -14,10 +14,23 @@ import 'package:petapp_mobile/features/portfolio/presentation/widgets/shared/sec
 /// drive `MascotController.evaluateEvolution`, and this card visualizes the
 /// result — the first place in the app where that wiring is actually shown.
 class RpgIntegrationCard extends StatelessWidget {
-  const RpgIntegrationCard({super.key, required this.controller, required this.stats});
+  const RpgIntegrationCard({
+    super.key,
+    required this.controller,
+    required this.stats,
+    this.showPetVisual = true,
+  });
 
   final MascotController controller;
   final PortfolioStats stats;
+
+  /// The Home dashboard already shows the user's actual chosen pet species
+  /// via `PetShowcase` (the mascot evolution art in `PetMascotWidget` isn't
+  /// produced yet and always falls back to a generic dog regardless of
+  /// species — see `assets/mascot/evolutions/`, currently empty). Passing
+  /// `false` here avoids rendering that fallback a second time right next
+  /// to the real pet and keeps this card focused on the numbers.
+  final bool showPetVisual;
 
   @override
   Widget build(BuildContext context) {
@@ -54,8 +67,10 @@ class RpgIntegrationCard extends StatelessWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    PetMascotWidget(controller: controller, size: 110),
-                    const SizedBox(width: 12),
+                    if (showPetVisual) ...[
+                      PetMascotWidget(controller: controller, size: 110),
+                      const SizedBox(width: 12),
+                    ],
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
