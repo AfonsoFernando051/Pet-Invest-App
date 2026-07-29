@@ -1,3 +1,6 @@
 .metadata/
 mvnw
 PetApp-Backend/mvnw
+
+# Local secrets (API keys, JWT signing key) — see PetApp-Backend/.env.example
+.env

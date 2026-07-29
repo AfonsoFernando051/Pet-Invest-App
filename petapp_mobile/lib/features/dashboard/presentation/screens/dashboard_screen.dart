@@ -16,6 +16,7 @@ import '../../../portfolio/presentation/widgets/hero_summary_section.dart';
 import '../../../portfolio/presentation/widgets/missions_achievements_section.dart';
 import '../../../portfolio/presentation/widgets/shared/error_banner.dart';
 import '../../../portfolio/presentation/widgets/wealth_evolution_card.dart';
+import '../../../mentor/presentation/screens/mentor_screen.dart';
 import '../../../profile/presentation/screens/profile_screen.dart';
 import '../widgets/pet_showcase.dart';
 import '../widgets/action_buttons.dart';
@@ -171,6 +172,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   _buildHomeContent(),
                   _buildWalletContent(),
                   _buildPassiveIncomeContent(),
+                  _buildMentorContent(),
                 ],
               ),
             ),
@@ -299,6 +301,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return PassiveIncomeScreen(controller: _portfolioController);
   }
 
+  // ── Mentor: AI-powered chat with the pet acting as investment mentor ────
+  Widget _buildMentorContent() {
+    return const MentorScreen();
+  }
+
   // ── Analytics (hidden from navigation for now — kept for a future tab) ───
   // ignore: unused_element
   Widget _buildAnalyticsContent() {
@@ -379,6 +386,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
             icon: Icon(Icons.payments_outlined),
             activeIcon: Icon(Icons.payments),
             label: 'Proventos',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.auto_awesome_outlined),
+            activeIcon: Icon(Icons.auto_awesome),
+            label: 'Mentor',
           ),
         ],
       ),

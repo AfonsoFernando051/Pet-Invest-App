@@ -11,6 +11,8 @@ import 'package:petapp_mobile/features/pet/data/repositories/pet_preferences_rep
 import 'package:petapp_mobile/features/pet/domain/repositories/mascot_repository.dart';
 import 'package:petapp_mobile/features/investment/data/datasources/investment_remote_datasource.dart';
 import 'package:petapp_mobile/features/investment/data/repositories/investment_repository.dart';
+import 'package:petapp_mobile/features/mentor/data/datasources/mentor_remote_datasource.dart';
+import 'package:petapp_mobile/features/mentor/data/repositories/mentor_chat_repository.dart';
 import 'package:petapp_mobile/features/portfolio/data/datasources/portfolio_remote_datasource.dart';
 import 'package:petapp_mobile/features/portfolio/data/repositories/achievements_local_repository.dart';
 import 'package:petapp_mobile/features/portfolio/data/repositories/portfolio_repository.dart';
@@ -63,4 +65,12 @@ class DI {
 
   // Not `final` so tests can replace it with a mock repository.
   static AchievementsLocalRepository achievementsRepository = AchievementsLocalRepository();
+
+  static final MentorRemoteDataSource _mentorRemoteDataSource =
+      MentorRemoteDataSource(apiClient: _apiClient);
+  // Not `final` so tests can replace it with a mock repository.
+  static MentorChatRepository mentorChatRepository = MentorChatRepository(
+    remoteDataSource: _mentorRemoteDataSource,
+    petPreferencesRepository: petPreferencesRepository,
+  );
 }
