@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/di/dependency_injection.dart';
+import '../../../../core/error/app_exceptions.dart';
 import '../../../../core/utils/game_snack.dart';
 import '../../../../core/utils/translator.dart';
 import '../../../dashboard/presentation/screens/dashboard_screen.dart';
@@ -62,7 +63,7 @@ class _OnboardingFormState extends State<OnboardingForm> {
       if (!mounted) return;
       GameSnack.show(
         context,
-        '${Translator.translate(AppStrings.onboardingFailed)}: ${e.toString()}',
+        '${Translator.translate(AppStrings.onboardingFailed)}: ${friendlyErrorMessage(e)}',
         isError: true,
       );
     } finally {

@@ -3,8 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
 import 'package:petapp_mobile/core/constants/app_strings.dart';
 import 'package:petapp_mobile/core/di/dependency_injection.dart';
+import 'package:petapp_mobile/core/error/app_exceptions.dart';
 import 'package:petapp_mobile/core/utils/game_snack.dart';
 import 'package:petapp_mobile/core/utils/translator.dart';
+import 'package:petapp_mobile/core/utils/validators.dart';
 import 'package:petapp_mobile/features/pet/data/models/pet_specie_enum.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:petapp_mobile/features/pet/presentation/screens/financial_goal_screen.dart';
@@ -65,15 +67,6 @@ class _PetConfigurationScreenState extends State<PetConfigurationScreen> with Si
     });
   }
 
-  final Map<PetSpecieEnum, IconData> _specieIcons = {
-    PetSpecieEnum.CAT: Icons.cruelty_free,
-    PetSpecieEnum.DOG: Icons.pets,
-    PetSpecieEnum.FOX: Icons.local_fire_department,
-    PetSpecieEnum.WOLF: Icons.nightlight_round,
-    PetSpecieEnum.BEAR: Icons.catching_pokemon,
-    PetSpecieEnum.LION: Icons.star,
-  };
-
   Future<void> _handleSelectType() async {
     final name = _nameController.text.trim();
     if (name.isEmpty) {
@@ -94,7 +87,7 @@ class _PetConfigurationScreenState extends State<PetConfigurationScreen> with Si
       if (mounted) {
         GameSnack.show(
           context,
-          '${Translator.translate(AppStrings.failedToSavePet)}: ${e.toString()}',
+          '${Translator.translate(AppStrings.failedToSavePet)}: ${friendlyErrorMessage(e)}',
           isError: true,
         );
       }
@@ -228,6 +221,7 @@ class _PetConfigurationScreenState extends State<PetConfigurationScreen> with Si
           controller: _nameController,
           textCapitalization: TextCapitalization.words,
           textAlign: TextAlign.center,
+          maxLength: Validators.nameMaxLength,
           style: const TextStyle(color: Colors.white),
           onChanged: (_) {
             if (_showNameError) setState(() => _showNameError = false);
@@ -238,6 +232,7 @@ class _PetConfigurationScreenState extends State<PetConfigurationScreen> with Si
             filled: true,
             fillColor: AppColors.spaceDark.withValues(alpha: 0.5),
             errorText: _showNameError ? Translator.translate(AppStrings.namePetRequiredError) : null,
+            counterText: '',
             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),

@@ -1,4 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:petapp_mobile/core/storage/secure_token_storage.dart';
 import 'package:petapp_mobile/features/auth/data/datasources/auth_remote_datasource.dart';
 
 class AuthRepository {
@@ -19,15 +20,14 @@ class AuthRepository {
   }
 
   Future<void> logout() async {
+    await SecureTokenStorage.clearToken();
     final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('auth_token');
     await prefs.remove('auth_email');
   }
 
   Future<void> _saveToken(String? token) async {
     if (token != null && token.isNotEmpty) {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('auth_token', token);
+      await SecureTokenStorage.saveToken(token);
     }
   }
 
@@ -42,7 +42,7 @@ class AuthRepository {
   }
 
   Future<bool> isLoggedIn() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('auth_token') != null;
+    final token = await SecureTokenStorage.readToken();
+    return token != null && token.isNotEmpty;
   }
 }

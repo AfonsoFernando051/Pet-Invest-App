@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
 import 'package:petapp_mobile/core/constants/app_strings.dart';
 import 'package:petapp_mobile/core/di/dependency_injection.dart';
+import 'package:petapp_mobile/core/error/app_exceptions.dart';
 import 'package:petapp_mobile/core/utils/game_snack.dart';
 import 'package:petapp_mobile/core/utils/translator.dart';
 import 'package:petapp_mobile/core/widgets/game_button.dart';
@@ -179,7 +180,7 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
       if (mounted) _goHome();
     } catch (e) {
       if (mounted) {
-        GameSnack.show(context, 'Falha ao salvar investimentos: ${e.toString()}', isError: true);
+        GameSnack.show(context, 'Falha ao salvar investimentos: ${friendlyErrorMessage(e)}', isError: true);
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);

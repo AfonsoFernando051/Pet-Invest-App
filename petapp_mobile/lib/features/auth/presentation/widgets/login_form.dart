@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
+import '../../../../core/error/app_exceptions.dart';
 import '../../../../core/utils/translator.dart';
 import '../../../../core/utils/game_snack.dart';
+import '../../../../core/utils/validators.dart';
 import '../../../../core/di/dependency_injection.dart';
-import '../../../home/presentation/screens/home_screen.dart';
-import '../../../onboarding/presentation/screens/onboarding_screen.dart';
-import '../../../pet/presentation/screens/pet_configuration_screen.dart';
 import 'custom_text_field.dart';
 import 'forgot_password_button.dart';
 import 'login_button.dart';
@@ -33,6 +32,8 @@ class _LoginFormState extends State<LoginForm> {
   }
 
   Future<void> _handleLogin() async {
+    if (_isLoading) return; // guard against double-tap submitting twice
+
     final email = _emailController.text.trim();
     final password = _passwordController.text;
 
@@ -41,18 +42,20 @@ class _LoginFormState extends State<LoginForm> {
       return;
     }
 
+    if (!Validators.isValidEmail(email)) {
+      GameSnack.show(context, 'Digite um e-mail válido.', isError: true);
+      return;
+    }
+
     setState(() => _isLoading = true);
     try {
       await DI.authRepository.login(email, password);
 
+      if (!mounted) return;
       await AuthNavigationUtils.handlePostAuthRedirect(context);
     } catch (e) {
       if (mounted) {
-        GameSnack.show(
-          context,
-          'Login falhou: ${e.toString().replaceAll('Exception: ', '')}',
-          isError: true,
-        );
+        GameSnack.show(context, friendlyErrorMessage(e), isError: true);
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -83,6 +86,7 @@ class _LoginFormState extends State<LoginForm> {
           hint: Translator.translate(AppStrings.emailOrUserHint),
           icon: Icons.email_outlined,
           controller: _emailController,
+          keyboardType: TextInputType.emailAddress,
         ),
         const SizedBox(height: 16),
         CustomTextField(

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
+import '../../../../core/error/app_exceptions.dart';
 import '../../../../core/utils/translator.dart';
 import '../../../../core/utils/game_snack.dart';
+import '../../../../core/utils/validators.dart';
 import '../../../../core/di/dependency_injection.dart';
-import '../../../home/presentation/screens/home_screen.dart';
-import '../../../onboarding/presentation/screens/onboarding_screen.dart';
-import '../../../pet/presentation/screens/pet_configuration_screen.dart';
 import 'custom_text_field.dart';
+import 'password_requirements_checklist.dart';
 import 'signup_action_button.dart';
 import 'already_have_account_button.dart';
 import '../../../../core/utils/auth_navigation_utils.dart';
@@ -25,6 +25,8 @@ class _SignupFormState extends State<SignupForm> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
   bool _isLoading = false;
+  bool _showPasswordRequirements = false;
+  String _password = '';
 
   @override
   void dispose() {
@@ -46,6 +48,17 @@ class _SignupFormState extends State<SignupForm> {
       return;
     }
 
+    if (!Validators.isValidEmail(email)) {
+      GameSnack.show(context, 'Digite um e-mail válido.', isError: true);
+      return;
+    }
+
+    if (!isPasswordValid(password)) {
+      setState(() => _showPasswordRequirements = true);
+      GameSnack.show(context, 'A senha não atende aos requisitos mínimos.', isError: true);
+      return;
+    }
+
     if (password != confirmPassword) {
       GameSnack.show(context, 'As senhas não coincidem.', isError: true);
       return;
@@ -54,18 +67,15 @@ class _SignupFormState extends State<SignupForm> {
     setState(() => _isLoading = true);
     try {
       await DI.authRepository.register(name, email, password);
-      
+
       // Auto-login since register doesn't return an accessToken
       await DI.authRepository.login(email, password);
 
+      if (!mounted) return;
       await AuthNavigationUtils.handlePostAuthRedirect(context);
     } catch (e) {
       if (mounted) {
-        GameSnack.show(
-          context,
-          'Cadastro falhou: ${e.toString().replaceAll('Exception: ', '')}',
-          isError: true,
-        );
+        GameSnack.show(context, friendlyErrorMessage(e), isError: true);
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -97,12 +107,14 @@ class _SignupFormState extends State<SignupForm> {
           hint: Translator.translate(AppStrings.nameHint),
           icon: Icons.person,
           controller: _nameController,
+          maxLength: Validators.nameMaxLength,
         ),
         const SizedBox(height: 16),
         CustomTextField(
           hint: Translator.translate(AppStrings.emailOrUserHint),
           icon: Icons.email,
           controller: _emailController,
+          keyboardType: TextInputType.emailAddress,
         ),
         const SizedBox(height: 16),
         CustomTextField(
@@ -110,7 +122,18 @@ class _SignupFormState extends State<SignupForm> {
           icon: Icons.lock,
           obscure: true,
           controller: _passwordController,
+          onChanged: (value) => setState(() {
+            _password = value;
+            if (value.isNotEmpty) _showPasswordRequirements = true;
+          }),
         ),
+        if (_showPasswordRequirements) ...[
+          const SizedBox(height: 8),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: PasswordRequirementsChecklist(password: _password),
+          ),
+        ],
         const SizedBox(height: 16),
         CustomTextField(
           hint: Translator.translate(AppStrings.confirmPasswordHint),

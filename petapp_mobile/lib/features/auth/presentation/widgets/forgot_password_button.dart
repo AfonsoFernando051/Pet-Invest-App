@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
+import '../../../../core/utils/game_snack.dart';
 import '../../../../core/utils/translator.dart';
 
 class ForgotPasswordButton extends StatelessWidget {
@@ -10,7 +11,10 @@ class ForgotPasswordButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        // TODO: Lógica para recuperação de senha
+        GameSnack.show(
+          context,
+          'Recuperação de senha ainda não está disponível. Entre em contato com o suporte.',
+        );
       },
       child: Text(
         Translator.translate(AppStrings.forgotPassword),

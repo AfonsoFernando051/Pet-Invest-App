@@ -2,19 +2,33 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
 import 'package:petapp_mobile/core/di/dependency_injection.dart';
+import 'package:petapp_mobile/core/navigation/onboarding_route.dart';
+import 'package:petapp_mobile/core/network/api_client.dart';
 import 'package:petapp_mobile/core/utils/translator.dart';
 import 'package:petapp_mobile/features/auth/presentation/screens/login_screen.dart';
-import 'package:petapp_mobile/features/dashboard/presentation/screens/dashboard_screen.dart';
-import 'package:petapp_mobile/features/investment/presentation/screens/portfolio_choice_screen.dart';
-import 'package:petapp_mobile/features/onboarding/presentation/screens/tutorial_screen.dart';
-import 'package:petapp_mobile/features/pet/presentation/screens/financial_goal_screen.dart';
-import 'package:petapp_mobile/features/pet/presentation/screens/pet_configuration_screen.dart';
+
+/// Global navigator key so app-wide events (e.g. a 401 from [ApiClient]
+/// meaning the session expired) can redirect to the login screen without
+/// needing a [BuildContext] from deep inside the widget tree.
+final navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Translator.load();
   await DI.onboardingStateRepository.incrementSessionCount();
+  ApiClient.onUnauthorized = _handleSessionExpired;
   runApp(const MyApp());
+}
+
+/// Called whenever the backend responds 401 to an authenticated request.
+/// Clears the stale token and bounces the user back to login so the app
+/// never sits on a screen backed by a session that no longer exists.
+Future<void> _handleSessionExpired() async {
+  await DI.authRepository.logout();
+  navigatorKey.currentState?.pushAndRemoveUntil(
+    MaterialPageRoute(builder: (_) => const LoginScreen()),
+    (route) => false,
+  );
 }
 
 /// The redesigned onboarding sequence: configure the pet (species + name,
@@ -24,34 +38,23 @@ void main() async {
 /// longer gates this chain; it's reachable later as a suggested action on
 /// Home, since it's financial data collection too and shouldn't block
 /// reaching Home in under a minute.
-enum StartRoute { login, meetPet, financialGoal, tutorial, portfolioChoice, home }
-
+///
+/// A `null` result means the user isn't logged in. Both this and the
+/// post-login redirect in `AuthNavigationUtils` resolve through the shared
+/// `resolveOnboardingRoute()`, so the two entry points can never disagree
+/// about which onboarding step is still outstanding.
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  Future<StartRoute> _getStartRoute() async {
+  Future<OnboardingRoute?> _getStartRoute() async {
     final loggedIn = await DI.authRepository.isLoggedIn();
-    if (!loggedIn) return StartRoute.login;
+    if (!loggedIn) return null;
 
     try {
-      final hasPet = await DI.petRepository.getPetStatus();
-      final profile = await DI.mascotRepository.loadProfile();
-      final hasName = profile.name != null && profile.name!.trim().isNotEmpty;
-      if (!hasPet || !hasName) return StartRoute.meetPet;
-
-      final hasSetGoal = await DI.onboardingStateRepository.hasSetGoal();
-      if (!hasSetGoal) return StartRoute.financialGoal;
-
-      final tutorialDone = await DI.onboardingStateRepository.isTutorialCompleted();
-      if (!tutorialDone) return StartRoute.tutorial;
-
-      final portfolioStepDone = await DI.onboardingStateRepository.isPortfolioStepDone();
-      if (!portfolioStepDone) return StartRoute.portfolioChoice;
-
-      return StartRoute.home;
+      return await resolveOnboardingRoute();
     } catch (_) {
       await DI.authRepository.logout();
-      return StartRoute.login;
+      return null;
     }
   }
 
@@ -64,6 +67,7 @@ class MyApp extends StatelessWidget {
     return ValueListenableBuilder<String>(
       valueListenable: Translator.languageNotifier,
       builder: (context, _, __) => MaterialApp(
+        navigatorKey: navigatorKey,
         debugShowCheckedModeBanner: false,
         theme: ThemeData.dark().copyWith(
           textTheme: outfitTextTheme,
@@ -83,28 +87,16 @@ class MyApp extends StatelessWidget {
             ),
           ),
         ),
-        home: FutureBuilder<StartRoute>(
+        home: FutureBuilder<OnboardingRoute?>(
           future: _getStartRoute(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const _SplashScreen();
             }
 
-            switch (snapshot.data) {
-              case StartRoute.home:
-                return const DashboardScreen();
-              case StartRoute.portfolioChoice:
-                return const PortfolioChoiceScreen();
-              case StartRoute.tutorial:
-                return const TutorialScreen();
-              case StartRoute.financialGoal:
-                return const FinancialGoalScreen();
-              case StartRoute.meetPet:
-                return const PetConfigurationScreen();
-              case StartRoute.login:
-              case null:
-                return const LoginScreen();
-            }
+            final route = snapshot.data;
+            if (route == null) return const LoginScreen();
+            return buildScreenForOnboardingRoute(route);
           },
         ),
       ),

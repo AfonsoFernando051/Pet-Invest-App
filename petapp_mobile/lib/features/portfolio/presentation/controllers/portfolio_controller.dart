@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:petapp_mobile/core/error/app_exceptions.dart';
 import 'package:petapp_mobile/features/investment/data/models/investment_type_enum.dart';
 import 'package:petapp_mobile/features/pet/presentation/mascot/controllers/mascot_controller.dart';
 import 'package:petapp_mobile/features/portfolio/data/repositories/achievements_local_repository.dart';
@@ -103,7 +104,7 @@ class PortfolioController extends ChangeNotifier {
       _recomputeChart();
       await _evaluateGamification();
     } catch (e) {
-      error = e.toString();
+      error = friendlyErrorMessage(e);
     }
 
     isLoading = false;

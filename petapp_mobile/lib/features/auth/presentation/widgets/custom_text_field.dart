@@ -6,6 +6,9 @@ class CustomTextField extends StatelessWidget {
   final IconData icon;
   final bool obscure;
   final TextEditingController? controller;
+  final int? maxLength;
+  final TextInputType? keyboardType;
+  final void Function(String)? onChanged;
 
   const CustomTextField({
     super.key,
@@ -13,6 +16,9 @@ class CustomTextField extends StatelessWidget {
     required this.icon,
     this.obscure = false,
     this.controller,
+    this.maxLength,
+    this.keyboardType,
+    this.onChanged,
   });
 
   @override
@@ -33,12 +39,16 @@ class CustomTextField extends StatelessWidget {
       child: TextField(
         controller: controller,
         obscureText: obscure,
+        maxLength: maxLength,
+        keyboardType: keyboardType,
+        onChanged: onChanged,
         style: const TextStyle(color: AppColors.white),
         decoration: InputDecoration(
           prefixIcon: Icon(icon, color: AppColors.neonCyan),
           hintText: hint,
           hintStyle: const TextStyle(color: AppColors.white54),
           border: InputBorder.none,
+          counterText: '',
           contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         ),
       ),
