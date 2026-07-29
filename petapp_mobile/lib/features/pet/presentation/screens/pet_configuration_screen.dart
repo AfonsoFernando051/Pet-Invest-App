@@ -1,13 +1,17 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
 import 'package:petapp_mobile/core/constants/app_strings.dart';
 import 'package:petapp_mobile/core/di/dependency_injection.dart';
 import 'package:petapp_mobile/core/utils/game_snack.dart';
 import 'package:petapp_mobile/core/utils/translator.dart';
+import 'package:petapp_mobile/features/pet/data/models/investment_horizon_enum.dart';
+import 'package:petapp_mobile/features/pet/data/models/pet_goal_enum.dart';
 import 'package:petapp_mobile/features/pet/data/models/pet_specie_enum.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:petapp_mobile/features/investment/presentation/screens/investment_configuration_screen.dart';
+import 'package:petapp_mobile/features/pet/presentation/widgets/option_picker_sheet.dart';
 import 'package:petapp_mobile/core/widgets/glass_card.dart';
 
 class PetConfigurationScreen extends StatefulWidget {
@@ -20,8 +24,8 @@ class PetConfigurationScreen extends StatefulWidget {
 class _PetConfigurationScreenState extends State<PetConfigurationScreen> with SingleTickerProviderStateMixin {
   PetSpecieEnum _selectedSpecie = PetSpecieEnum.DOG;
   bool _isLoading = false;
-  String _selectedGoal = 'Growth';
-  String _selectedHorizon = '1 years';
+  PetGoalEnum _selectedGoal = PetGoalEnum.moderateGrowth;
+  InvestmentHorizonEnum _selectedHorizon = InvestmentHorizonEnum.mediumTerm;
 
   late AnimationController _animationController;
   late Animation<double> _breatheAnimation;
@@ -42,6 +46,18 @@ class _PetConfigurationScreenState extends State<PetConfigurationScreen> with Si
     _floatAnimation = Tween<double>(begin: -5.0, end: 5.0).animate(
       CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
     );
+
+    _loadSavedPreferences();
+  }
+
+  Future<void> _loadSavedPreferences() async {
+    final goal = await DI.petPreferencesRepository.loadGoal();
+    final horizon = await DI.petPreferencesRepository.loadHorizon();
+    if (!mounted) return;
+    setState(() {
+      _selectedGoal = goal;
+      _selectedHorizon = horizon;
+    });
   }
 
   @override
@@ -166,9 +182,9 @@ class _PetConfigurationScreenState extends State<PetConfigurationScreen> with Si
           const SizedBox(height: 20),
           _buildPetSelector(),
           const SizedBox(height: 16),
-          _buildDropdown('Meta Principal', _selectedGoal, (v) => setState(() => _selectedGoal = v!)),
+          _buildGoalDropdown(),
           const SizedBox(height: 12),
-          _buildDropdown('Horizonte de Tempo', _selectedHorizon, (v) => setState(() => _selectedHorizon = v!)),
+          _buildHorizonDropdown(),
           const SizedBox(height: 24),
           _buildConfirmButton(),
         ],
@@ -276,32 +292,94 @@ class _PetConfigurationScreenState extends State<PetConfigurationScreen> with Si
     );
   }
 
-  Widget _buildDropdown(String title, String value, Function(String?) onChanged) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.1),
+  Future<void> _pickGoal() async {
+    HapticFeedback.selectionClick();
+    final picked = await showOptionPickerSheet<PetGoalEnum>(
+      context,
+      title: 'Qual é a sua meta principal?',
+      options: PetGoalEnum.values,
+      selected: _selectedGoal,
+      labelOf: (g) => g.label,
+      descriptionOf: (g) => g.description,
+      iconOf: (g) => g.icon,
+    );
+    if (picked == null || !mounted) return;
+    setState(() => _selectedGoal = picked);
+    await DI.petPreferencesRepository.saveGoal(picked);
+  }
+
+  Future<void> _pickHorizon() async {
+    HapticFeedback.selectionClick();
+    final picked = await showOptionPickerSheet<InvestmentHorizonEnum>(
+      context,
+      title: 'Qual é o seu horizonte de tempo?',
+      options: InvestmentHorizonEnum.values,
+      selected: _selectedHorizon,
+      labelOf: (h) => h.label,
+      descriptionOf: (h) => h.description,
+      iconOf: (h) => h.icon,
+    );
+    if (picked == null || !mounted) return;
+    setState(() => _selectedHorizon = picked);
+    await DI.petPreferencesRepository.saveHorizon(picked);
+  }
+
+  Widget _buildGoalDropdown() {
+    return _buildDropdown(
+      title: 'Meta Principal',
+      value: _selectedGoal.label,
+      icon: Icons.track_changes,
+      onTap: _pickGoal,
+    );
+  }
+
+  Widget _buildHorizonDropdown() {
+    return _buildDropdown(
+      title: 'Horizonte de Tempo',
+      value: _selectedHorizon.label,
+      icon: Icons.access_time,
+      onTap: _pickHorizon,
+    );
+  }
+
+  Widget _buildDropdown({
+    required String title,
+    required String value,
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Icon(title.contains('Meta') ? Icons.track_changes : Icons.access_time, color: Colors.white70, size: 20),
-              const SizedBox(width: 12),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              Row(
                 children: [
-                  Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)),
-                  Text(value, style: const TextStyle(color: Colors.white70, fontSize: 12)),
+                  Icon(icon, color: Colors.white70, size: 20),
+                  const SizedBox(width: 12),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)),
+                      Text(value, style: const TextStyle(color: Colors.white70, fontSize: 12)),
+                    ],
+                  ),
                 ],
               ),
+              const Icon(Icons.keyboard_arrow_down, color: Colors.white70),
             ],
           ),
-          const Icon(Icons.keyboard_arrow_down, color: Colors.white70),
-        ],
+        ),
       ),
     );
   }

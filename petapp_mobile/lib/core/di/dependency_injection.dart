@@ -7,6 +7,7 @@ import 'package:petapp_mobile/features/pet/data/datasources/pet_remote_datasourc
 import 'package:petapp_mobile/features/pet/data/repositories/pet_repository_impl.dart';
 import 'package:petapp_mobile/features/pet/domain/repositories/pet_repository.dart';
 import 'package:petapp_mobile/features/pet/data/repositories/mascot_repository_impl.dart';
+import 'package:petapp_mobile/features/pet/data/repositories/pet_preferences_repository.dart';
 import 'package:petapp_mobile/features/pet/domain/repositories/mascot_repository.dart';
 import 'package:petapp_mobile/features/investment/data/datasources/investment_remote_datasource.dart';
 import 'package:petapp_mobile/features/investment/data/repositories/investment_repository.dart';
@@ -40,6 +41,9 @@ class DI {
 
   // Not `final` so tests can replace it with a mock repository.
   static MascotRepository mascotRepository = MascotRepositoryImpl();
+
+  // Not `final` so tests can replace it with a mock repository.
+  static PetPreferencesRepository petPreferencesRepository = PetPreferencesRepository();
 
   static final InvestmentRemoteDataSource _investmentRemoteDataSource =
       InvestmentRemoteDataSource(apiClient: _apiClient);
