@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:petapp_mobile/features/pet/data/models/pet_specie_enum.dart';
 import 'package:petapp_mobile/features/pet/domain/entities/pet_accessory.dart';
 import 'package:petapp_mobile/features/pet/domain/entities/pet_evolution_rule.dart';
 import 'package:petapp_mobile/features/pet/domain/entities/pet_profile.dart';
@@ -175,6 +176,17 @@ class MascotController extends ChangeNotifier {
     notifyListeners();
 
     await _repository.saveEquippedAccessories(equipped);
+  }
+
+  /// Corrects the mascot's specie from the real backend record. Species
+  /// selection is owned by `PetRepository` (server-backed), not by this
+  /// controller's `MascotRepository` (local-prefs, gamification-only) — see
+  /// `CharacterEngine._hydrateSpecies`, which calls this after
+  /// `PetRepository.getMyPet()` resolves.
+  void updateSpecie(PetSpecieEnum specie) {
+    if (_profile.specie == specie) return;
+    _profile = _profile.copyWith(specie: specie);
+    notifyListeners();
   }
 
   Future<void> unequipAccessory(AccessoryType type) async {

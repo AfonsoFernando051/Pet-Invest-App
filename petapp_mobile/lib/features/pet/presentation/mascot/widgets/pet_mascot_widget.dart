@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lottie/lottie.dart';
-import 'package:petapp_mobile/core/constants/app_colors.dart';
 import 'package:petapp_mobile/features/pet/domain/enums/accessory_type.dart';
+import 'package:petapp_mobile/features/pet/domain/enums/idle_variant.dart';
 import 'package:petapp_mobile/features/pet/domain/enums/pet_accessory_id.dart';
 import 'package:petapp_mobile/features/pet/domain/enums/pet_animation_state.dart';
 import 'package:petapp_mobile/features/pet/domain/enums/pet_evolution_stage.dart';
-import 'package:petapp_mobile/features/pet/presentation/mascot/controllers/mascot_controller.dart';
+import 'package:petapp_mobile/features/pet/presentation/character/character_engine.dart';
+import 'package:petapp_mobile/features/pet/presentation/character/widgets/character_speech_bubble.dart';
 
-/// Renders the gamified pet mascot: an aura layer, the base evolution
-/// animation (Lottie, falling back to a static PNG per stage), and any
-/// equipped accessories layered on top. Tapping/petting the mascot plays a
-/// brief `happy` reaction with light haptic feedback.
+const Duration _kBaseBreatheDuration = Duration(milliseconds: 2500);
+
+/// Renders the gamified pet mascot: an aura layer (tinted by the Character
+/// Engine's current emotion), the base evolution animation (Lottie, falling
+/// back to a static PNG per stage), any equipped accessories, and a
+/// transient speech bubble. Idle micro-motion (tilt) varies with
+/// `CharacterEngine.idle.variant` so the mascot never sits in one static
+/// loop. Tapping/petting plays a brief `happy` reaction with haptics.
 class PetMascotWidget extends StatefulWidget {
   const PetMascotWidget({
     super.key,
@@ -19,7 +24,7 @@ class PetMascotWidget extends StatefulWidget {
     this.size = 220,
   });
 
-  final MascotController controller;
+  final CharacterEngine controller;
   final double size;
 
   @override
@@ -41,7 +46,7 @@ class _PetMascotWidgetState extends State<PetMascotWidget>
 
     _breatheController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 2500),
+      duration: _kBaseBreatheDuration,
     )..repeat(reverse: true);
     _breatheAnimation = Tween<double>(begin: 0.96, end: 1.04).animate(
       CurvedAnimation(parent: _breatheController, curve: Curves.easeInOutSine),
@@ -61,6 +66,8 @@ class _PetMascotWidgetState extends State<PetMascotWidget>
         weight: 50,
       ),
     ]).animate(_bumpController);
+
+    _syncBreatheSpeed();
   }
 
   @override
@@ -69,10 +76,28 @@ class _PetMascotWidgetState extends State<PetMascotWidget>
     if (oldWidget.controller != widget.controller) {
       oldWidget.controller.removeListener(_onControllerChanged);
       widget.controller.addListener(_onControllerChanged);
+      _syncBreatheSpeed();
     }
   }
 
-  void _onControllerChanged() => setState(() {});
+  void _onControllerChanged() {
+    _syncBreatheSpeed();
+    setState(() {});
+  }
+
+  /// The breathe cycle's *speed* (not amplitude) reflects the current
+  /// emotion — calmer emotions breathe slower, excited/celebrating ones
+  /// faster — using the same Lottie/PNG art, no new assets.
+  void _syncBreatheSpeed() {
+    final multiplier = widget.controller.emotion.visualProfile.breatheSpeedMultiplier;
+    final targetMs = (_kBaseBreatheDuration.inMilliseconds / multiplier).round();
+    final targetDuration = Duration(milliseconds: targetMs);
+    if (_breatheController.duration == targetDuration) return;
+    _breatheController.duration = targetDuration;
+    if (_breatheController.isAnimating) {
+      _breatheController.repeat(reverse: true);
+    }
+  }
 
   void _handlePet() {
     HapticFeedback.lightImpact();
@@ -94,67 +119,97 @@ class _PetMascotWidgetState extends State<PetMascotWidget>
   @override
   Widget build(BuildContext context) {
     final profile = widget.controller.profile;
+    final emotionProfile = widget.controller.emotion.visualProfile;
 
     return GestureDetector(
       onTap: _handlePet,
-      child: AnimatedBuilder(
-        animation: Listenable.merge([_breatheController, _bumpController]),
-        builder: (context, child) {
-          return Transform.translate(
-            offset: Offset(0, _bumpAnimation.value),
-            child: Transform.scale(
-              scale: _breatheAnimation.value,
-              child: child,
-            ),
-          );
-        },
-        child: SizedBox(
-          width: widget.size,
-          height: widget.size,
-          child: Stack(
-            alignment: Alignment.center,
-            clipBehavior: Clip.none,
-            children: [
-              if (_showsAura(profile.stage, profile.animationState))
-                _AuraLayer(stage: profile.stage, size: widget.size),
-              _BaseMascotLayer(
-                state: profile.animationState,
-                stage: profile.stage,
-                size: widget.size,
-              ),
-              for (final entry in profile.equippedAccessories.entries)
-                _AccessoryLayer(
-                  slot: entry.key,
-                  accessoryId: entry.value,
-                  size: widget.size,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CharacterSpeechBubble(line: widget.controller.currentLine),
+          const SizedBox(height: 8),
+          AnimatedBuilder(
+            animation: Listenable.merge([_breatheController, _bumpController]),
+            builder: (context, child) {
+              return Transform.translate(
+                offset: Offset(
+                  0,
+                  _bumpAnimation.value * emotionProfile.bumpIntensityMultiplier,
                 ),
-            ],
+                child: Transform.scale(
+                  scale: _breatheAnimation.value,
+                  child: child,
+                ),
+              );
+            },
+            child: AnimatedRotation(
+              turns: _idleTiltFor(widget.controller.idle.variant),
+              duration: const Duration(milliseconds: 900),
+              curve: Curves.easeInOut,
+              child: SizedBox(
+                width: widget.size,
+                height: widget.size,
+                child: Stack(
+                  alignment: Alignment.center,
+                  clipBehavior: Clip.none,
+                  children: [
+                    if (_showsAura(profile.stage, profile.animationState, emotionProfile.sparkle))
+                      _AuraLayer(color: emotionProfile.auraColor, size: widget.size),
+                    _BaseMascotLayer(
+                      state: profile.animationState,
+                      stage: profile.stage,
+                      size: widget.size,
+                    ),
+                    for (final entry in profile.equippedAccessories.entries)
+                      _AccessoryLayer(
+                        slot: entry.key,
+                        accessoryId: entry.value,
+                        size: widget.size,
+                      ),
+                  ],
+                ),
+              ),
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
 
-  bool _showsAura(PetEvolutionStage stage, PetAnimationState state) {
+  bool _showsAura(PetEvolutionStage stage, PetAnimationState state, bool sparkle) {
     return stage.hasAura ||
         state == PetAnimationState.celebrate ||
-        state == PetAnimationState.victory;
+        state == PetAnimationState.victory ||
+        sparkle;
+  }
+
+  /// A small, smoothly-animated tilt per idle variant — enough to read as
+  /// "looking around" / "stretching" / etc. without needing per-variant art.
+  double _idleTiltFor(IdleVariant variant) {
+    switch (variant) {
+      case IdleVariant.breathing:
+        return 0.0;
+      case IdleVariant.lookAround:
+        return 0.045;
+      case IdleVariant.stretch:
+        return -0.05;
+      case IdleVariant.tailWag:
+        return 0.03;
+      case IdleVariant.sit:
+        return 0.0;
+      case IdleVariant.watchCoins:
+        return 0.035;
+      case IdleVariant.watchNotification:
+        return -0.03;
+    }
   }
 }
 
 class _AuraLayer extends StatelessWidget {
-  const _AuraLayer({required this.stage, required this.size});
+  const _AuraLayer({required this.color, required this.size});
 
-  final PetEvolutionStage stage;
+  final Color color;
   final double size;
-
-  Color get _color {
-    if (stage.tier >= 9) return AppColors.goldenBorder;
-    if (stage.tier >= 8) return AppColors.neonPurple;
-    if (stage.tier >= 7) return AppColors.neonCyan;
-    if (stage.tier >= 6) return AppColors.neonViolet;
-    return AppColors.neonCyan;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -165,7 +220,7 @@ class _AuraLayer extends StatelessWidget {
         shape: BoxShape.circle,
         boxShadow: [
           BoxShadow(
-            color: _color.withValues(alpha: 0.35),
+            color: color.withValues(alpha: 0.35),
             blurRadius: size * 0.25,
             spreadRadius: size * 0.05,
           ),

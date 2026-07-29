@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:petapp_mobile/features/investment/data/models/investment_type_enum.dart';
-import 'package:petapp_mobile/features/pet/presentation/mascot/controllers/mascot_controller.dart';
+import 'package:petapp_mobile/features/pet/domain/character/character_event.dart';
+import 'package:petapp_mobile/features/pet/presentation/character/character_engine.dart';
 import 'package:petapp_mobile/features/portfolio/data/repositories/achievements_local_repository.dart';
 import 'package:petapp_mobile/features/portfolio/data/repositories/portfolio_repository.dart';
 import 'package:petapp_mobile/features/portfolio/domain/entities/achievement.dart';
@@ -25,20 +26,22 @@ import 'package:petapp_mobile/features/portfolio/domain/services/wealth_history_
 /// client-side from that real data (health score, insights, missions,
 /// achievements, estimated passive income). When [mascotController] is
 /// supplied, every successful load feeds the user's real net worth and
-/// achievement-earned XP into `MascotController.evaluateEvolution` — the
-/// first real wiring between actual portfolio data and pet progression.
+/// achievement-earned XP into `CharacterEngine.evaluateEvolution` — the
+/// first real wiring between actual portfolio data and pet progression —
+/// and newly-unlocked achievements are published to the Character Engine's
+/// event bus so the mascot can react to them.
 class PortfolioController extends ChangeNotifier {
   PortfolioController({
     required PortfolioRepository repository,
     required AchievementsLocalRepository achievementsRepository,
-    MascotController? mascotController,
+    CharacterEngine? mascotController,
   })  : _repository = repository,
         _achievementsRepository = achievementsRepository,
         _mascotController = mascotController;
 
   final PortfolioRepository _repository;
   final AchievementsLocalRepository _achievementsRepository;
-  final MascotController? _mascotController;
+  final CharacterEngine? _mascotController;
 
   bool isLoading = true;
   String? error;
@@ -214,5 +217,11 @@ class PortfolioController extends ChangeNotifier {
 
     final totalXp = AchievementCatalog.totalXpFor(_unlockedAchievements.keys.toSet());
     await _mascotController?.evaluateEvolution(summary.currentValue, totalXp);
+
+    if (newlyUnlocked.isNotEmpty) {
+      _mascotController?.publish(
+        const CharacterEvent(CharacterEventType.achievementUnlocked),
+      );
+    }
   }
 }

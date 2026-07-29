@@ -7,7 +7,7 @@ import '../../../../core/widgets/cosmic_background.dart';
 import '../../../../core/widgets/glass_card.dart';
 import '../../../../core/di/dependency_injection.dart';
 import '../../../auth/presentation/screens/login_screen.dart';
-import '../../../pet/presentation/mascot/controllers/mascot_controller.dart';
+import '../../../pet/presentation/character/character_engine.dart';
 import '../../../portfolio/domain/entities/achievement.dart';
 import '../../../portfolio/presentation/controllers/portfolio_controller.dart';
 import '../../../portfolio/presentation/screens/passive_income_screen.dart';
@@ -39,7 +39,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   // Shared across the Início (Home) and Carteira (Portfolio) tabs so both
   // reflect the same real holdings/summary/allocation data and a single
   // in-flight load — no duplicate fetches, no drift between tabs.
-  late final MascotController _mascotController;
+  late final CharacterEngine _mascotController;
   late final PortfolioController _portfolioController;
 
   // Newly-unlocked achievements awaiting their celebration overlay (see
@@ -57,7 +57,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   void initState() {
     super.initState();
-    _mascotController = MascotController(repository: DI.mascotRepository);
+    _mascotController = CharacterEngine(
+      mascotRepository: DI.mascotRepository,
+      petRepository: DI.petRepository,
+    );
     _portfolioController = PortfolioController(
       repository: DI.portfolioRepository,
       achievementsRepository: DI.achievementsRepository,

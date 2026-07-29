@@ -3,7 +3,7 @@ import 'package:petapp_mobile/core/constants/app_colors.dart';
 import 'package:petapp_mobile/core/widgets/glass_card.dart';
 import 'package:petapp_mobile/features/pet/domain/entities/pet_evolution_rule.dart';
 import 'package:petapp_mobile/features/pet/domain/enums/pet_evolution_stage.dart';
-import 'package:petapp_mobile/features/pet/presentation/mascot/controllers/mascot_controller.dart';
+import 'package:petapp_mobile/features/pet/presentation/character/character_engine.dart';
 import 'package:petapp_mobile/features/pet/presentation/mascot/widgets/pet_mascot_widget.dart';
 import 'package:petapp_mobile/features/portfolio/domain/entities/portfolio_stats.dart';
 import 'package:petapp_mobile/features/portfolio/presentation/widgets/shared/formatters.dart';
@@ -21,7 +21,7 @@ class RpgIntegrationCard extends StatelessWidget {
     this.showPetVisual = true,
   });
 
-  final MascotController controller;
+  final CharacterEngine controller;
   final PortfolioStats stats;
 
   /// The Home dashboard already shows the user's actual chosen pet species
