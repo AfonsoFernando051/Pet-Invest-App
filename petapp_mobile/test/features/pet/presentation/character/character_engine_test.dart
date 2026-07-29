@@ -107,7 +107,7 @@ void main() {
       await Future.delayed(Duration.zero);
 
       expect(engine.currentLine, isNotNull);
-      expect(engine.emotion.emotion, CharacterEmotion.excited);
+      expect(engine.emotion.emotion, CharacterEmotion.love);
     });
 
     test('does not publish a welcome-back line on a same-day return', () async {
@@ -137,7 +137,7 @@ void main() {
 
       expect(engine.stage, PetEvolutionStage.adultDog);
       expect(engine.currentLine, isNotNull);
-      expect(engine.emotion.emotion, CharacterEmotion.celebrating);
+      expect(engine.emotion.emotion, CharacterEmotion.veryHappy);
     });
 
     test('does not replay stageEvolved when the tier is unchanged', () async {
@@ -148,13 +148,13 @@ void main() {
 
       await engine.evaluateEvolution(2000, 300);
       await Future.delayed(Duration.zero);
-      engine.emotion.setEmotion(CharacterEmotion.calm);
+      engine.emotion.setEmotion(CharacterEmotion.neutral);
 
       await engine.evaluateEvolution(2100, 310);
       await Future.delayed(Duration.zero);
 
       expect(engine.stage, PetEvolutionStage.adultDog);
-      expect(engine.emotion.emotion, CharacterEmotion.calm);
+      expect(engine.emotion.emotion, CharacterEmotion.neutral);
     });
   });
 }

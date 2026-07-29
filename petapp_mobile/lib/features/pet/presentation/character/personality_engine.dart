@@ -37,32 +37,39 @@ class DefaultPersonalityEngine implements PersonalityEngine {
   static const Map<CharacterEventType, String> _fallback = {
     CharacterEventType.achievementUnlocked: 'Conquista desbloqueada! Muito bem!',
     CharacterEventType.stageEvolved: 'Uau, eu evoluí!',
+    CharacterEventType.missionCompleted: 'Missão concluída!',
   };
 
   static final Map<PetSpecieEnum, Map<CharacterEventType, String>> _phrases = {
     PetSpecieEnum.DOG: {
       CharacterEventType.achievementUnlocked: 'Auau! Você conseguiu! Estou pulando de alegria! 🐾',
       CharacterEventType.stageEvolved: 'Eba eba eba! Olha só no que eu virei!',
+      CharacterEventType.missionCompleted: 'Missão completa! Bora pra próxima?',
     },
     PetSpecieEnum.CAT: {
       CharacterEventType.achievementUnlocked: 'Hmpf... nada mal. Estou orgulhoso, mesmo que não pareça.',
       CharacterEventType.stageEvolved: 'Eu já sabia que ia evoluir. Óbvio.',
+      CharacterEventType.missionCompleted: 'Missão feita. Como esperado de mim.',
     },
     PetSpecieEnum.WOLF: {
       CharacterEventType.achievementUnlocked: 'Disciplina reconhecida. Continue assim.',
       CharacterEventType.stageEvolved: 'Mais forte. Mais preparado. Vamos em frente.',
+      CharacterEventType.missionCompleted: 'Objetivo cumprido. Próximo passo.',
     },
     PetSpecieEnum.FOX: {
       CharacterEventType.achievementUnlocked: 'Esperto como sempre! Essa jogada valeu a pena.',
       CharacterEventType.stageEvolved: 'Nova forma, nova estratégia. Adorei.',
+      CharacterEventType.missionCompleted: 'Missão resolvida com estilo!',
     },
     PetSpecieEnum.BEAR: {
       CharacterEventType.achievementUnlocked: 'Passo a passo, com calma. Você chegou lá.',
       CharacterEventType.stageEvolved: 'Crescimento sólido. Sem pressa, sem parar.',
+      CharacterEventType.missionCompleted: 'Mais uma missão concluída, com calma e firmeza.',
     },
     PetSpecieEnum.LION: {
       CharacterEventType.achievementUnlocked: 'Essa é a atitude de um verdadeiro líder!',
       CharacterEventType.stageEvolved: 'Eu foi feito para isso. Vamos liderar juntos.',
+      CharacterEventType.missionCompleted: 'Missão vencida! Lidere a próxima também!',
     },
   };
 

@@ -75,6 +75,17 @@ class PortfolioController extends ChangeNotifier {
 
   final Map<HistoryRange, List<HistoryPoint>> _backendHistoryCache = {};
 
+  /// Mission IDs already seen as complete in a *previous* `loadAll()` this
+  /// session — used to detect newly-completed missions in
+  /// `_evaluateGamification` without persisting anything: unlike
+  /// achievements (permanent, persisted), `Mission` is recomputed fresh
+  /// every load (see `Mission`'s own doc comment), so a session-level diff
+  /// is proportionate. [_hasEvaluatedMissionsOnce] guards against treating
+  /// every mission that was *already* complete before this session started
+  /// as "newly" completed on the very first load.
+  Set<String> _previouslyCompletedMissionIds = {};
+  bool _hasEvaluatedMissionsOnce = false;
+
   PortfolioStats get stats => PortfolioStats(summary: summary, holdings: holdings, allocation: allocation);
 
   PortfolioHealth get health => PortfolioHealthCalculator.calculate(stats);
@@ -223,5 +234,17 @@ class PortfolioController extends ChangeNotifier {
         const CharacterEvent(CharacterEventType.achievementUnlocked),
       );
     }
+
+    final completedNow = missions.where((m) => m.isComplete).map((m) => m.id).toSet();
+    if (_hasEvaluatedMissionsOnce) {
+      final newlyCompleted = completedNow.difference(_previouslyCompletedMissionIds);
+      if (newlyCompleted.isNotEmpty) {
+        _mascotController?.publish(
+          const CharacterEvent(CharacterEventType.missionCompleted),
+        );
+      }
+    }
+    _previouslyCompletedMissionIds = completedNow;
+    _hasEvaluatedMissionsOnce = true;
   }
 }

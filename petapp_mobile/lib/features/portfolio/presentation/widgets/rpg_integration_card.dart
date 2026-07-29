@@ -4,7 +4,7 @@ import 'package:petapp_mobile/core/widgets/glass_card.dart';
 import 'package:petapp_mobile/features/pet/domain/entities/pet_evolution_rule.dart';
 import 'package:petapp_mobile/features/pet/domain/enums/pet_evolution_stage.dart';
 import 'package:petapp_mobile/features/pet/presentation/character/character_engine.dart';
-import 'package:petapp_mobile/features/pet/presentation/mascot/widgets/pet_mascot_widget.dart';
+import 'package:petapp_mobile/features/pet/presentation/character/widgets/character_widget.dart';
 import 'package:petapp_mobile/features/portfolio/domain/entities/portfolio_stats.dart';
 import 'package:petapp_mobile/features/portfolio/presentation/widgets/shared/formatters.dart';
 import 'package:petapp_mobile/features/portfolio/presentation/widgets/shared/section_label.dart';
@@ -25,7 +25,7 @@ class RpgIntegrationCard extends StatelessWidget {
   final PortfolioStats stats;
 
   /// The Home dashboard already shows the user's actual chosen pet species
-  /// via `PetShowcase` (the mascot evolution art in `PetMascotWidget` isn't
+  /// via `PetShowcase` (the mascot evolution art in `CharacterWidget` isn't
   /// produced yet and always falls back to a generic dog regardless of
   /// species — see `assets/mascot/evolutions/`, currently empty). Passing
   /// `false` here avoids rendering that fallback a second time right next
@@ -68,7 +68,7 @@ class RpgIntegrationCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     if (showPetVisual) ...[
-                      PetMascotWidget(controller: controller, size: 110),
+                      CharacterWidget(controller: controller, size: 110),
                       const SizedBox(width: 12),
                     ],
                     Expanded(

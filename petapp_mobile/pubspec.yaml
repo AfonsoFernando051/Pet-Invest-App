@@ -84,6 +84,18 @@ flutter:
     - assets/mascot/animations/
     - assets/mascot/evolutions/
     - assets/mascot/accessories/
+    - assets/characters/dog/poses/
+    - assets/characters/dog/expressions/
+    - assets/characters/cat/poses/
+    - assets/characters/cat/expressions/
+    - assets/characters/wolf/poses/
+    - assets/characters/wolf/expressions/
+    - assets/characters/fox/poses/
+    - assets/characters/fox/expressions/
+    - assets/characters/bear/poses/
+    - assets/characters/bear/expressions/
+    - assets/characters/lion/poses/
+    - assets/characters/lion/expressions/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

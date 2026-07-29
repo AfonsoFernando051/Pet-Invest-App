@@ -15,6 +15,7 @@ import 'package:petapp_mobile/features/pet/domain/repositories/pet_repository.da
 import 'package:petapp_mobile/features/pet/presentation/character/character_emotion_controller.dart';
 import 'package:petapp_mobile/features/pet/presentation/character/character_event_bus.dart';
 import 'package:petapp_mobile/features/pet/presentation/character/idle_behavior_controller.dart';
+import 'package:petapp_mobile/features/pet/presentation/character/interaction_controller.dart';
 import 'package:petapp_mobile/features/pet/presentation/character/personality_engine.dart';
 import 'package:petapp_mobile/features/pet/presentation/character/relationship_engine.dart';
 import 'package:petapp_mobile/features/pet/presentation/mascot/controllers/mascot_controller.dart';
@@ -43,6 +44,7 @@ class CharacterEngine extends ChangeNotifier {
         personality = personalityEngine ?? const DefaultPersonalityEngine(),
         relationship = relationshipEngine ?? const RelationshipEngine(),
         eventBus = CharacterEventBus() {
+    interaction = InteractionController(mascot: mascot, emotion: emotion);
     mascot.addListener(_onMascotChanged);
     emotion.addListener(notifyListeners);
     idle.addListener(notifyListeners);
@@ -63,6 +65,10 @@ class CharacterEngine extends ChangeNotifier {
   final PersonalityEngine personality;
   final RelationshipEngine relationship;
   final CharacterEventBus eventBus;
+
+  /// Interaction Controller subsystem — `CharacterWidget`'s gesture handlers
+  /// call through this instead of manipulating `mascot`/`emotion` directly.
+  late final InteractionController interaction;
 
   late final StreamSubscription<CharacterEvent> _eventSubscription;
   Timer? _lineTimer;
@@ -183,7 +189,8 @@ class CharacterEngine extends ChangeNotifier {
           petName: mascot.profile.name,
         ),
       CharacterEventType.achievementUnlocked ||
-      CharacterEventType.stageEvolved =>
+      CharacterEventType.stageEvolved ||
+      CharacterEventType.missionCompleted =>
         personality.phraseFor(event.type, mascot.profile.specie),
       // Phase 1+ event types — not published yet, nothing to say.
       _ => null,

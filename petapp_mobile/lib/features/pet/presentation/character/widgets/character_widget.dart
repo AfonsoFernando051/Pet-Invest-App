@@ -1,24 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lottie/lottie.dart';
+import 'package:petapp_mobile/features/pet/data/models/pet_specie_enum.dart';
 import 'package:petapp_mobile/features/pet/domain/enums/accessory_type.dart';
+import 'package:petapp_mobile/features/pet/domain/enums/character_emotion.dart';
 import 'package:petapp_mobile/features/pet/domain/enums/idle_variant.dart';
 import 'package:petapp_mobile/features/pet/domain/enums/pet_accessory_id.dart';
 import 'package:petapp_mobile/features/pet/domain/enums/pet_animation_state.dart';
 import 'package:petapp_mobile/features/pet/domain/enums/pet_evolution_stage.dart';
+import 'package:petapp_mobile/features/pet/presentation/character/asset/character_asset_loader.dart';
 import 'package:petapp_mobile/features/pet/presentation/character/character_engine.dart';
 import 'package:petapp_mobile/features/pet/presentation/character/widgets/character_speech_bubble.dart';
 
 const Duration _kBaseBreatheDuration = Duration(milliseconds: 2500);
+const Duration _kPoseCrossfadeDuration = Duration(milliseconds: 250);
+const CharacterAssetLoader _kAssetLoader = CharacterAssetLoader();
 
-/// Renders the gamified pet mascot: an aura layer (tinted by the Character
-/// Engine's current emotion), the base evolution animation (Lottie, falling
-/// back to a static PNG per stage), any equipped accessories, and a
-/// transient speech bubble. Idle micro-motion (tilt) varies with
-/// `CharacterEngine.idle.variant` so the mascot never sits in one static
-/// loop. Tapping/petting plays a brief `happy` reaction with haptics.
-class PetMascotWidget extends StatefulWidget {
-  const PetMascotWidget({
+/// Renders the living character: an aura layer (tinted by the current
+/// emotion), the base pose animation — species-specific Lottie once one
+/// exists (`CharacterAssetLoader`), falling back through the shared Lottie
+/// clip, the evolution-stage PNG, a generic PNG, and finally an icon — any
+/// equipped accessories, an (currently empty, art-pending) expression
+/// overlay, and a transient speech bubble. Idle micro-motion (tilt) varies
+/// with `CharacterEngine.idle.variant`. Tap/double-tap/long-press/drag all
+/// route through `CharacterEngine.interaction` — this widget never mutates
+/// animation/emotion state itself.
+class CharacterWidget extends StatefulWidget {
+  const CharacterWidget({
     super.key,
     required this.controller,
     this.size = 220,
@@ -28,16 +36,20 @@ class PetMascotWidget extends StatefulWidget {
   final double size;
 
   @override
-  State<PetMascotWidget> createState() => _PetMascotWidgetState();
+  State<CharacterWidget> createState() => _CharacterWidgetState();
 }
 
-class _PetMascotWidgetState extends State<PetMascotWidget>
+class _CharacterWidgetState extends State<CharacterWidget>
     with TickerProviderStateMixin {
   late final AnimationController _breatheController;
   late final Animation<double> _breatheAnimation;
 
   late final AnimationController _bumpController;
   late final Animation<double> _bumpAnimation;
+
+  late final AnimationController _dragBackController;
+  Offset _dragOffset = Offset.zero;
+  Animation<Offset>? _dragSpringBack;
 
   @override
   void initState() {
@@ -67,11 +79,20 @@ class _PetMascotWidgetState extends State<PetMascotWidget>
       ),
     ]).animate(_bumpController);
 
+    _dragBackController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    )..addListener(() {
+        final springBack = _dragSpringBack;
+        if (springBack == null) return;
+        setState(() => _dragOffset = springBack.value);
+      });
+
     _syncBreatheSpeed();
   }
 
   @override
-  void didUpdateWidget(covariant PetMascotWidget oldWidget) {
+  void didUpdateWidget(covariant CharacterWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.controller != widget.controller) {
       oldWidget.controller.removeListener(_onControllerChanged);
@@ -99,13 +120,39 @@ class _PetMascotWidgetState extends State<PetMascotWidget>
     }
   }
 
-  void _handlePet() {
+  void _handleTap() {
     HapticFeedback.lightImpact();
     if (!_bumpController.isAnimating) _bumpController.forward(from: 0);
-    widget.controller.triggerEventAnimation(
-      PetAnimationState.happy,
-      duration: const Duration(milliseconds: 900),
+    widget.controller.interaction.onTap();
+  }
+
+  void _handleDoubleTap() {
+    HapticFeedback.mediumImpact();
+    widget.controller.interaction.onDoubleTap();
+  }
+
+  void _handleLongPress() {
+    HapticFeedback.selectionClick();
+    widget.controller.interaction.onLongPress();
+  }
+
+  void _handlePanUpdate(DragUpdateDetails details) {
+    _dragBackController.stop();
+    setState(() {
+      _dragOffset += details.delta;
+      final maxRadius = widget.size * 0.35;
+      if (_dragOffset.distance > maxRadius) {
+        _dragOffset = Offset.fromDirection(_dragOffset.direction, maxRadius);
+      }
+    });
+  }
+
+  void _handlePanEnd(DragEndDetails details) {
+    _dragSpringBack = Tween<Offset>(begin: _dragOffset, end: Offset.zero).animate(
+      CurvedAnimation(parent: _dragBackController, curve: Curves.elasticOut),
     );
+    _dragBackController.forward(from: 0);
+    widget.controller.interaction.onDragReleased();
   }
 
   @override
@@ -113,6 +160,7 @@ class _PetMascotWidgetState extends State<PetMascotWidget>
     widget.controller.removeListener(_onControllerChanged);
     _breatheController.dispose();
     _bumpController.dispose();
+    _dragBackController.dispose();
     super.dispose();
   }
 
@@ -122,7 +170,11 @@ class _PetMascotWidgetState extends State<PetMascotWidget>
     final emotionProfile = widget.controller.emotion.visualProfile;
 
     return GestureDetector(
-      onTap: _handlePet,
+      onTap: _handleTap,
+      onDoubleTap: _handleDoubleTap,
+      onLongPress: _handleLongPress,
+      onPanUpdate: _handlePanUpdate,
+      onPanEnd: _handlePanEnd,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -133,8 +185,8 @@ class _PetMascotWidgetState extends State<PetMascotWidget>
             builder: (context, child) {
               return Transform.translate(
                 offset: Offset(
-                  0,
-                  _bumpAnimation.value * emotionProfile.bumpIntensityMultiplier,
+                  _dragOffset.dx,
+                  _dragOffset.dy + _bumpAnimation.value * emotionProfile.bumpIntensityMultiplier,
                 ),
                 child: Transform.scale(
                   scale: _breatheAnimation.value,
@@ -155,9 +207,19 @@ class _PetMascotWidgetState extends State<PetMascotWidget>
                   children: [
                     if (_showsAura(profile.stage, profile.animationState, emotionProfile.sparkle))
                       _AuraLayer(color: emotionProfile.auraColor, size: widget.size),
-                    _BaseMascotLayer(
-                      state: profile.animationState,
-                      stage: profile.stage,
+                    AnimatedSwitcher(
+                      duration: _kPoseCrossfadeDuration,
+                      child: _BaseMascotLayer(
+                        key: ValueKey(profile.animationState),
+                        species: profile.specie,
+                        state: profile.animationState,
+                        stage: profile.stage,
+                        size: widget.size,
+                      ),
+                    ),
+                    _ExpressionLayer(
+                      species: profile.specie,
+                      emotion: widget.controller.emotion.emotion,
                       size: widget.size,
                     ),
                     for (final entry in profile.equippedAccessories.entries)
@@ -184,23 +246,34 @@ class _PetMascotWidgetState extends State<PetMascotWidget>
   }
 
   /// A small, smoothly-animated tilt per idle variant — enough to read as
-  /// "looking around" / "stretching" / etc. without needing per-variant art.
+  /// "stretching" / "looking up" / "waving" / etc. without needing the
+  /// per-variant art each name refers to in `assets/pets/*.png` yet.
   double _idleTiltFor(IdleVariant variant) {
     switch (variant) {
       case IdleVariant.breathing:
         return 0.0;
-      case IdleVariant.lookAround:
-        return 0.045;
+      case IdleVariant.blinking:
+        return 0.0;
       case IdleVariant.stretch:
         return -0.05;
-      case IdleVariant.tailWag:
-        return 0.03;
       case IdleVariant.sit:
         return 0.0;
-      case IdleVariant.watchCoins:
-        return 0.035;
-      case IdleVariant.watchNotification:
+      case IdleVariant.layDown:
+        return -0.06;
+      case IdleVariant.lookUp:
+        return 0.04;
+      case IdleVariant.lookDown:
+        return -0.04;
+      case IdleVariant.think:
+        return 0.03;
+      case IdleVariant.wave:
+        return 0.05;
+      case IdleVariant.eat:
         return -0.03;
+      case IdleVariant.drink:
+        return -0.02;
+      case IdleVariant.dance:
+        return 0.06;
     }
   }
 }
@@ -232,11 +305,14 @@ class _AuraLayer extends StatelessWidget {
 
 class _BaseMascotLayer extends StatelessWidget {
   const _BaseMascotLayer({
+    super.key,
+    required this.species,
     required this.state,
     required this.stage,
     required this.size,
   });
 
+  final PetSpecieEnum species;
   final PetAnimationState state;
   final PetEvolutionStage stage;
   final double size;
@@ -244,21 +320,26 @@ class _BaseMascotLayer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final mascotSize = size * 0.9;
+    final candidates = _kAssetLoader.posePaths(species, state);
+    return _lottieChain(candidates, 0, mascotSize);
+  }
+
+  Widget _lottieChain(List<String> paths, int index, double mascotSize) {
+    if (index >= paths.length) {
+      return _EvolutionFallback(stage: stage, size: mascotSize);
+    }
     return Lottie.asset(
-      'assets/mascot/animations/${state.assetKey}.json',
+      paths[index],
       width: mascotSize,
       height: mascotSize,
       fit: BoxFit.contain,
-      errorBuilder: (context, error, stackTrace) => _EvolutionFallback(
-        stage: stage,
-        size: mascotSize,
-      ),
+      errorBuilder: (context, error, stackTrace) => _lottieChain(paths, index + 1, mascotSize),
     );
   }
 }
 
 /// Static PNG fallback for a given evolution [stage], used while
-/// per-state Lottie animations aren't authored yet.
+/// per-species/per-state Lottie animations aren't authored yet.
 class _EvolutionFallback extends StatelessWidget {
   const _EvolutionFallback({required this.stage, required this.size});
 
@@ -283,6 +364,41 @@ class _EvolutionFallback extends StatelessWidget {
           color: Colors.white70,
         ),
       ),
+    );
+  }
+}
+
+/// The species-specific face for the current emotion, layered near the top
+/// of the mascot. Renders nothing until the species' `expressions` folder
+/// (see `CharacterAssetLoader`) actually has files — today that's every
+/// species, so this is a no-op overlay, wired ahead of the art existing.
+class _ExpressionLayer extends StatelessWidget {
+  const _ExpressionLayer({
+    required this.species,
+    required this.emotion,
+    required this.size,
+  });
+
+  final PetSpecieEnum species;
+  final CharacterEmotion emotion;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    final candidates = _kAssetLoader.expressionPaths(species, emotion);
+    return Align(
+      alignment: const Alignment(0, -0.3),
+      child: _imageChain(candidates, 0),
+    );
+  }
+
+  Widget _imageChain(List<String> paths, int index) {
+    if (index >= paths.length) return const SizedBox.shrink();
+    return Image.asset(
+      paths[index],
+      width: size * 0.45,
+      fit: BoxFit.contain,
+      errorBuilder: (context, error, stackTrace) => _imageChain(paths, index + 1),
     );
   }
 }
