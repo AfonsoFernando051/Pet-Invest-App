@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
@@ -6,14 +5,15 @@ import 'package:petapp_mobile/core/constants/app_strings.dart';
 import 'package:petapp_mobile/core/di/dependency_injection.dart';
 import 'package:petapp_mobile/core/utils/game_snack.dart';
 import 'package:petapp_mobile/core/utils/translator.dart';
-import 'package:petapp_mobile/features/pet/data/models/investment_horizon_enum.dart';
-import 'package:petapp_mobile/features/pet/data/models/pet_goal_enum.dart';
 import 'package:petapp_mobile/features/pet/data/models/pet_specie_enum.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:petapp_mobile/features/investment/presentation/screens/investment_configuration_screen.dart';
-import 'package:petapp_mobile/features/pet/presentation/widgets/option_picker_sheet.dart';
+import 'package:petapp_mobile/features/pet/presentation/screens/financial_goal_screen.dart';
 import 'package:petapp_mobile/core/widgets/glass_card.dart';
 
+/// Onboarding's "Configure Your Pet" step — the pet introduces itself, and
+/// the player picks its species and name together in one screen right
+/// after registering, before anything financial is asked. The financial
+/// goal (`FinancialGoalScreen`) is a separate step later in the flow.
 class PetConfigurationScreen extends StatefulWidget {
   const PetConfigurationScreen({super.key});
 
@@ -22,10 +22,12 @@ class PetConfigurationScreen extends StatefulWidget {
 }
 
 class _PetConfigurationScreenState extends State<PetConfigurationScreen> with SingleTickerProviderStateMixin {
+  static const _nameSuggestions = ['Atlas', 'Bolt', 'Loki', 'Charlie', 'Max', 'Nino'];
+
   PetSpecieEnum _selectedSpecie = PetSpecieEnum.DOG;
   bool _isLoading = false;
-  PetGoalEnum _selectedGoal = PetGoalEnum.moderateGrowth;
-  InvestmentHorizonEnum _selectedHorizon = InvestmentHorizonEnum.mediumTerm;
+  bool _showNameError = false;
+  final _nameController = TextEditingController();
 
   late AnimationController _animationController;
   late Animation<double> _breatheAnimation;
@@ -46,24 +48,21 @@ class _PetConfigurationScreenState extends State<PetConfigurationScreen> with Si
     _floatAnimation = Tween<double>(begin: -5.0, end: 5.0).animate(
       CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
     );
-
-    _loadSavedPreferences();
-  }
-
-  Future<void> _loadSavedPreferences() async {
-    final goal = await DI.petPreferencesRepository.loadGoal();
-    final horizon = await DI.petPreferencesRepository.loadHorizon();
-    if (!mounted) return;
-    setState(() {
-      _selectedGoal = goal;
-      _selectedHorizon = horizon;
-    });
   }
 
   @override
   void dispose() {
     _animationController.dispose();
+    _nameController.dispose();
     super.dispose();
+  }
+
+  void _pickSuggestion(String name) {
+    HapticFeedback.selectionClick();
+    setState(() {
+      _nameController.text = name;
+      _showNameError = false;
+    });
   }
 
   final Map<PetSpecieEnum, IconData> _specieIcons = {
@@ -76,12 +75,19 @@ class _PetConfigurationScreenState extends State<PetConfigurationScreen> with Si
   };
 
   Future<void> _handleSelectType() async {
+    final name = _nameController.text.trim();
+    if (name.isEmpty) {
+      setState(() => _showNameError = true);
+      return;
+    }
+
     setState(() => _isLoading = true);
     try {
       await DI.petRepository.configurePet(_selectedSpecie);
+      await DI.mascotRepository.saveName(name);
       if (mounted) {
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const InvestmentConfigurationScreen()),
+          MaterialPageRoute(builder: (_) => const FinancialGoalScreen()),
         );
       }
     } catch (e) {
@@ -166,29 +172,109 @@ class _PetConfigurationScreenState extends State<PetConfigurationScreen> with Si
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Text(
-            'Seu PET Ativo',
+          Text(
+            Translator.translate(AppStrings.meetPetGreeting),
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: const TextStyle(
               color: Colors.white,
               fontSize: 22,
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 8),
+          Text(
+            Translator.translate(AppStrings.meetPetIntro),
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: AppColors.subtleText, fontSize: 13, height: 1.4),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            Translator.translate(AppStrings.meetPetNeedName),
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: AppColors.goldenBorder, fontSize: 13, fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 16),
           Expanded(
             child: _buildActivePetCapsule(),
           ),
-          const SizedBox(height: 20),
-          _buildPetSelector(),
           const SizedBox(height: 16),
-          _buildGoalDropdown(),
+          Text(
+            Translator.translate(AppStrings.meetPetSpeciesPrompt),
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: Colors.white70, fontSize: 13),
+          ),
           const SizedBox(height: 12),
-          _buildHorizonDropdown(),
-          const SizedBox(height: 24),
+          _buildPetSelector(),
+          const SizedBox(height: 20),
+          _buildNameField(),
+          const SizedBox(height: 20),
           _buildConfirmButton(),
         ],
       ),
+    );
+  }
+
+  Widget _buildNameField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          Translator.translate(AppStrings.namePetPrompt),
+          textAlign: TextAlign.center,
+          style: const TextStyle(color: Colors.white70, fontSize: 13),
+        ),
+        const SizedBox(height: 10),
+        TextField(
+          controller: _nameController,
+          textCapitalization: TextCapitalization.words,
+          textAlign: TextAlign.center,
+          style: const TextStyle(color: Colors.white),
+          onChanged: (_) {
+            if (_showNameError) setState(() => _showNameError = false);
+          },
+          decoration: InputDecoration(
+            hintText: Translator.translate(AppStrings.namePetHint),
+            hintStyle: const TextStyle(color: Colors.white38),
+            filled: true,
+            fillColor: AppColors.spaceDark.withValues(alpha: 0.5),
+            errorText: _showNameError ? Translator.translate(AppStrings.namePetRequiredError) : null,
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: BorderSide(color: AppColors.neonCyan.withValues(alpha: 0.4)),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: BorderSide(color: AppColors.neonCyan.withValues(alpha: 0.3)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: const BorderSide(color: AppColors.neonCyan, width: 1.5),
+            ),
+          ),
+        ),
+        const SizedBox(height: 10),
+        Wrap(
+          alignment: WrapAlignment.center,
+          spacing: 8,
+          runSpacing: 8,
+          children: _nameSuggestions.map((name) {
+            final isSelected = _nameController.text == name;
+            return ChoiceChip(
+              label: Text(name),
+              selected: isSelected,
+              onSelected: (_) => _pickSuggestion(name),
+              labelStyle: TextStyle(
+                color: isSelected ? Colors.white : Colors.white70,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              ),
+              backgroundColor: Colors.white.withValues(alpha: 0.06),
+              selectedColor: AppColors.neonCyan.withValues(alpha: 0.25),
+              side: BorderSide(color: isSelected ? AppColors.neonCyan : Colors.white.withValues(alpha: 0.15)),
+            );
+          }).toList(),
+        ),
+      ],
     );
   }
 
@@ -292,98 +378,6 @@ class _PetConfigurationScreenState extends State<PetConfigurationScreen> with Si
     );
   }
 
-  Future<void> _pickGoal() async {
-    HapticFeedback.selectionClick();
-    final picked = await showOptionPickerSheet<PetGoalEnum>(
-      context,
-      title: 'Qual é a sua meta principal?',
-      options: PetGoalEnum.values,
-      selected: _selectedGoal,
-      labelOf: (g) => g.label,
-      descriptionOf: (g) => g.description,
-      iconOf: (g) => g.icon,
-    );
-    if (picked == null || !mounted) return;
-    setState(() => _selectedGoal = picked);
-    await DI.petPreferencesRepository.saveGoal(picked);
-  }
-
-  Future<void> _pickHorizon() async {
-    HapticFeedback.selectionClick();
-    final picked = await showOptionPickerSheet<InvestmentHorizonEnum>(
-      context,
-      title: 'Qual é o seu horizonte de tempo?',
-      options: InvestmentHorizonEnum.values,
-      selected: _selectedHorizon,
-      labelOf: (h) => h.label,
-      descriptionOf: (h) => h.description,
-      iconOf: (h) => h.icon,
-    );
-    if (picked == null || !mounted) return;
-    setState(() => _selectedHorizon = picked);
-    await DI.petPreferencesRepository.saveHorizon(picked);
-  }
-
-  Widget _buildGoalDropdown() {
-    return _buildDropdown(
-      title: 'Meta Principal',
-      value: _selectedGoal.label,
-      icon: Icons.track_changes,
-      onTap: _pickGoal,
-    );
-  }
-
-  Widget _buildHorizonDropdown() {
-    return _buildDropdown(
-      title: 'Horizonte de Tempo',
-      value: _selectedHorizon.label,
-      icon: Icons.access_time,
-      onTap: _pickHorizon,
-    );
-  }
-
-  Widget _buildDropdown({
-    required String title,
-    required String value,
-    required IconData icon,
-    required VoidCallback onTap,
-  }) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  Icon(icon, color: Colors.white70, size: 20),
-                  const SizedBox(width: 12),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)),
-                      Text(value, style: const TextStyle(color: Colors.white70, fontSize: 12)),
-                    ],
-                  ),
-                ],
-              ),
-              const Icon(Icons.keyboard_arrow_down, color: Colors.white70),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _buildConfirmButton() {
     return Container(
       height: 56,
@@ -403,9 +397,9 @@ class _PetConfigurationScreenState extends State<PetConfigurationScreen> with Si
           child: Center(
             child: _isLoading
                 ? const SizedBox(height: 24, width: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                : const Text(
-                    'Confirmar Seleção & Voltar',
-                    style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                : Text(
+                    Translator.translate(AppStrings.meetPetContinue),
+                    style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
                   ),
           ),
         ),

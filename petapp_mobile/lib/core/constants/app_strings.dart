@@ -27,6 +27,72 @@ class AppStrings {
   static const String petProfileTitle = "petProfileTitle";
   static const String failedToSavePet = "failedToSavePet";
 
+  // Meet Your Pet (onboarding)
+  static const String meetPetGreeting = "meetPetGreeting";
+  static const String meetPetIntro = "meetPetIntro";
+  static const String meetPetNeedName = "meetPetNeedName";
+  static const String meetPetSpeciesPrompt = "meetPetSpeciesPrompt";
+  static const String meetPetContinue = "meetPetContinue";
+
+  // Name Your Pet (onboarding)
+  static const String namePetTitle = "namePetTitle";
+  static const String namePetPrompt = "namePetPrompt";
+  static const String namePetHint = "namePetHint";
+  static const String namePetContinue = "namePetContinue";
+  static const String namePetReaction = "namePetReaction";
+  static const String namePetRequiredError = "namePetRequiredError";
+
+  // Financial Goal (onboarding)
+  static const String financialGoalTitle = "financialGoalTitle";
+  static const String financialGoalSubtitle = "financialGoalSubtitle";
+  static const String financialGoalContinue = "financialGoalContinue";
+
+  // Tutorial (onboarding)
+  static const String tutorialSkip = "tutorialSkip";
+  static const String tutorialNext = "tutorialNext";
+  static const String tutorialEnterHome = "tutorialEnterHome";
+  static const String tutorialStep1Title = "tutorialStep1Title";
+  static const String tutorialStep1Body = "tutorialStep1Body";
+  static const String tutorialStep2Title = "tutorialStep2Title";
+  static const String tutorialStep2Body = "tutorialStep2Body";
+  static const String tutorialStep3Title = "tutorialStep3Title";
+  static const String tutorialStep3Body = "tutorialStep3Body";
+
+  // Portfolio choice (onboarding — optional portfolio connection)
+  static const String portfolioChoiceTitle = "portfolioChoiceTitle";
+  static const String portfolioChoiceBody = "portfolioChoiceBody";
+  static const String portfolioChoiceFootnote = "portfolioChoiceFootnote";
+  static const String importPortfolioButton = "importPortfolioButton";
+  static const String addManuallyButton = "addManuallyButton";
+  static const String skipForNowButton = "skipForNowButton";
+  static const String importComingSoonTitle = "importComingSoonTitle";
+  static const String importComingSoonBody = "importComingSoonBody";
+  static const String okButton = "okButton";
+
+  // Home — portfolio-not-connected placeholder & suggested actions
+  static const String portfolioNotConnectedTitle = "portfolioNotConnectedTitle";
+  static const String portfolioNotConnectedBody = "portfolioNotConnectedBody";
+  static const String connectInvestmentsButton = "connectInvestmentsButton";
+  static const String suggestedActionsTitle = "suggestedActionsTitle";
+  static const String suggestedActionCompleteLesson = "suggestedActionCompleteLesson";
+  static const String suggestedActionTodayMission = "suggestedActionTodayMission";
+  static const String suggestedActionLearnDividends = "suggestedActionLearnDividends";
+  static const String suggestedActionFirstQuiz = "suggestedActionFirstQuiz";
+  static const String suggestedActionInvestorProfile = "suggestedActionInvestorProfile";
+  static const String comingSoonSnack = "comingSoonSnack";
+
+  // Portfolio reminder (gentle nudge after skipping)
+  static const String portfolioReminderMessage = "portfolioReminderMessage";
+  static const String portfolioReminderCta = "portfolioReminderCta";
+  static const String portfolioReminderDismiss = "portfolioReminderDismiss";
+
+  // Settings — companion / rename pet
+  static const String companionSectionTitle = "companionSectionTitle";
+  static const String renamePetLabel = "renamePetLabel";
+  static const String renamePetButton = "renamePetButton";
+  static const String renamePetDialogTitle = "renamePetDialogTitle";
+  static const String renamePetSuccess = "renamePetSuccess";
+
   // Settings
   static const String settingsTitle = "settingsTitle";
   static const String settingsSubtitle = "settingsSubtitle";

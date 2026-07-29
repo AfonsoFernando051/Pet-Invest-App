@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
+import 'package:petapp_mobile/core/constants/app_strings.dart';
 import 'package:petapp_mobile/core/di/dependency_injection.dart';
 import 'package:petapp_mobile/core/utils/game_snack.dart';
+import 'package:petapp_mobile/core/utils/translator.dart';
 import 'package:petapp_mobile/core/widgets/game_button.dart';
 import 'package:petapp_mobile/features/dashboard/presentation/screens/dashboard_screen.dart';
 import 'package:petapp_mobile/features/investment/data/models/investment_type_enum.dart';
@@ -173,9 +175,8 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
     setState(() => _isLoading = true);
     try {
       await DI.investmentRepository.configureInvestments(_assets);
-      if (mounted) {
-        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const DashboardScreen()));
-      }
+      await DI.onboardingStateRepository.markPortfolioConnected();
+      if (mounted) _goHome();
     } catch (e) {
       if (mounted) {
         GameSnack.show(context, 'Falha ao salvar investimentos: ${e.toString()}', isError: true);
@@ -183,6 +184,21 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
+  }
+
+  Future<void> _handleSkip() async {
+    await DI.onboardingStateRepository.markPortfolioSkipped();
+    if (mounted) _goHome();
+  }
+
+  /// Clears the entire navigator stack (including any onboarding screens
+  /// still underneath) so the back button never leads back into onboarding
+  /// once the user has reached Home.
+  void _goHome() {
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (_) => const DashboardScreen()),
+      (route) => false,
+    );
   }
 
   Future<void> _selectDate() async {
@@ -586,6 +602,15 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
               pulse: _assets.isNotEmpty,
               height: 56,
               onPressed: _assets.isEmpty ? null : _handleConfirm,
+            ),
+            Center(
+              child: TextButton(
+                onPressed: _isLoading ? null : _handleSkip,
+                child: Text(
+                  Translator.translate(AppStrings.skipForNowButton),
+                  style: const TextStyle(color: Colors.white70, fontWeight: FontWeight.w600),
+                ),
+              ),
             ),
           ],
         ),

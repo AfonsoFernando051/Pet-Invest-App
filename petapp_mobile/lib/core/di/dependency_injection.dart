@@ -3,6 +3,7 @@ import 'package:petapp_mobile/features/auth/data/datasources/auth_remote_datasou
 import 'package:petapp_mobile/features/auth/data/repositories/auth_repository.dart';
 import 'package:petapp_mobile/features/onboarding/data/datasources/onboarding_remote_datasource.dart';
 import 'package:petapp_mobile/features/onboarding/data/repositories/onboarding_repository.dart';
+import 'package:petapp_mobile/features/onboarding/data/repositories/onboarding_state_repository.dart';
 import 'package:petapp_mobile/features/pet/data/datasources/pet_remote_datasource.dart';
 import 'package:petapp_mobile/features/pet/data/repositories/pet_repository_impl.dart';
 import 'package:petapp_mobile/features/pet/domain/repositories/pet_repository.dart';
@@ -34,6 +35,9 @@ class DI {
   // Not `final` so tests can replace it with a mock repository.
   static OnboardingRepository onboardingRepository =
       OnboardingRepository(remoteDataSource: _onboardingRemoteDataSource);
+
+  // Not `final` so tests can replace it with a mock repository.
+  static OnboardingStateRepository onboardingStateRepository = OnboardingStateRepository();
 
   static final PetRemoteDataSource _petRemoteDataSource =
       PetRemoteDataSource(apiClient: _apiClient);

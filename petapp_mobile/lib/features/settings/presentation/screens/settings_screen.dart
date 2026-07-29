@@ -23,6 +23,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   static const _showOnRankingsKey = 'settings_show_on_rankings';
 
   String? _email;
+  String? _petName;
   bool _dailyMissionReminders = true;
   bool _achievementAlerts = true;
   bool _showOnRankings = true;
@@ -36,15 +37,58 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Future<void> _loadLocalPreferences() async {
     final email = await DI.authRepository.getSavedEmail();
+    final profile = await DI.mascotRepository.loadProfile();
     final prefs = await SharedPreferences.getInstance();
     if (!mounted) return;
     setState(() {
       _email = email;
+      _petName = profile.name;
       _dailyMissionReminders = prefs.getBool(_dailyMissionRemindersKey) ?? true;
       _achievementAlerts = prefs.getBool(_achievementAlertsKey) ?? true;
       _showOnRankings = prefs.getBool(_showOnRankingsKey) ?? true;
       _loadingPrefs = false;
     });
+  }
+
+  Future<void> _handleRenamePet() async {
+    final controller = TextEditingController(text: _petName);
+    final newName = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColors.spaceBlue,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text(
+          Translator.translate(AppStrings.renamePetDialogTitle),
+          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          textCapitalization: TextCapitalization.words,
+          style: const TextStyle(color: Colors.white),
+          decoration: InputDecoration(
+            hintText: Translator.translate(AppStrings.namePetHint),
+            hintStyle: const TextStyle(color: Colors.white38),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(Translator.translate(AppStrings.cancelButton), style: const TextStyle(color: AppColors.neonCyan)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, controller.text.trim()),
+            child: Text(Translator.translate(AppStrings.renamePetButton), style: const TextStyle(color: AppColors.neonCyan)),
+          ),
+        ],
+      ),
+    );
+
+    if (newName == null || newName.isEmpty || !mounted) return;
+    await DI.mascotRepository.saveName(newName);
+    if (!mounted) return;
+    setState(() => _petName = newName);
+    GameSnack.show(context, Translator.translate(AppStrings.renamePetSuccess), isSuccess: true);
   }
 
   Future<void> _setBoolPref(String key, bool value) async {
@@ -145,6 +189,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           style: const TextStyle(color: AppColors.subtleText, fontSize: 14),
                         ),
                         const SizedBox(height: 20),
+                        _buildCompanionSection(),
+                        const SizedBox(height: 20),
                         _buildLanguageSection(),
                         const SizedBox(height: 20),
                         _buildNotificationsSection(),
@@ -174,6 +220,50 @@ class _SettingsScreenState extends State<SettingsScreen> {
           letterSpacing: 1.5,
         ),
       ),
+    );
+  }
+
+  Widget _buildCompanionSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _sectionLabel(Translator.translate(AppStrings.companionSectionTitle).toUpperCase()),
+        GlassCard(
+          backgroundColor: AppColors.spaceDark.withValues(alpha: 0.6),
+          borderColor: AppColors.neonPink.withValues(alpha: 0.3),
+          borderRadius: 20,
+          borderWidth: 1,
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              const Icon(Icons.pets, color: AppColors.neonPink, size: 22),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      Translator.translate(AppStrings.renamePetLabel),
+                      style: const TextStyle(color: Colors.white70, fontSize: 12),
+                    ),
+                    Text(
+                      (_petName?.isNotEmpty ?? false) ? _petName! : '—',
+                      style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+              ),
+              TextButton(
+                onPressed: _handleRenamePet,
+                child: Text(
+                  Translator.translate(AppStrings.renamePetButton),
+                  style: const TextStyle(color: AppColors.neonPink, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 

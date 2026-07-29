@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_strings.dart';
+import '../../../../core/utils/translator.dart';
 import '../../../../core/widgets/cosmic_background.dart';
 import '../../../../core/widgets/glass_card.dart';
 import '../../../../core/di/dependency_injection.dart';
@@ -20,6 +22,9 @@ import '../../../mentor/presentation/screens/mentor_screen.dart';
 import '../../../profile/presentation/screens/profile_screen.dart';
 import '../widgets/pet_showcase.dart';
 import '../widgets/action_buttons.dart';
+import '../widgets/portfolio_not_connected_card.dart';
+import '../widgets/portfolio_reminder_banner.dart';
+import '../widgets/suggested_actions_list.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -42,6 +47,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
   // completely silently, with no on-screen reward moment at all.
   List<Achievement> _celebrating = [];
 
+  // Whether the pet should nudge the user about the (skipped) portfolio
+  // step this session, and whether the risk-assessment questionnaire is
+  // still unanswered — both feed the "what to do now" placeholder content
+  // shown when there's no live portfolio yet.
+  bool _showPortfolioReminder = false;
+  bool _investorProfileUnanswered = false;
+
   @override
   void initState() {
     super.initState();
@@ -54,6 +66,31 @@ class _DashboardScreenState extends State<DashboardScreen> {
     _mascotController.loadProfile();
     _portfolioController.addListener(_onPortfolioChanged);
     _portfolioController.loadAll();
+    _loadOnboardingSignals();
+  }
+
+  Future<void> _loadOnboardingSignals() async {
+    final showReminder = await DI.onboardingStateRepository.shouldShowPortfolioReminder();
+    if (showReminder) {
+      // Recorded the moment we decide to show it, not on dismiss — so a
+      // user who just navigates away without tapping anything still gets
+      // the cooldown, instead of seeing it again next session.
+      final sessionCount = await DI.onboardingStateRepository.currentSessionCount();
+      await DI.onboardingStateRepository.markReminderShown(sessionCount);
+    }
+
+    bool investorProfileUnanswered = false;
+    try {
+      final status = await DI.onboardingRepository.getStatus();
+      investorProfileUnanswered = !status.hasAnswered;
+    } catch (_) {
+      // Non-critical suggestion — if the status check fails, just omit it.
+    }
+    if (!mounted) return;
+    setState(() {
+      _showPortfolioReminder = showReminder;
+      _investorProfileUnanswered = investorProfileUnanswered;
+    });
   }
 
   void _onPortfolioChanged() {
@@ -150,8 +187,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
           IconButton(
             icon: const Icon(Icons.settings_outlined, color: Colors.white70),
             tooltip: 'Perfil',
-            onPressed: () {
-              Navigator.of(context).push(_fadeRoute(const ProfileScreen()));
+            onPressed: () async {
+              await Navigator.of(context).push(_fadeRoute(const ProfileScreen()));
+              // Settings (reached via Profile) may have renamed the pet —
+              // reload so the AppBar/greeting reflect it immediately.
+              await _mascotController.loadProfile();
+              if (mounted) setState(() {});
             },
           ),
           IconButton(
@@ -212,7 +253,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
               style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
             ),
             Text(
-              'Nível 7 · Explorador',
+              _mascotController.profile.name?.isNotEmpty == true
+                  ? '${_mascotController.profile.name} · Nível 7'
+                  : 'Nível 7 · Explorador',
               style: TextStyle(color: AppColors.neonCyan.withValues(alpha: 0.9), fontSize: 11),
             ),
           ],
@@ -232,6 +275,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
       return const Center(child: CircularProgressIndicator(color: AppColors.neonCyan));
     }
 
+    // No real holdings yet — whether the user skipped portfolio setup or
+    // just hasn't gotten to it, Home must stay fully usable: placeholders
+    // and "what to do now" suggestions stand in for the data-driven cards.
+    final hasPortfolio = _portfolioController.holdings.isNotEmpty;
+
     return RefreshIndicator(
       color: AppColors.neonCyan,
       backgroundColor: AppColors.spaceBlue,
@@ -249,19 +297,36 @@ class _DashboardScreenState extends State<DashboardScreen> {
             const PetShowcase(),
             const SizedBox(height: 16),
 
-            _buildSectionLabel('RESUMO DO PORTFÓLIO'),
-            const SizedBox(height: 8),
-            HeroSummarySection(controller: _portfolioController),
-            const SizedBox(height: 16),
+            if (_showPortfolioReminder) ...[
+              PortfolioReminderBanner(onDismiss: () => setState(() => _showPortfolioReminder = false)),
+              const SizedBox(height: 16),
+            ],
 
-            WealthEvolutionCard(controller: _portfolioController),
-            const SizedBox(height: 16),
+            if (!hasPortfolio) ...[
+              const PortfolioNotConnectedCard(),
+              const SizedBox(height: 16),
+              _buildSectionLabel(Translator.translate(AppStrings.suggestedActionsTitle).toUpperCase()),
+              const SizedBox(height: 8),
+              SuggestedActionsList(
+                onLearnDividends: () => setState(() => _selectedIndex = 2),
+                showInvestorProfileAction: _investorProfileUnanswered,
+              ),
+              const SizedBox(height: 16),
+            ] else ...[
+              _buildSectionLabel('RESUMO DO PORTFÓLIO'),
+              const SizedBox(height: 8),
+              HeroSummarySection(controller: _portfolioController),
+              const SizedBox(height: 16),
 
-            AssetAllocationCard(
-              allocation: _portfolioController.allocation,
-              totalValue: _portfolioController.summary.currentValue,
-            ),
-            const SizedBox(height: 16),
+              WealthEvolutionCard(controller: _portfolioController),
+              const SizedBox(height: 16),
+
+              AssetAllocationCard(
+                allocation: _portfolioController.allocation,
+                totalValue: _portfolioController.summary.currentValue,
+              ),
+              const SizedBox(height: 16),
+            ],
 
             _buildSectionLabel('AÇÕES RÁPIDAS'),
             const SizedBox(height: 8),

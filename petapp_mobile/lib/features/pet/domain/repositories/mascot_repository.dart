@@ -11,6 +11,8 @@ import 'package:petapp_mobile/features/pet/domain/enums/pet_evolution_stage.dart
 abstract class MascotRepository {
   Future<PetProfile> loadProfile();
 
+  Future<void> saveName(String name);
+
   Future<void> saveStage(PetEvolutionStage stage);
 
   Future<void> saveXp(int xp);

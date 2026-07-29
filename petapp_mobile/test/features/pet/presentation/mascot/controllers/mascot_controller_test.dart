@@ -20,9 +20,13 @@ class FakeMascotRepository implements MascotRepository {
   DateTime? savedLastActiveAt;
 
   PetProfile profileToReturn = PetProfile();
+  String? savedName;
 
   @override
   Future<PetProfile> loadProfile() async => profileToReturn;
+
+  @override
+  Future<void> saveName(String name) async => savedName = name;
 
   @override
   Future<void> saveStage(PetEvolutionStage stage) async {

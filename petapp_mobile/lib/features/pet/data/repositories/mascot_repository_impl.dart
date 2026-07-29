@@ -7,6 +7,7 @@ import 'package:petapp_mobile/features/pet/domain/enums/pet_evolution_stage.dart
 import 'package:petapp_mobile/features/pet/domain/repositories/mascot_repository.dart';
 
 class MascotRepositoryImpl implements MascotRepository {
+  static const _nameKey = 'mascot_name';
   static const _stageKey = 'mascot_stage';
   static const _xpKey = 'mascot_xp';
   static const _netWorthKey = 'mascot_net_worth';
@@ -18,6 +19,7 @@ class MascotRepositoryImpl implements MascotRepository {
   Future<PetProfile> loadProfile() async {
     final prefs = await SharedPreferences.getInstance();
 
+    final name = prefs.getString(_nameKey);
     final stageName = prefs.getString(_stageKey);
     final stage = PetEvolutionStage.values.firstWhere(
       (s) => s.name == stageName,
@@ -46,6 +48,7 @@ class MascotRepositoryImpl implements MascotRepository {
 
     return PetProfile(
       specie: PetSpecieEnum.DOG,
+      name: name,
       stage: stage,
       xp: xp,
       netWorth: netWorth,
@@ -53,6 +56,12 @@ class MascotRepositoryImpl implements MascotRepository {
       equippedAccessories: equipped,
       lastActiveAt: lastActiveAt ?? DateTime.now(),
     );
+  }
+
+  @override
+  Future<void> saveName(String name) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_nameKey, name);
   }
 
   @override

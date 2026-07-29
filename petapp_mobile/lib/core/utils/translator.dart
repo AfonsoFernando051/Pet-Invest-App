@@ -67,6 +67,64 @@ class Translator {
       AppStrings.petProfileTitle: "Perfil do PET",
       AppStrings.failedToSavePet: "Falha ao salvar o pet",
 
+      AppStrings.meetPetGreeting: "Olá!",
+      AppStrings.meetPetIntro: "Sou o seu companheiro financeiro. Vou te ajudar a aprender sobre investimentos, manter a disciplina e comemorar cada conquista da sua jornada.",
+      AppStrings.meetPetNeedName: "Mas antes... eu preciso de um nome!",
+      AppStrings.meetPetSpeciesPrompt: "Escolha a espécie do seu companheiro",
+      AppStrings.meetPetContinue: "Vamos começar!",
+
+      AppStrings.namePetTitle: "Escolha o Nome do seu Pet",
+      AppStrings.namePetPrompt: "Como você gostaria de chamar seu companheiro?",
+      AppStrings.namePetHint: "Nome do companheiro",
+      AppStrings.namePetContinue: "Continuar",
+      AppStrings.namePetReaction: "Adorei meu novo nome! Vamos começar sua jornada!",
+      AppStrings.namePetRequiredError: "Escolha um nome para continuar",
+
+      AppStrings.financialGoalTitle: "Qual é o seu objetivo?",
+      AppStrings.financialGoalSubtitle: "Não se preocupe, você pode mudar isso depois. Isso só nos ajuda a personalizar sua jornada.",
+      AppStrings.financialGoalContinue: "Continuar",
+
+      AppStrings.tutorialSkip: "Pular",
+      AppStrings.tutorialNext: "Próximo",
+      AppStrings.tutorialEnterHome: "Entrar no App",
+      AppStrings.tutorialStep1Title: "Sua Jornada, Gamificada",
+      AppStrings.tutorialStep1Body: "Complete missões, ganhe XP e evolua seu pet conforme você aprende e investe.",
+      AppStrings.tutorialStep2Title: "Aprenda no seu Ritmo",
+      AppStrings.tutorialStep2Body: "Lições curtas e quizzes te ensinam o essencial sobre investir, sem pressa.",
+      AppStrings.tutorialStep3Title: "Seu Portfólio, Quando Quiser",
+      AppStrings.tutorialStep3Body: "Conectar seus investimentos é opcional — você pode explorar o app à vontade primeiro.",
+
+      AppStrings.portfolioChoiceTitle: "Quer conectar seus investimentos agora?",
+      AppStrings.portfolioChoiceBody: "Você pode importar seu portfólio automaticamente, adicionar manualmente, ou pular por enquanto. Você sempre pode fazer isso depois.",
+      AppStrings.portfolioChoiceFootnote: "Não há pressa — {petName} vai estar aqui quando você estiver pronto.",
+      AppStrings.importPortfolioButton: "Importar Portfólio",
+      AppStrings.addManuallyButton: "Adicionar Manualmente",
+      AppStrings.skipForNowButton: "Pular por Enquanto",
+      AppStrings.importComingSoonTitle: "Em breve",
+      AppStrings.importComingSoonBody: "A importação automática (B3, corretoras, CSV) ainda está sendo construída. Por enquanto, você pode adicionar seus ativos manualmente ou pular esta etapa.",
+      AppStrings.okButton: "Entendi",
+
+      AppStrings.portfolioNotConnectedTitle: "Portfólio ainda não conectado",
+      AppStrings.portfolioNotConnectedBody: "Conecte seus investimentos quando estiver pronto — sem pressa.",
+      AppStrings.connectInvestmentsButton: "Conectar Investimentos",
+      AppStrings.suggestedActionsTitle: "O que fazer agora",
+      AppStrings.suggestedActionCompleteLesson: "Concluir sua primeira lição",
+      AppStrings.suggestedActionTodayMission: "Concluir a missão de hoje",
+      AppStrings.suggestedActionLearnDividends: "Aprender sobre dividendos",
+      AppStrings.suggestedActionFirstQuiz: "Fazer seu primeiro quiz",
+      AppStrings.suggestedActionInvestorProfile: "Completar seu perfil de investidor",
+      AppStrings.comingSoonSnack: "Em construção — em breve!",
+
+      AppStrings.portfolioReminderMessage: "Percebi que ainda não conectamos seus investimentos. Quando você quiser, posso analisar seu portfólio e criar missões personalizadas. Não há pressa.",
+      AppStrings.portfolioReminderCta: "Conectar agora",
+      AppStrings.portfolioReminderDismiss: "Agora não",
+
+      AppStrings.companionSectionTitle: "Companheiro",
+      AppStrings.renamePetLabel: "Nome do companheiro",
+      AppStrings.renamePetButton: "Renomear",
+      AppStrings.renamePetDialogTitle: "Renomear companheiro",
+      AppStrings.renamePetSuccess: "Nome atualizado!",
+
       AppStrings.settingsTitle: "Configurações",
       AppStrings.settingsSubtitle: "Personalize sua experiência, Comandante.",
       AppStrings.languageSectionTitle: "Idioma",
@@ -107,6 +165,64 @@ class Translator {
 
       AppStrings.petProfileTitle: "Pet Profile",
       AppStrings.failedToSavePet: "Failed to save pet",
+
+      AppStrings.meetPetGreeting: "Hello!",
+      AppStrings.meetPetIntro: "I'm your financial companion. I'll help you learn about investing, stay disciplined and celebrate every achievement along your journey.",
+      AppStrings.meetPetNeedName: "But first... I need a name!",
+      AppStrings.meetPetSpeciesPrompt: "Choose your companion's species",
+      AppStrings.meetPetContinue: "Let's get started!",
+
+      AppStrings.namePetTitle: "Name Your Pet",
+      AppStrings.namePetPrompt: "What would you like to call your companion?",
+      AppStrings.namePetHint: "Companion's name",
+      AppStrings.namePetContinue: "Continue",
+      AppStrings.namePetReaction: "I love my new name! Let's start your journey!",
+      AppStrings.namePetRequiredError: "Choose a name to continue",
+
+      AppStrings.financialGoalTitle: "What's your goal?",
+      AppStrings.financialGoalSubtitle: "Don't worry, you can change this later. It just helps us personalize your journey.",
+      AppStrings.financialGoalContinue: "Continue",
+
+      AppStrings.tutorialSkip: "Skip",
+      AppStrings.tutorialNext: "Next",
+      AppStrings.tutorialEnterHome: "Enter the App",
+      AppStrings.tutorialStep1Title: "Your Journey, Gamified",
+      AppStrings.tutorialStep1Body: "Complete missions, earn XP and evolve your pet as you learn and invest.",
+      AppStrings.tutorialStep2Title: "Learn at Your Own Pace",
+      AppStrings.tutorialStep2Body: "Short lessons and quizzes teach you the essentials of investing, no rush.",
+      AppStrings.tutorialStep3Title: "Your Portfolio, Whenever You're Ready",
+      AppStrings.tutorialStep3Body: "Connecting your investments is optional — feel free to explore the app first.",
+
+      AppStrings.portfolioChoiceTitle: "Would you like to connect your investments now?",
+      AppStrings.portfolioChoiceBody: "You can import your portfolio automatically, add investments manually, or skip for now. You can always do this later.",
+      AppStrings.portfolioChoiceFootnote: "There's no rush — {petName} will be here when you're ready.",
+      AppStrings.importPortfolioButton: "Import Portfolio",
+      AppStrings.addManuallyButton: "Add Manually",
+      AppStrings.skipForNowButton: "Skip For Now",
+      AppStrings.importComingSoonTitle: "Coming soon",
+      AppStrings.importComingSoonBody: "Automatic import (B3, brokers, CSV) is still being built. For now, you can add your assets manually or skip this step.",
+      AppStrings.okButton: "Got it",
+
+      AppStrings.portfolioNotConnectedTitle: "Portfolio not connected yet",
+      AppStrings.portfolioNotConnectedBody: "Connect your investments whenever you're ready — no rush.",
+      AppStrings.connectInvestmentsButton: "Connect Investments",
+      AppStrings.suggestedActionsTitle: "What to do now",
+      AppStrings.suggestedActionCompleteLesson: "Complete your first lesson",
+      AppStrings.suggestedActionTodayMission: "Complete today's mission",
+      AppStrings.suggestedActionLearnDividends: "Learn about dividends",
+      AppStrings.suggestedActionFirstQuiz: "Start your first quiz",
+      AppStrings.suggestedActionInvestorProfile: "Complete your investor profile",
+      AppStrings.comingSoonSnack: "Coming soon!",
+
+      AppStrings.portfolioReminderMessage: "I noticed we still haven't connected your investments. When you're ready, I can analyze your portfolio and create personalized missions. There is no rush.",
+      AppStrings.portfolioReminderCta: "Connect now",
+      AppStrings.portfolioReminderDismiss: "Not now",
+
+      AppStrings.companionSectionTitle: "Companion",
+      AppStrings.renamePetLabel: "Companion's name",
+      AppStrings.renamePetButton: "Rename",
+      AppStrings.renamePetDialogTitle: "Rename companion",
+      AppStrings.renamePetSuccess: "Name updated!",
 
       AppStrings.settingsTitle: "Settings",
       AppStrings.settingsSubtitle: "Personalize your experience, Commander.",
@@ -149,6 +265,64 @@ class Translator {
       AppStrings.petProfileTitle: "Perfil de la Mascota",
       AppStrings.failedToSavePet: "Error al guardar la mascota",
 
+      AppStrings.meetPetGreeting: "¡Hola!",
+      AppStrings.meetPetIntro: "Soy tu compañero financiero. Te ayudaré a aprender sobre inversiones, mantener la disciplina y celebrar cada logro en tu camino.",
+      AppStrings.meetPetNeedName: "Pero antes... ¡necesito un nombre!",
+      AppStrings.meetPetSpeciesPrompt: "Elige la especie de tu compañero",
+      AppStrings.meetPetContinue: "¡Vamos a empezar!",
+
+      AppStrings.namePetTitle: "Nombra a tu Mascota",
+      AppStrings.namePetPrompt: "¿Cómo te gustaría llamar a tu compañero?",
+      AppStrings.namePetHint: "Nombre del compañero",
+      AppStrings.namePetContinue: "Continuar",
+      AppStrings.namePetReaction: "¡Me encanta mi nuevo nombre! ¡Comencemos tu viaje!",
+      AppStrings.namePetRequiredError: "Elige un nombre para continuar",
+
+      AppStrings.financialGoalTitle: "¿Cuál es tu objetivo?",
+      AppStrings.financialGoalSubtitle: "No te preocupes, puedes cambiar esto después. Solo nos ayuda a personalizar tu experiencia.",
+      AppStrings.financialGoalContinue: "Continuar",
+
+      AppStrings.tutorialSkip: "Omitir",
+      AppStrings.tutorialNext: "Siguiente",
+      AppStrings.tutorialEnterHome: "Entrar a la App",
+      AppStrings.tutorialStep1Title: "Tu Viaje, Gamificado",
+      AppStrings.tutorialStep1Body: "Completa misiones, gana XP y evoluciona a tu mascota mientras aprendes e inviertes.",
+      AppStrings.tutorialStep2Title: "Aprende a tu Ritmo",
+      AppStrings.tutorialStep2Body: "Lecciones cortas y quizzes te enseñan lo esencial sobre invertir, sin prisa.",
+      AppStrings.tutorialStep3Title: "Tu Portafolio, Cuando Quieras",
+      AppStrings.tutorialStep3Body: "Conectar tus inversiones es opcional — puedes explorar la app primero.",
+
+      AppStrings.portfolioChoiceTitle: "¿Quieres conectar tus inversiones ahora?",
+      AppStrings.portfolioChoiceBody: "Puedes importar tu portafolio automáticamente, agregar inversiones manualmente, o omitir por ahora. Siempre puedes hacerlo después.",
+      AppStrings.portfolioChoiceFootnote: "No hay prisa — {petName} estará aquí cuando estés listo.",
+      AppStrings.importPortfolioButton: "Importar Portafolio",
+      AppStrings.addManuallyButton: "Agregar Manualmente",
+      AppStrings.skipForNowButton: "Omitir por Ahora",
+      AppStrings.importComingSoonTitle: "Próximamente",
+      AppStrings.importComingSoonBody: "La importación automática (B3, corredoras, CSV) todavía se está construyendo. Por ahora, puedes agregar tus activos manualmente u omitir este paso.",
+      AppStrings.okButton: "Entendido",
+
+      AppStrings.portfolioNotConnectedTitle: "Portafolio aún no conectado",
+      AppStrings.portfolioNotConnectedBody: "Conecta tus inversiones cuando estés listo — no hay prisa.",
+      AppStrings.connectInvestmentsButton: "Conectar Inversiones",
+      AppStrings.suggestedActionsTitle: "Qué hacer ahora",
+      AppStrings.suggestedActionCompleteLesson: "Completar tu primera lección",
+      AppStrings.suggestedActionTodayMission: "Completar la misión de hoy",
+      AppStrings.suggestedActionLearnDividends: "Aprender sobre dividendos",
+      AppStrings.suggestedActionFirstQuiz: "Hacer tu primer quiz",
+      AppStrings.suggestedActionInvestorProfile: "Completar tu perfil de inversionista",
+      AppStrings.comingSoonSnack: "¡Próximamente!",
+
+      AppStrings.portfolioReminderMessage: "Noté que todavía no hemos conectado tus inversiones. Cuando estés listo, puedo analizar tu portafolio y crear misiones personalizadas. No hay prisa.",
+      AppStrings.portfolioReminderCta: "Conectar ahora",
+      AppStrings.portfolioReminderDismiss: "Ahora no",
+
+      AppStrings.companionSectionTitle: "Compañero",
+      AppStrings.renamePetLabel: "Nombre del compañero",
+      AppStrings.renamePetButton: "Renombrar",
+      AppStrings.renamePetDialogTitle: "Renombrar compañero",
+      AppStrings.renamePetSuccess: "¡Nombre actualizado!",
+
       AppStrings.settingsTitle: "Configuración",
       AppStrings.settingsSubtitle: "Personaliza tu experiencia, Comandante.",
       AppStrings.languageSectionTitle: "Idioma",
@@ -169,7 +343,16 @@ class Translator {
     },
   };
 
-  static String translate(String key) {
-    return _localizedValues[currentLanguage]?[key] ?? _localizedValues[defaultLanguage]?[key] ?? key;
+  /// [params] fills `{token}` placeholders in the translated string (e.g.
+  /// `{petName}`) — used for copy that embeds the user's chosen pet name,
+  /// which can't be baked into the static translation map.
+  static String translate(String key, {Map<String, String>? params}) {
+    var value = _localizedValues[currentLanguage]?[key] ?? _localizedValues[defaultLanguage]?[key] ?? key;
+    if (params != null) {
+      for (final entry in params.entries) {
+        value = value.replaceAll('{${entry.key}}', entry.value);
+      }
+    }
+    return value;
   }
 }

@@ -8,6 +8,11 @@ import 'package:petapp_mobile/features/pet/domain/enums/pet_evolution_stage.dart
 /// equipped/unlocked accessories and current animation.
 class PetProfile {
   final PetSpecieEnum specie;
+
+  /// The companion's name, chosen during onboarding's "Name Your Pet" step.
+  /// `null` until the user sets it — used to gate that onboarding step and
+  /// to decide whether greetings fall back to a generic label.
+  final String? name;
   final PetEvolutionStage stage;
   final double netWorth;
   final int xp;
@@ -20,6 +25,7 @@ class PetProfile {
 
   PetProfile({
     this.specie = PetSpecieEnum.DOG,
+    this.name,
     this.stage = PetEvolutionStage.babyDog,
     this.netWorth = 0,
     this.xp = 0,
@@ -33,6 +39,7 @@ class PetProfile {
 
   PetProfile copyWith({
     PetSpecieEnum? specie,
+    String? name,
     PetEvolutionStage? stage,
     double? netWorth,
     int? xp,
@@ -43,6 +50,7 @@ class PetProfile {
   }) {
     return PetProfile(
       specie: specie ?? this.specie,
+      name: name ?? this.name,
       stage: stage ?? this.stage,
       netWorth: netWorth ?? this.netWorth,
       xp: xp ?? this.xp,
@@ -59,6 +67,7 @@ class PetProfile {
       other is PetProfile &&
           runtimeType == other.runtimeType &&
           specie == other.specie &&
+          name == other.name &&
           stage == other.stage &&
           netWorth == other.netWorth &&
           xp == other.xp &&
@@ -70,6 +79,7 @@ class PetProfile {
   @override
   int get hashCode => Object.hash(
         specie,
+        name,
         stage,
         netWorth,
         xp,
@@ -80,7 +90,7 @@ class PetProfile {
 
   @override
   String toString() =>
-      'PetProfile(specie: $specie, stage: $stage, netWorth: $netWorth, xp: $xp, '
+      'PetProfile(specie: $specie, name: $name, stage: $stage, netWorth: $netWorth, xp: $xp, '
       'animationState: $animationState, equipped: $equippedAccessories)';
 }
 

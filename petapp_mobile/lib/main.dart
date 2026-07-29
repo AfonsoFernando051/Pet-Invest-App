@@ -5,16 +5,26 @@ import 'package:petapp_mobile/core/di/dependency_injection.dart';
 import 'package:petapp_mobile/core/utils/translator.dart';
 import 'package:petapp_mobile/features/auth/presentation/screens/login_screen.dart';
 import 'package:petapp_mobile/features/dashboard/presentation/screens/dashboard_screen.dart';
-import 'package:petapp_mobile/features/onboarding/presentation/screens/onboarding_screen.dart';
+import 'package:petapp_mobile/features/investment/presentation/screens/portfolio_choice_screen.dart';
+import 'package:petapp_mobile/features/onboarding/presentation/screens/tutorial_screen.dart';
+import 'package:petapp_mobile/features/pet/presentation/screens/financial_goal_screen.dart';
 import 'package:petapp_mobile/features/pet/presentation/screens/pet_configuration_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Translator.load();
+  await DI.onboardingStateRepository.incrementSessionCount();
   runApp(const MyApp());
 }
 
-enum StartRoute { login, onboarding, petConfig, home }
+/// The redesigned onboarding sequence: configure the pet (species + name,
+/// in one screen right after registering) and pick a goal — all
+/// emotional/low-friction steps — before the (now fully optional) portfolio
+/// step. The old risk-assessment questionnaire (`OnboardingScreen`) no
+/// longer gates this chain; it's reachable later as a suggested action on
+/// Home, since it's financial data collection too and shouldn't block
+/// reaching Home in under a minute.
+enum StartRoute { login, meetPet, financialGoal, tutorial, portfolioChoice, home }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -24,11 +34,19 @@ class MyApp extends StatelessWidget {
     if (!loggedIn) return StartRoute.login;
 
     try {
-      final status = await DI.onboardingRepository.getStatus();
-      if (!status.hasAnswered) return StartRoute.onboarding;
-
       final hasPet = await DI.petRepository.getPetStatus();
-      if (!hasPet) return StartRoute.petConfig;
+      final profile = await DI.mascotRepository.loadProfile();
+      final hasName = profile.name != null && profile.name!.trim().isNotEmpty;
+      if (!hasPet || !hasName) return StartRoute.meetPet;
+
+      final hasSetGoal = await DI.onboardingStateRepository.hasSetGoal();
+      if (!hasSetGoal) return StartRoute.financialGoal;
+
+      final tutorialDone = await DI.onboardingStateRepository.isTutorialCompleted();
+      if (!tutorialDone) return StartRoute.tutorial;
+
+      final portfolioStepDone = await DI.onboardingStateRepository.isPortfolioStepDone();
+      if (!portfolioStepDone) return StartRoute.portfolioChoice;
 
       return StartRoute.home;
     } catch (_) {
@@ -72,11 +90,21 @@ class MyApp extends StatelessWidget {
               return const _SplashScreen();
             }
 
-            final route = snapshot.data;
-            if (route == StartRoute.home) return const DashboardScreen();
-            if (route == StartRoute.petConfig) return const PetConfigurationScreen();
-            if (route == StartRoute.onboarding) return const OnboardingScreen();
-            return const LoginScreen();
+            switch (snapshot.data) {
+              case StartRoute.home:
+                return const DashboardScreen();
+              case StartRoute.portfolioChoice:
+                return const PortfolioChoiceScreen();
+              case StartRoute.tutorial:
+                return const TutorialScreen();
+              case StartRoute.financialGoal:
+                return const FinancialGoalScreen();
+              case StartRoute.meetPet:
+                return const PetConfigurationScreen();
+              case StartRoute.login:
+              case null:
+                return const LoginScreen();
+            }
           },
         ),
       ),
