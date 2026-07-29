@@ -1,0 +1,59 @@
+import 'package:flutter/material.dart';
+import 'package:petapp_mobile/core/constants/app_colors.dart';
+import 'package:petapp_mobile/core/widgets/glass_card.dart';
+import 'package:petapp_mobile/features/investment/data/models/investment_type_enum.dart';
+import 'package:petapp_mobile/features/portfolio/domain/entities/holding.dart';
+import 'package:petapp_mobile/features/portfolio/presentation/widgets/expandable_category.dart';
+import 'package:petapp_mobile/features/portfolio/presentation/widgets/shared/section_label.dart';
+
+/// Groups holdings by category (Investidor10-inspired usability): each
+/// category is collapsible and shows aggregate stats in its header.
+class HoldingsSection extends StatelessWidget {
+  const HoldingsSection({super.key, required this.holdings, required this.totalPortfolioValue});
+
+  final List<Holding> holdings;
+  final double totalPortfolioValue;
+
+  @override
+  Widget build(BuildContext context) {
+    final byType = <InvestmentTypeEnum, List<Holding>>{};
+    for (final holding in holdings) {
+      byType.putIfAbsent(holding.type, () => []).add(holding);
+    }
+    final sortedTypes = byType.keys.toList()
+      ..sort((a, b) => byType[b]!.fold<double>(0, (s, h) => s + h.currentValue)
+          .compareTo(byType[a]!.fold<double>(0, (s, h) => s + h.currentValue)));
+
+    return GlassCard(
+      backgroundColor: AppColors.spaceDark.withValues(alpha: 0.55),
+      borderColor: AppColors.neonCyan.withValues(alpha: 0.2),
+      borderRadius: 20,
+      borderWidth: 1,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SectionLabel('MEUS ATIVOS'),
+            const SizedBox(height: 12),
+            if (holdings.isEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 20),
+                child: Center(
+                  child: Text('Nenhum ativo registrado ainda.', style: TextStyle(color: AppColors.subtleText)),
+                ),
+              )
+            else
+              for (var i = 0; i < sortedTypes.length; i++)
+                ExpandableCategory(
+                  type: sortedTypes[i],
+                  holdings: byType[sortedTypes[i]]!,
+                  totalPortfolioValue: totalPortfolioValue,
+                  initiallyExpanded: i == 0,
+                ),
+          ],
+        ),
+      ),
+    );
+  }
+}

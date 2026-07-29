@@ -1,0 +1,339 @@
+import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:petapp_mobile/core/constants/app_colors.dart';
+import 'package:petapp_mobile/core/widgets/glass_card.dart';
+import 'package:petapp_mobile/features/investment/data/models/investment_type_enum.dart';
+import 'package:petapp_mobile/features/portfolio/domain/entities/history_point.dart';
+import 'package:petapp_mobile/features/portfolio/domain/entities/investment_type_display.dart';
+import 'package:petapp_mobile/features/portfolio/domain/enums/history_range.dart';
+import 'package:petapp_mobile/features/portfolio/presentation/controllers/portfolio_controller.dart';
+import 'package:petapp_mobile/features/portfolio/presentation/widgets/shared/formatters.dart';
+
+/// The "Wealth Evolution" premium chart: invested capital vs. portfolio
+/// value over a selectable range, with an asset-class filter, drag tooltip
+/// and pinch-zoom/pan via [InteractiveViewer].
+class WealthEvolutionCard extends StatefulWidget {
+  const WealthEvolutionCard({super.key, required this.controller});
+
+  final PortfolioController controller;
+
+  @override
+  State<WealthEvolutionCard> createState() => _WealthEvolutionCardState();
+}
+
+class _WealthEvolutionCardState extends State<WealthEvolutionCard> {
+  int? _touchedIndex;
+
+  @override
+  Widget build(BuildContext context) {
+    final controller = widget.controller;
+    final points = controller.chartPoints;
+
+    return GlassCard(
+      backgroundColor: AppColors.spaceDark.withValues(alpha: 0.62),
+      borderColor: AppColors.neonCyan.withValues(alpha: 0.3),
+      borderRadius: 20,
+      borderWidth: 1,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Evolução Patrimonial',
+                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15),
+                ),
+                _Legend(),
+              ],
+            ),
+            const SizedBox(height: 12),
+            _RangeSelector(controller: controller),
+            const SizedBox(height: 8),
+            _AssetFilterSelector(controller: controller),
+            const SizedBox(height: 16),
+            SizedBox(
+              height: 220,
+              child: points.length < 2
+                  ? Center(
+                      child: Text(
+                        'Sem dados suficientes para este período.',
+                        style: TextStyle(color: AppColors.subtleText, fontSize: 12),
+                      ),
+                    )
+                  : InteractiveViewer(
+                      minScale: 1,
+                      maxScale: 4,
+                      panEnabled: true,
+                      scaleEnabled: true,
+                      child: LineChart(
+                        _buildChartData(points),
+                        duration: const Duration(milliseconds: 500),
+                        curve: Curves.easeOutCubic,
+                      ),
+                    ),
+            ),
+            if (_touchedIndex != null && _touchedIndex! < points.length) ...[
+              const SizedBox(height: 12),
+              _TooltipSummary(point: points[_touchedIndex!]),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  LineChartData _buildChartData(List<HistoryPoint> points) {
+    final investedSpots = <FlSpot>[];
+    final valueSpots = <FlSpot>[];
+    for (var i = 0; i < points.length; i++) {
+      investedSpots.add(FlSpot(i.toDouble(), points[i].investedCapital));
+      valueSpots.add(FlSpot(i.toDouble(), points[i].portfolioValue));
+    }
+
+    final allY = [...investedSpots.map((s) => s.y), ...valueSpots.map((s) => s.y)];
+    final minY = allY.reduce((a, b) => a < b ? a : b);
+    final maxY = allY.reduce((a, b) => a > b ? a : b);
+    final pad = (maxY - minY) * 0.12 + 1;
+
+    return LineChartData(
+      gridData: FlGridData(
+        show: true,
+        drawVerticalLine: false,
+        horizontalInterval: (maxY - minY + pad * 2) / 4,
+        getDrawingHorizontalLine: (_) => FlLine(color: Colors.white.withValues(alpha: 0.06), strokeWidth: 1),
+      ),
+      titlesData: const FlTitlesData(show: false),
+      borderData: FlBorderData(show: false),
+      minY: minY - pad,
+      maxY: maxY + pad,
+      lineTouchData: LineTouchData(
+        touchTooltipData: LineTouchTooltipData(getTooltipItems: (_) => []),
+        touchCallback: (event, response) {
+          if (!event.isInterestedForInteractions ||
+              response == null ||
+              response.lineBarSpots == null ||
+              response.lineBarSpots!.isEmpty) {
+            if (event is FlTapUpEvent || event is FlPanEndEvent || event is FlLongPressEnd) {
+              setState(() => _touchedIndex = null);
+            }
+            return;
+          }
+          HapticFeedback.selectionClick();
+          setState(() => _touchedIndex = response.lineBarSpots!.first.x.round());
+        },
+      ),
+      lineBarsData: [
+        LineChartBarData(
+          spots: investedSpots,
+          isCurved: true,
+          color: AppColors.subtleText.withValues(alpha: 0.6),
+          barWidth: 2,
+          isStrokeCapRound: true,
+          dashArray: [6, 4],
+          dotData: const FlDotData(show: false),
+        ),
+        LineChartBarData(
+          spots: valueSpots,
+          isCurved: true,
+          gradient: const LinearGradient(colors: [AppColors.neonViolet, AppColors.neonCyan]),
+          barWidth: 3,
+          isStrokeCapRound: true,
+          dotData: FlDotData(
+            show: true,
+            checkToShowDot: (spot, _) => spot.x.round() == _touchedIndex,
+            getDotPainter: (spot, percent, bar, index) => FlDotCirclePainter(
+              radius: 4,
+              color: AppColors.neonCyan,
+              strokeWidth: 2,
+              strokeColor: Colors.white,
+            ),
+          ),
+          belowBarData: BarAreaData(
+            show: true,
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [AppColors.neonCyan.withValues(alpha: 0.22), AppColors.neonCyan.withValues(alpha: 0.0)],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _TooltipSummary extends StatelessWidget {
+  const _TooltipSummary({required this.point});
+
+  final HistoryPoint point;
+
+  @override
+  Widget build(BuildContext context) {
+    final profit = point.profit;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: AppColors.spaceBlue.withValues(alpha: 0.7),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.neonCyan.withValues(alpha: 0.3)),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            PortfolioFormatters.date(point.date),
+            style: TextStyle(color: AppColors.subtleText, fontSize: 11),
+          ),
+          Text(
+            PortfolioFormatters.currency(point.portfolioValue, showCents: false),
+            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+          ),
+          Text(
+            '${profit >= 0 ? '+' : ''}${PortfolioFormatters.currency(profit, showCents: false)}',
+            style: TextStyle(
+              color: profit >= 0 ? AppColors.positiveGreen : AppColors.negativeRed,
+              fontWeight: FontWeight.bold,
+              fontSize: 12,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _Legend extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _dot(AppColors.neonCyan),
+        const SizedBox(width: 4),
+        Text('Patrimônio', style: TextStyle(color: AppColors.subtleText, fontSize: 10)),
+        const SizedBox(width: 10),
+        _dot(AppColors.subtleText.withValues(alpha: 0.6)),
+        const SizedBox(width: 4),
+        Text('Investido', style: TextStyle(color: AppColors.subtleText, fontSize: 10)),
+      ],
+    );
+  }
+
+  Widget _dot(Color color) => Container(
+        width: 8,
+        height: 8,
+        decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+      );
+}
+
+class _RangeSelector extends StatelessWidget {
+  const _RangeSelector({required this.controller});
+
+  final PortfolioController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 30,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: HistoryRange.values.length,
+        separatorBuilder: (_, __) => const SizedBox(width: 6),
+        itemBuilder: (context, i) {
+          final range = HistoryRange.values[i];
+          final selected = controller.selectedRange == range;
+          return _Chip(
+            label: range.label,
+            selected: selected,
+            onTap: () {
+              HapticFeedback.selectionClick();
+              controller.setRange(range);
+            },
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _AssetFilterSelector extends StatelessWidget {
+  const _AssetFilterSelector({required this.controller});
+
+  final PortfolioController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    final types = InvestmentTypeEnum.values;
+    return SizedBox(
+      height: 30,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        children: [
+          _Chip(
+            label: 'Todos',
+            selected: controller.selectedAssetFilter == null,
+            accent: AppColors.neonViolet,
+            onTap: () {
+              HapticFeedback.selectionClick();
+              controller.setAssetFilter(null);
+            },
+          ),
+          const SizedBox(width: 6),
+          for (final type in types) ...[
+            _Chip(
+              label: type.shortLabel,
+              selected: controller.selectedAssetFilter == type,
+              accent: type.color,
+              onTap: () {
+                HapticFeedback.selectionClick();
+                controller.setAssetFilter(type);
+              },
+            ),
+            const SizedBox(width: 6),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _Chip extends StatelessWidget {
+  const _Chip({required this.label, required this.selected, required this.onTap, this.accent = AppColors.neonCyan});
+
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+  final Color accent;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(
+            color: selected ? accent.withValues(alpha: 0.18) : Colors.white.withValues(alpha: 0.04),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: selected ? accent.withValues(alpha: 0.7) : Colors.white.withValues(alpha: 0.1)),
+          ),
+          child: Text(
+            label,
+            style: TextStyle(
+              color: selected ? Colors.white : AppColors.subtleText,
+              fontSize: 11,
+              fontWeight: selected ? FontWeight.bold : FontWeight.normal,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

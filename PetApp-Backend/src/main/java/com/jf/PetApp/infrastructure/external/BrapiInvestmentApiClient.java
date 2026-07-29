@@ -49,8 +49,14 @@ public class BrapiInvestmentApiClient implements ExternalInvestmentApiPort {
                     }
                     
                     String currency = (String) data.getOrDefault("currency", "BRL");
-                    
-                    return Optional.of(new AssetQuoteResponse(symbol, shortName, price, currency));
+
+                    Object changePercentObj = data.get("regularMarketChangePercent");
+                    Double changePercent = 0.0;
+                    if (changePercentObj instanceof Number) {
+                        changePercent = ((Number) changePercentObj).doubleValue();
+                    }
+
+                    return Optional.of(new AssetQuoteResponse(symbol, shortName, price, currency, changePercent));
                 }
             }
             return Optional.empty();

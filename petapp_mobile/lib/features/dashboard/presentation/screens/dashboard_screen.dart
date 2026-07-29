@@ -4,7 +4,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/glass_card.dart';
 import '../../../../core/di/dependency_injection.dart';
 import '../../../auth/presentation/screens/login_screen.dart';
-import '../../../investment/presentation/screens/investment_configuration_screen.dart';
+import '../../../portfolio/presentation/screens/portfolio_screen.dart';
 import '../../../settings/presentation/screens/settings_screen.dart';
 import '../widgets/pet_showcase.dart';
 import '../widgets/rpg_attributes.dart';
@@ -223,64 +223,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  // ── Wallet ────────────────────────────────────────────────────────────────
+  // ── Wallet / Portfolio ───────────────────────────────────────────────────
   Widget _buildWalletContent() {
-    return Center(
-      child: GlassCard(
-        backgroundColor: AppColors.spaceDark.withValues(alpha: 0.6),
-        borderColor: AppColors.neonCyan.withValues(alpha: 0.3),
-        borderRadius: 24,
-        borderWidth: 1,
-        child: Padding(
-          padding: const EdgeInsets.all(32.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Image.asset(
-                'assets/images/generated_fox.png',
-                height: 100,
-                errorBuilder: (_, __, ___) => const Icon(
-                  Icons.diamond,
-                  size: 64,
-                  color: AppColors.neonCyan,
-                ),
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'Nenhum Ativo Detectado,\nComandante.',
-                textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Adicione ativos para construir\nseu portfólio intergaláctico.',
-                textAlign: TextAlign.center,
-                style: TextStyle(color: AppColors.subtleText, fontSize: 14),
-              ),
-              const SizedBox(height: 24),
-              ElevatedButton.icon(
-                icon: const Icon(Icons.rocket_launch, color: Colors.white),
-                label: const Text(
-                  'Iniciar Missão de Investimento',
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.neonViolet,
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-                  elevation: 8,
-                  shadowColor: AppColors.neonViolet.withValues(alpha: 0.5),
-                ),
-                onPressed: () {
-                  HapticFeedback.mediumImpact();
-                  Navigator.of(context).push(_fadeRoute(const InvestmentConfigurationScreen()));
-                },
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+    return const PortfolioScreen();
   }
 
   // ── Analytics ─────────────────────────────────────────────────────────────
