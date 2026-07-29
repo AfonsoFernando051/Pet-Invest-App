@@ -8,15 +8,15 @@ import '../../../auth/presentation/screens/login_screen.dart';
 import '../../../pet/presentation/mascot/controllers/mascot_controller.dart';
 import '../../../portfolio/domain/entities/achievement.dart';
 import '../../../portfolio/presentation/controllers/portfolio_controller.dart';
-import '../../../portfolio/presentation/screens/missions_screen.dart';
 import '../../../portfolio/presentation/screens/passive_income_screen.dart';
 import '../../../portfolio/presentation/screens/portfolio_screen.dart';
 import '../../../portfolio/presentation/widgets/achievement_celebration_overlay.dart';
 import '../../../portfolio/presentation/widgets/asset_allocation_card.dart';
 import '../../../portfolio/presentation/widgets/hero_summary_section.dart';
+import '../../../portfolio/presentation/widgets/missions_achievements_section.dart';
 import '../../../portfolio/presentation/widgets/shared/error_banner.dart';
 import '../../../portfolio/presentation/widgets/wealth_evolution_card.dart';
-import '../../../settings/presentation/screens/settings_screen.dart';
+import '../../../profile/presentation/screens/profile_screen.dart';
 import '../widgets/pet_showcase.dart';
 import '../widgets/action_buttons.dart';
 
@@ -148,9 +148,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
           IconButton(
             icon: const Icon(Icons.settings_outlined, color: Colors.white70),
-            tooltip: 'Configurações',
+            tooltip: 'Perfil',
             onPressed: () {
-              Navigator.of(context).push(_fadeRoute(const SettingsScreen()));
+              Navigator.of(context).push(_fadeRoute(const ProfileScreen()));
             },
           ),
           IconButton(
@@ -171,8 +171,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   _buildHomeContent(),
                   _buildWalletContent(),
                   _buildPassiveIncomeContent(),
-                  _buildMissionsContent(),
-                  _buildProfileContent(),
                 ],
               ),
             ),
@@ -266,6 +264,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
             _buildSectionLabel('AÇÕES RÁPIDAS'),
             const SizedBox(height: 8),
             const ActionButtons(),
+            const SizedBox(height: 16),
+
+            MissionsAchievementsSection(
+              missions: _portfolioController.missions,
+              achievements: _portfolioController.achievements,
+            ),
             const SizedBox(height: 32),
           ],
         ),
@@ -295,11 +299,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return PassiveIncomeScreen(controller: _portfolioController);
   }
 
-  // ── Missões / Gamification hub ───────────────────────────────────────────
-  Widget _buildMissionsContent() {
-    return MissionsScreen(controller: _portfolioController, mascotController: _mascotController);
-  }
-
   // ── Analytics (hidden from navigation for now — kept for a future tab) ───
   // ignore: unused_element
   Widget _buildAnalyticsContent() {
@@ -325,55 +324,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 'Centro de análise de ativos\nem construção, Comandante.',
                 textAlign: TextAlign.center,
                 style: TextStyle(color: AppColors.subtleText, fontSize: 14),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  // ── Profile ───────────────────────────────────────────────────────────────
-  Widget _buildProfileContent() {
-    return Center(
-      child: GlassCard(
-        backgroundColor: AppColors.spaceDark.withValues(alpha: 0.6),
-        borderColor: AppColors.neonPink.withValues(alpha: 0.3),
-        borderRadius: 24,
-        borderWidth: 1,
-        child: Padding(
-          padding: const EdgeInsets.all(32),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.manage_accounts, size: 64, color: AppColors.neonPink.withValues(alpha: 0.7)),
-              const SizedBox(height: 16),
-              const Text(
-                'Perfil do Comandante',
-                style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Conquistas em breve.\nGerencie idioma e conta nas configurações.',
-                textAlign: TextAlign.center,
-                style: TextStyle(color: AppColors.subtleText, fontSize: 14),
-              ),
-              const SizedBox(height: 24),
-              OutlinedButton.icon(
-                icon: const Icon(Icons.settings_outlined, color: AppColors.neonPink),
-                label: const Text(
-                  'Configurações',
-                  style: TextStyle(color: AppColors.neonPink, fontWeight: FontWeight.bold),
-                ),
-                style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: AppColors.neonPink),
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-                ),
-                onPressed: () {
-                  HapticFeedback.selectionClick();
-                  Navigator.of(context).push(_fadeRoute(const SettingsScreen()));
-                },
               ),
             ],
           ),
@@ -429,16 +379,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
             icon: Icon(Icons.payments_outlined),
             activeIcon: Icon(Icons.payments),
             label: 'Proventos',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.flag_outlined),
-            activeIcon: Icon(Icons.flag),
-            label: 'Missões',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.manage_accounts_outlined),
-            activeIcon: Icon(Icons.manage_accounts),
-            label: 'Perfil',
           ),
         ],
       ),
