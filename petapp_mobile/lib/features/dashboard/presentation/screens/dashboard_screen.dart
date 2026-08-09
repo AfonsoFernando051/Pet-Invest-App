@@ -14,6 +14,7 @@ import '../../../portfolio/presentation/screens/passive_income_screen.dart';
 import '../../../portfolio/presentation/screens/portfolio_screen.dart';
 import '../../../portfolio/presentation/widgets/achievement_celebration_overlay.dart';
 import '../../../portfolio/presentation/widgets/asset_allocation_card.dart';
+import '../../../portfolio/presentation/widgets/dividend_notifications_sheet.dart';
 import '../../../portfolio/presentation/widgets/hero_summary_section.dart';
 import '../../../portfolio/presentation/widgets/missions_achievements_section.dart';
 import '../../../portfolio/presentation/widgets/shared/error_banner.dart';
@@ -66,6 +67,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
     _mascotController.loadProfile();
     _portfolioController.addListener(_onPortfolioChanged);
     _portfolioController.loadAll();
+    // Loaded here (not just on first Proventos-tab visit) so the
+    // notification bell's badge reflects real upcoming payments as soon as
+    // the dashboard opens, even if the user never taps into Proventos.
+    _portfolioController.loadDividendRadarIfNeeded();
     _loadOnboardingSignals();
   }
 
@@ -184,6 +189,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             icon: const Icon(Icons.search, color: Colors.white70),
             onPressed: () {},
           ),
+          _buildNotificationsButton(),
           IconButton(
             icon: const Icon(Icons.settings_outlined, color: Colors.white70),
             tooltip: 'Perfil',
@@ -261,6 +267,64 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ],
         ),
       ],
+    );
+  }
+
+  // ── Notifications: upcoming dividends for the user's real holdings ──────
+  // Badge count is real and provider-confirmed (`DividendRadar.upcoming`,
+  // the same data `DividendRadarSection` renders on the Proventos tab) —
+  // never a placeholder or simulated count.
+  Widget _buildNotificationsButton() {
+    final upcomingCount = _portfolioController.dividendRadar.upcoming.length;
+
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        IconButton(
+          icon: const Icon(Icons.notifications_outlined, color: Colors.white70),
+          tooltip: 'Notificações',
+          onPressed: _openNotifications,
+        ),
+        if (upcomingCount > 0)
+          Positioned(
+            right: 6,
+            top: 6,
+            child: IgnorePointer(
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                constraints: const BoxConstraints(minWidth: 15, minHeight: 15),
+                decoration: BoxDecoration(
+                  color: AppColors.negativeRed,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: AppColors.backgroundDark, width: 1.5),
+                ),
+                child: Text(
+                  upcomingCount > 9 ? '9+' : '$upcomingCount',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  void _openNotifications() {
+    HapticFeedback.selectionClick();
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (_) => AnimatedBuilder(
+        animation: _portfolioController,
+        builder: (context, _) => DividendNotificationsSheet(
+          isLoading: _portfolioController.isDividendRadarLoading,
+          error: _portfolioController.dividendRadarError,
+          upcoming: _portfolioController.dividendRadar.upcoming,
+          onRetry: _portfolioController.refreshDividendRadar,
+        ),
+      ),
     );
   }
 
