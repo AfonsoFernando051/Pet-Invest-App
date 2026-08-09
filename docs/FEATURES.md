@@ -126,6 +126,38 @@ In Progress
 
 ---
 
+# Dividend Radar
+
+## Purpose
+
+Show users the real, confirmed dividend/JCP/yield payments for the assets they actually hold — inspired by
+Investidor10's dividend calendar/radar, adapted to this app's "the number never lies" principle (see
+`MARKET_EVENTS_ENGINE.md`).
+
+## Responsibilities
+
+- Fetch confirmed corporate-action history from the external market data provider (Brapi
+  `/api/v2/stocks/dividends`) for every distinct ticker the user holds.
+- Split into upcoming (announced, not yet paid) and history (already paid), each scaled by the quantity the
+  user actually held at the relevant date.
+- Surface the radar inside the existing "Proventos" tab, above the pre-existing yield-based estimate, so
+  confirmed data and projection are never visually conflated.
+
+## Business Rules
+
+- Never fabricate a payment: a ticker the provider has nothing confirmed for contributes nothing to the radar.
+- A historical (already-paid) event only counts for a user if they held the position on or before that
+  event's data-com date — a position purchased after the fact is never scaled into "what you received".
+- Upcoming events are scaled by the user's current quantity as a forward-looking estimate, clearly distinct
+  in the UI from the confirmed history section.
+
+## Status
+
+Implemented (Phase 0 slice of `MARKET_EVENTS_ENGINE.md` — no XP/mission/notification wiring yet; that remains
+Phase 3+, pending the event-driven gameplay engine described there).
+
+---
+
 # Buy Assets
 
 ## Purpose

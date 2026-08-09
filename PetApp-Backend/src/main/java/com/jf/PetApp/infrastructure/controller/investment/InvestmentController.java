@@ -1,6 +1,7 @@
 package com.jf.PetApp.infrastructure.controller.investment;
 
 import com.jf.PetApp.application.investment.usecase.ConfigureInvestmentsUseCase;
+import com.jf.PetApp.application.investment.usecase.GetDividendRadarUseCase;
 import com.jf.PetApp.application.investment.usecase.GetPortfolioAllocationUseCase;
 import com.jf.PetApp.application.investment.usecase.GetPortfolioHistoryUseCase;
 import com.jf.PetApp.application.investment.usecase.GetPortfolioHoldingsUseCase;
@@ -25,6 +26,7 @@ import com.jf.PetApp.application.investment.dto.InvestmentLotDTO;
 import com.jf.PetApp.application.investment.dto.PortfolioSummaryDTO;
 import com.jf.PetApp.application.investment.dto.AllocationSliceDTO;
 import com.jf.PetApp.application.investment.dto.PortfolioHistoryPointDTO;
+import com.jf.PetApp.application.investment.dto.DividendRadarResponseDTO;
 import java.util.Optional;
 import java.util.List;
 
@@ -38,19 +40,22 @@ public class InvestmentController {
     private final GetPortfolioSummaryUseCase getPortfolioSummaryUseCase;
     private final GetPortfolioAllocationUseCase getPortfolioAllocationUseCase;
     private final GetPortfolioHistoryUseCase getPortfolioHistoryUseCase;
+    private final GetDividendRadarUseCase getDividendRadarUseCase;
 
     public InvestmentController(ConfigureInvestmentsUseCase configureInvestmentsUseCase,
                                  ExternalInvestmentApiPort externalInvestmentApiPort,
                                  GetPortfolioHoldingsUseCase getPortfolioHoldingsUseCase,
                                  GetPortfolioSummaryUseCase getPortfolioSummaryUseCase,
                                  GetPortfolioAllocationUseCase getPortfolioAllocationUseCase,
-                                 GetPortfolioHistoryUseCase getPortfolioHistoryUseCase) {
+                                 GetPortfolioHistoryUseCase getPortfolioHistoryUseCase,
+                                 GetDividendRadarUseCase getDividendRadarUseCase) {
         this.configureInvestmentsUseCase = configureInvestmentsUseCase;
         this.externalInvestmentApiPort = externalInvestmentApiPort;
         this.getPortfolioHoldingsUseCase = getPortfolioHoldingsUseCase;
         this.getPortfolioSummaryUseCase = getPortfolioSummaryUseCase;
         this.getPortfolioAllocationUseCase = getPortfolioAllocationUseCase;
         this.getPortfolioHistoryUseCase = getPortfolioHistoryUseCase;
+        this.getDividendRadarUseCase = getDividendRadarUseCase;
     }
 
     @PostMapping("/configure")
@@ -99,5 +104,11 @@ public class InvestmentController {
             @RequestParam(required = false, defaultValue = "ALL") String range) {
         String email = com.jf.PetApp.core.security.SecurityUtils.getCurrentUserEmail();
         return ResponseEntity.ok(getPortfolioHistoryUseCase.execute(email, range));
+    }
+
+    @GetMapping("/dividends")
+    public ResponseEntity<DividendRadarResponseDTO> getDividends() {
+        String email = com.jf.PetApp.core.security.SecurityUtils.getCurrentUserEmail();
+        return ResponseEntity.ok(getDividendRadarUseCase.execute(email));
     }
 }

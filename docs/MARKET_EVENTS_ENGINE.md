@@ -55,16 +55,26 @@ server-authoritative, event-driven system** — not a rewrite of it.
 
 ### The honest data gap
 
-`BrapiInvestmentApiClient` today exposes exactly two things: a quote (`getQuote`) and a search list
-(`searchQuotes`). There is no dividend calendar, no ex-dividend date, no earnings release, no corporate-action feed,
-and no news feed wired anywhere in the backend. FEATURES.md itself says "Market data is simulated."
+**Update:** `BrapiInvestmentApiClient.getDividends(ticker)` (added for the "Dividend Radar" feature, see
+FEATURES.md) now wires Brapi's `/api/v2/stocks/dividends` endpoint — confirmed cash dividend/JCP/yield history and
+announcements per ticker, no token required. This closes the data gap for the `DIVIDEND_ANNOUNCED` /
+`DIVIDEND_PAYMENT_TODAY` / `ETF_DISTRIBUTION_RECEIVED` rows in Section 2's table below: the raw data source now
+exists (`GetDividendRadarUseCaseImpl`, `application/investment/usecase/`), it's just not yet wired into the
+event/mission/notification/XP machinery this document specifies (no `MarketEventSourcePort`, no
+`market_events` table, no scheduler, no `GameplayReactionService`). Those rows should be re-read as "data source
+solved, gameplay wiring still Phase 3+", not "blocked on data".
 
-Everything in the brief that depends on dividend/earnings/corporate-action data (Dividend Events, Educational
-Events, most of Portfolio milestone triggers) is **real-data-shaped but currently has no real data source**. This
-spec treats that as a solvable integration problem (a new `MarketEventSourcePort` method set, Section 15), not a
-reason to fake the data. **Never simulate a dividend payment as if it were real** — if the data source can't confirm
-it, the event does not fire. This is non-negotiable per the brief itself ("Never create fake financial information")
-and per DECISION-006/DECISION-007 (the app is an educational simulator, not a source of financial misinformation).
+There is still no earnings release, no 52-week range, no corporate-action feed beyond dividends, and no news feed
+wired anywhere in the backend. FEATURES.md itself says "Market data is simulated" for quotes.
+
+Everything in the brief that depends on earnings/other corporate-action data (Educational Events, most Portfolio
+milestone triggers) is **real-data-shaped but currently has no real data source**. This spec treats that as a
+solvable integration problem (a new `MarketEventSourcePort` method set, Section 15), not a reason to fake the data.
+**Never simulate a dividend payment as if it were real** — if the data source can't confirm it, the event does not
+fire. This is non-negotiable per the brief itself ("Never create fake financial information") and per
+DECISION-006/DECISION-007 (the app is an educational simulator, not a source of financial misinformation). The
+Dividend Radar's own use case enforces this by scaling historical payments by the quantity the user actually held
+at the data-com date, not their current quantity — see `GetDividendRadarUseCaseImpl.quantityHeldAsOf`.
 
 Event categories that need **no new data source** — because they're derivable entirely from data already flowing
 through `PortfolioController`/`GetPortfolioSummaryUseCase` today — are marked **[Phase 0]** throughout this document.

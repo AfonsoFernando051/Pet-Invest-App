@@ -45,4 +45,12 @@ class PortfolioRemoteDataSource {
     final List<dynamic> data = jsonDecode(response.body);
     return data.cast<Map<String, dynamic>>();
   }
+
+  Future<Map<String, dynamic>> fetchDividends() async {
+    final response = await apiClient.get('/api/investments/dividends');
+    if (response.statusCode != 200) {
+      throw Exception('Failed to load dividend radar (${response.statusCode})');
+    }
+    return jsonDecode(response.body) as Map<String, dynamic>;
+  }
 }

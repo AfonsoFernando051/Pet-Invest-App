@@ -1,5 +1,6 @@
 import 'package:petapp_mobile/features/portfolio/data/datasources/portfolio_remote_datasource.dart';
 import 'package:petapp_mobile/features/portfolio/domain/entities/allocation_slice.dart';
+import 'package:petapp_mobile/features/portfolio/domain/entities/dividend_event.dart';
 import 'package:petapp_mobile/features/portfolio/domain/entities/history_point.dart';
 import 'package:petapp_mobile/features/portfolio/domain/entities/holding.dart';
 import 'package:petapp_mobile/features/portfolio/domain/entities/investment_lot.dart';
@@ -30,5 +31,10 @@ class PortfolioRepository {
   Future<List<HistoryPoint>> fetchHistory(HistoryRange range) async {
     final raw = await remoteDataSource.fetchHistory(range.apiValue);
     return raw.map(HistoryPoint.fromJson).toList();
+  }
+
+  Future<DividendRadar> fetchDividendRadar() async {
+    final raw = await remoteDataSource.fetchDividends();
+    return DividendRadar.fromJson(raw);
   }
 }

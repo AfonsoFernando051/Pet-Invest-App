@@ -5,6 +5,7 @@ import 'package:petapp_mobile/features/portfolio/data/repositories/achievements_
 import 'package:petapp_mobile/features/portfolio/data/repositories/portfolio_repository.dart';
 import 'package:petapp_mobile/features/portfolio/domain/entities/achievement.dart';
 import 'package:petapp_mobile/features/portfolio/domain/entities/allocation_slice.dart';
+import 'package:petapp_mobile/features/portfolio/domain/entities/dividend_event.dart';
 import 'package:petapp_mobile/features/portfolio/domain/entities/history_point.dart';
 import 'package:petapp_mobile/features/portfolio/domain/entities/holding.dart';
 import 'package:petapp_mobile/features/portfolio/domain/entities/investment_lot.dart';
@@ -72,6 +73,16 @@ class PortfolioController extends ChangeNotifier {
 
   final Map<HistoryRange, List<HistoryPoint>> _backendHistoryCache = {};
 
+  // Real, provider-confirmed dividend/JCP/yield history for the user's real
+  // holdings (contrast with `passiveIncome` below, which is an *estimate*).
+  // Loaded lazily — only the Proventos tab needs it, and each ticker is a
+  // real external API round-trip server-side, so Home/Carteira shouldn't pay
+  // for it on every load.
+  bool isDividendRadarLoading = false;
+  String? dividendRadarError;
+  DividendRadar dividendRadar = DividendRadar.empty;
+  bool _dividendRadarLoaded = false;
+
   PortfolioStats get stats => PortfolioStats(summary: summary, holdings: holdings, allocation: allocation);
 
   PortfolioHealth get health => PortfolioHealthCalculator.calculate(stats);
@@ -111,6 +122,32 @@ class PortfolioController extends ChangeNotifier {
   }
 
   Future<void> refresh() => loadAll();
+
+  /// Fetches the real dividend radar on first use and caches it for the rest
+  /// of the session; call again via [refreshDividendRadar] to force a reload
+  /// (e.g. pull-to-refresh on the Proventos tab).
+  Future<void> loadDividendRadarIfNeeded() async {
+    if (_dividendRadarLoaded || isDividendRadarLoading) return;
+    await _fetchDividendRadar();
+  }
+
+  Future<void> refreshDividendRadar() => _fetchDividendRadar();
+
+  Future<void> _fetchDividendRadar() async {
+    isDividendRadarLoading = true;
+    dividendRadarError = null;
+    notifyListeners();
+
+    try {
+      dividendRadar = await _repository.fetchDividendRadar();
+      _dividendRadarLoaded = true;
+    } catch (e) {
+      dividendRadarError = e.toString();
+    }
+
+    isDividendRadarLoading = false;
+    notifyListeners();
+  }
 
   void setRange(HistoryRange range) {
     if (range == selectedRange) return;
