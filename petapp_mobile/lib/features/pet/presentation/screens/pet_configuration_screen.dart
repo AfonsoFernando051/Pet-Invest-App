@@ -6,7 +6,6 @@ import 'package:petapp_mobile/core/di/dependency_injection.dart';
 import 'package:petapp_mobile/core/utils/game_snack.dart';
 import 'package:petapp_mobile/core/utils/translator.dart';
 import 'package:petapp_mobile/features/pet/data/models/pet_specie_enum.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:petapp_mobile/features/pet/presentation/screens/financial_goal_screen.dart';
 import 'package:petapp_mobile/core/widgets/glass_card.dart';
 
@@ -65,15 +64,6 @@ class _PetConfigurationScreenState extends State<PetConfigurationScreen> with Si
     });
   }
 
-  final Map<PetSpecieEnum, IconData> _specieIcons = {
-    PetSpecieEnum.CAT: Icons.cruelty_free,
-    PetSpecieEnum.DOG: Icons.pets,
-    PetSpecieEnum.FOX: Icons.local_fire_department,
-    PetSpecieEnum.WOLF: Icons.nightlight_round,
-    PetSpecieEnum.BEAR: Icons.catching_pokemon,
-    PetSpecieEnum.LION: Icons.star,
-  };
-
   Future<void> _handleSelectType() async {
     final name = _nameController.text.trim();
     if (name.isEmpty) {
@@ -108,7 +98,7 @@ class _PetConfigurationScreenState extends State<PetConfigurationScreen> with Si
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: Text(Translator.translate(AppStrings.petProfileTitle), style: const TextStyle(color: Colors.white)),
+        title: Text(Translator.translate(AppStrings.meetPetTitle), style: const TextStyle(color: Colors.white)),
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
@@ -407,6 +397,9 @@ class _PetConfigurationScreenState extends State<PetConfigurationScreen> with Si
     );
   }
 
+  /// What the companion actually is: a description of the relationship
+  /// ahead, not a stat sheet. No numbers are invented here — the pet has no
+  /// financial metrics of its own; those belong to the user's portfolio.
   Widget _buildRightPanel() {
     return GlassCard(
       borderColor: AppColors.neonCyan.withValues(alpha: 0.3),
@@ -417,152 +410,47 @@ class _PetConfigurationScreenState extends State<PetConfigurationScreen> with Si
           spreadRadius: 2,
         )
       ],
-      child: Stack(
-        children: [
-          // Background decorative chart
-          Positioned(
-            top: 20,
-            left: -50,
-            child: Opacity(
-              opacity: 0.5,
-              child: SizedBox(
-                width: 250,
-                height: 250,
-                child: _buildRadarChart(false),
-              ),
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              Translator.translate(AppStrings.meetPetPreviewTitle),
+              style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Align(
-                  alignment: Alignment.topRight,
-                  child: SizedBox(
-                    width: 300,
-                    height: 300,
-                    child: _buildRadarChart(true),
-                  ),
-                ),
-                const Spacer(),
-                Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.05),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: const [
-                              Text('PET-Invest Valor:', style: TextStyle(color: Colors.white70, fontSize: 14)),
-                              Text('R\$ 8,250.00', style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
-                            ],
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: const [
-                              Text('Desempenho:', style: TextStyle(color: Colors.white70, fontSize: 14)),
-                              Text('+15.2%', style: TextStyle(color: AppColors.neonCyan, fontSize: 20, fontWeight: FontWeight.bold)),
-                            ],
-                          ),
-                        ],
-                      ),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 16.0),
-                        child: Divider(color: Colors.white24),
-                      ),
-                      _buildStatRow(Icons.healing, 'Regeneração', '2,00'),
-                      const SizedBox(height: 12),
-                      _buildStatRow(Icons.psychology, 'Inteligência', '1,0'),
-                      const SizedBox(height: 12),
-                      _buildStatRow(Icons.monetization_on, 'Custo de Evocação', '1,00'),
-                    ],
-                  ),
-                )
-              ],
-            ),
-          ),
-        ],
+            const SizedBox(height: 20),
+            _buildPreviewRow(Icons.celebration, AppColors.goldenBorder, Translator.translate(AppStrings.meetPetPreviewCelebrate)),
+            const SizedBox(height: 16),
+            _buildPreviewRow(Icons.school, AppColors.neonCyan, Translator.translate(AppStrings.meetPetPreviewLearn)),
+            const SizedBox(height: 16),
+            _buildPreviewRow(Icons.favorite, AppColors.neonPink, Translator.translate(AppStrings.meetPetPreviewRemember)),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildRadarChart(bool main) {
-    return RadarChart(
-      RadarChartData(
-        dataSets: [
-          RadarDataSet(
-            fillColor: AppColors.neonCyan.withValues(alpha: 0.2),
-            borderColor: AppColors.neonCyan,
-            entryRadius: 0,
-            dataEntries: [
-              const RadarEntry(value: 8),
-              const RadarEntry(value: 5),
-              const RadarEntry(value: 7),
-              const RadarEntry(value: 6),
-            ],
-            borderWidth: 2,
-          ),
-          RadarDataSet(
-            fillColor: AppColors.goldenBorder.withValues(alpha: 0.2),
-            borderColor: AppColors.goldenBorder,
-            entryRadius: 0,
-            dataEntries: [
-              const RadarEntry(value: 6),
-              const RadarEntry(value: 8),
-              const RadarEntry(value: 4),
-              const RadarEntry(value: 9),
-            ],
-            borderWidth: 2,
-          ),
-        ],
-        radarBackgroundColor: Colors.transparent,
-        borderData: FlBorderData(show: false),
-        radarBorderData: const BorderSide(color: Colors.white24),
-        titlePositionPercentageOffset: 0.2,
-        titleTextStyle: TextStyle(color: Colors.white.withValues(alpha: main ? 0.8 : 0.4), fontSize: main ? 14 : 10),
-        getTitle: (index, angle) {
-          switch (index) {
-            case 0: return const RadarChartTitle(text: 'DY');
-            case 1: return const RadarChartTitle(text: 'ROE');
-            case 2: return const RadarChartTitle(text: 'P/VP');
-            case 3: return const RadarChartTitle(text: 'Stock');
-            default: return const RadarChartTitle(text: '');
-          }
-        },
-        tickCount: 3,
-        ticksTextStyle: const TextStyle(color: Colors.transparent, fontSize: 10),
-        tickBorderData: const BorderSide(color: Colors.white12),
-        gridBorderData: const BorderSide(color: Colors.white24, width: 2),
-      ),
-      swapAnimationDuration: const Duration(milliseconds: 150),
-      swapAnimationCurve: Curves.linear,
-    );
-  }
-
-  Widget _buildStatRow(IconData icon, String label, String value) {
+  Widget _buildPreviewRow(IconData icon, Color color, String label) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.1),
+            color: color.withValues(alpha: 0.15),
             shape: BoxShape.circle,
           ),
-          child: Icon(icon, color: AppColors.neonCyan, size: 20),
+          child: Icon(icon, color: color, size: 20),
         ),
         const SizedBox(width: 12),
-        Text(label, style: const TextStyle(color: Colors.white, fontSize: 16)),
-        const Spacer(),
-        Text(value, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: Text(label, style: const TextStyle(color: Colors.white70, fontSize: 14, height: 1.3)),
+          ),
+        ),
       ],
     );
   }

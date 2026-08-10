@@ -1,4 +1,6 @@
 import 'package:flutter/foundation.dart';
+import 'package:petapp_mobile/core/events/app_event.dart';
+import 'package:petapp_mobile/core/events/app_event_bus.dart';
 import 'package:petapp_mobile/features/investment/data/models/investment_type_enum.dart';
 import 'package:petapp_mobile/features/pet/presentation/mascot/controllers/mascot_controller.dart';
 import 'package:petapp_mobile/features/portfolio/data/repositories/achievements_local_repository.dart';
@@ -33,13 +35,16 @@ class PortfolioController extends ChangeNotifier {
     required PortfolioRepository repository,
     required AchievementsLocalRepository achievementsRepository,
     MascotController? mascotController,
+    AppEventBus? eventBus,
   })  : _repository = repository,
         _achievementsRepository = achievementsRepository,
-        _mascotController = mascotController;
+        _mascotController = mascotController,
+        _eventBus = eventBus ?? AppEventBus.instance;
 
   final PortfolioRepository _repository;
   final AchievementsLocalRepository _achievementsRepository;
   final MascotController? _mascotController;
+  final AppEventBus _eventBus;
 
   bool isLoading = true;
   String? error;
@@ -247,6 +252,12 @@ class PortfolioController extends ChangeNotifier {
       newlyUnlocked = AchievementCatalog.resolve(_unlockedAchievements)
           .where((a) => newIds.contains(a.id))
           .toList();
+      // The in-screen celebration overlay (`newlyUnlocked` above) already
+      // shows these; the bus emission is for other, decoupled listeners
+      // (e.g. a future Character Engine reaction) rather than a second UI.
+      for (final achievement in newlyUnlocked) {
+        _eventBus.emit(AchievementUnlockedEvent(achievement));
+      }
     }
 
     final totalXp = AchievementCatalog.totalXpFor(_unlockedAchievements.keys.toSet());

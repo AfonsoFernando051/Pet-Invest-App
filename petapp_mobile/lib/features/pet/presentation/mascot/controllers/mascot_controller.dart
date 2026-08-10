@@ -1,6 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:petapp_mobile/core/events/app_event.dart';
+import 'package:petapp_mobile/core/events/app_event_bus.dart';
+import 'package:petapp_mobile/features/game/domain/services/level_calculator.dart';
 import 'package:petapp_mobile/features/pet/domain/entities/pet_accessory.dart';
 import 'package:petapp_mobile/features/pet/domain/entities/pet_evolution_rule.dart';
 import 'package:petapp_mobile/features/pet/domain/entities/pet_profile.dart';
@@ -26,12 +29,15 @@ class MascotController extends ChangeNotifier {
   MascotController({
     required MascotRepository repository,
     List<PetEvolutionRule> evolutionRules = PetEvolutionRule.defaultRules,
+    AppEventBus? eventBus,
   })  : _repository = repository,
         _rules = _sortedDescending(evolutionRules),
+        _eventBus = eventBus ?? AppEventBus.instance,
         _profile = PetProfile();
 
   final MascotRepository _repository;
   final List<PetEvolutionRule> _rules;
+  final AppEventBus _eventBus;
 
   PetProfile _profile;
   Timer? _revertTimer;
@@ -128,7 +134,10 @@ class MascotController extends ChangeNotifier {
 
   /// Checks the evolution rules against the user's latest financial state
   /// and, if a higher tier has been unlocked, upgrades the mascot and plays
-  /// the `victory` animation.
+  /// the `victory` animation. Also detects a level-up (see [LevelCalculator])
+  /// from the same XP delta. Both are broadcast on [AppEventBus] so other
+  /// systems (a toast today, a future Character Engine reaction) can react
+  /// without this controller knowing who's listening.
   Future<void> evaluateEvolution(double currentNetWorth, int userXp) async {
     final resolvedStage = resolveStage(
       currentNetWorth: currentNetWorth,
@@ -138,6 +147,9 @@ class MascotController extends ChangeNotifier {
     // withdrawal) must not strip a tier the user already earned.
     final didEvolve = resolvedStage.tier > _profile.stage.tier;
     final targetStage = didEvolve ? resolvedStage : _profile.stage;
+
+    final previousLevel = LevelCalculator.fromXp(_profile.xp).level;
+    final newLevel = LevelCalculator.fromXp(userXp).level;
 
     _profile = _profile.copyWith(
       stage: targetStage,
@@ -151,6 +163,10 @@ class MascotController extends ChangeNotifier {
     if (didEvolve) {
       await _repository.saveStage(targetStage);
       triggerEventAnimation(PetAnimationState.victory, duration: const Duration(seconds: 4));
+      _eventBus.emit(PetEvolvedEvent(targetStage));
+    }
+    if (newLevel > previousLevel) {
+      _eventBus.emit(UserLeveledUpEvent(newLevel));
     }
   }
 

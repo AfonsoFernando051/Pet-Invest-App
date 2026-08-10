@@ -1,12 +1,18 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/utils/translator.dart';
+import '../../../../core/utils/game_snack.dart';
 import '../../../../core/widgets/cosmic_background.dart';
 import '../../../../core/widgets/glass_card.dart';
 import '../../../../core/di/dependency_injection.dart';
+import '../../../../core/events/app_event.dart';
+import '../../../../core/events/app_event_bus.dart';
 import '../../../auth/presentation/screens/login_screen.dart';
+import '../../../game/domain/services/level_calculator.dart';
 import '../../../pet/presentation/mascot/controllers/mascot_controller.dart';
 import '../../../portfolio/domain/entities/achievement.dart';
 import '../../../portfolio/presentation/controllers/portfolio_controller.dart';
@@ -55,6 +61,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
   bool _showPortfolioReminder = false;
   bool _investorProfileUnanswered = false;
 
+  // First real consumer of `AppEventBus`: reacts to game-progression events
+  // (currently just level-ups) without the emitter (`MascotController`)
+  // knowing this screen exists.
+  StreamSubscription<AppEvent>? _eventSubscription;
+
   @override
   void initState() {
     super.initState();
@@ -72,6 +83,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
     // the dashboard opens, even if the user never taps into Proventos.
     _portfolioController.loadDividendRadarIfNeeded();
     _loadOnboardingSignals();
+    _eventSubscription = AppEventBus.instance.stream.listen(_onAppEvent);
+  }
+
+  void _onAppEvent(AppEvent event) {
+    if (!mounted) return;
+    if (event is UserLeveledUpEvent) {
+      GameSnack.showWithHaptic(
+        context,
+        'Nível ${event.newLevel} alcançado!',
+        isSuccess: true,
+      );
+    }
   }
 
   Future<void> _loadOnboardingSignals() async {
@@ -109,6 +132,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   void dispose() {
+    _eventSubscription?.cancel();
     _portfolioController.removeListener(_onPortfolioChanged);
     _portfolioController.dispose();
     _mascotController.dispose();
@@ -237,6 +261,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   // ── AppBar title — compact player HUD ────────────────────────────────────
   Widget _buildAppBarTitle() {
+    // Real level derived from the same accumulated XP that drives pet
+    // evolution (`MascotController.profile.xp`), not a hardcoded number.
+    final level = LevelCalculator.fromXp(_mascotController.profile.xp).level;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -260,8 +287,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
             Text(
               _mascotController.profile.name?.isNotEmpty == true
-                  ? '${_mascotController.profile.name} · Nível 7'
-                  : 'Nível 7 · Explorador',
+                  ? '${_mascotController.profile.name} · Nível $level'
+                  : 'Nível $level · Explorador',
               style: TextStyle(color: AppColors.neonCyan.withValues(alpha: 0.9), fontSize: 11),
             ),
           ],
@@ -358,7 +385,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ErrorBanner(onRetry: _portfolioController.refresh),
               const SizedBox(height: 12),
             ],
-            const PetShowcase(),
+            PetShowcase(performancePercent: _portfolioController.summary.totalGainPercent),
             const SizedBox(height: 16),
 
             if (_showPortfolioReminder) ...[

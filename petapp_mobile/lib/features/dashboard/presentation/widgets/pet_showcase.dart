@@ -7,7 +7,11 @@ import '../../../../core/widgets/glass_card.dart';
 import '../../../../core/di/dependency_injection.dart';
 
 class PetShowcase extends StatefulWidget {
-  const PetShowcase({super.key});
+  const PetShowcase({super.key, required this.performancePercent});
+
+  /// Real portfolio total-gain percent (`PortfolioSummary.totalGainPercent`),
+  /// used only to color the aura — never displayed as an invented pet stat.
+  final double performancePercent;
 
   @override
   State<PetShowcase> createState() => _PetShowcaseState();
@@ -15,13 +19,14 @@ class PetShowcase extends StatefulWidget {
 
 class _PetShowcaseState extends State<PetShowcase> with TickerProviderStateMixin {
   // Data
-  double _currentPerformance = 10.0;
   bool _isLoadingPet = true;
   String _petAsset = 'assets/images/generated_dog.png';
 
-  // Pet stat values (0.0 – 1.0)
+  // Pet stat value (0.0 – 1.0), sourced from the backend `health` field —
+  // see `_fetchMyPet`. There is no real "Mood" figure to show yet (that
+  // belongs to the future Character Engine's emotion system), so this is
+  // the only stat bar rendered.
   double _health = 0.75;
-  double _mood   = 0.60;
 
   // Animation controllers
   late AnimationController _breatheController;
@@ -176,8 +181,8 @@ class _PetShowcaseState extends State<PetShowcase> with TickerProviderStateMixin
   }
 
   Color get _currentAuraColor {
-    if (_currentPerformance < -10) return Colors.redAccent;
-    if (_currentPerformance < 0)   return AppColors.neonPurple;
+    if (widget.performancePercent < -10) return Colors.redAccent;
+    if (widget.performancePercent < 0)   return AppColors.neonPurple;
     return AppColors.neonCyan;
   }
 
@@ -217,27 +222,15 @@ class _PetShowcaseState extends State<PetShowcase> with TickerProviderStateMixin
               padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 16),
               child: Column(
                 children: [
-                  // ── Stat bars with real fill ───────────────────────────────────
+                  // ── Stat bar with real fill ────────────────────────────────────
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _buildStatBar(
-                            Icons.favorite_border,
-                            [const Color(0xFFFF007F), AppColors.neonViolet],
-                            value: _health,
-                            label: 'HP',
-                          ),
-                          const SizedBox(height: 12),
-                          _buildStatBar(
-                            Icons.sentiment_satisfied,
-                            [AppColors.neonViolet, AppColors.neonCyan],
-                            value: _mood,
-                            label: 'Mood',
-                          ),
-                        ],
+                      _buildStatBar(
+                        Icons.favorite_border,
+                        [const Color(0xFFFF007F), AppColors.neonViolet],
+                        value: _health,
+                        label: 'HP',
                       ),
                     ],
                   ),

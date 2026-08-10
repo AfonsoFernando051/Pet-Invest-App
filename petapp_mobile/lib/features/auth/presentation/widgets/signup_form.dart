@@ -4,13 +4,10 @@ import '../../../../core/constants/app_strings.dart';
 import '../../../../core/utils/translator.dart';
 import '../../../../core/utils/game_snack.dart';
 import '../../../../core/di/dependency_injection.dart';
-import '../../../home/presentation/screens/home_screen.dart';
-import '../../../onboarding/presentation/screens/onboarding_screen.dart';
-import '../../../pet/presentation/screens/pet_configuration_screen.dart';
+import '../../../../main.dart';
 import 'custom_text_field.dart';
 import 'signup_action_button.dart';
 import 'already_have_account_button.dart';
-import '../../../../core/utils/auth_navigation_utils.dart';
 
 class SignupForm extends StatefulWidget {
   const SignupForm({super.key});
@@ -58,7 +55,15 @@ class _SignupFormState extends State<SignupForm> {
       // Auto-login since register doesn't return an accessToken
       await DI.authRepository.login(email, password);
 
-      await AuthNavigationUtils.handlePostAuthRedirect(context);
+      // Rebuilds fresh from `MyApp._getStartRoute()` — the single source of
+      // truth for where a user belongs (meet pet / goal / tutorial /
+      // portfolio choice / home) — instead of a separate, narrower redirect.
+      if (mounted) {
+        await Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => const MyApp()),
+          (route) => false,
+        );
+      }
     } catch (e) {
       if (mounted) {
         GameSnack.show(

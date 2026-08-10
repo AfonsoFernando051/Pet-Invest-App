@@ -4,14 +4,11 @@ import '../../../../core/constants/app_strings.dart';
 import '../../../../core/utils/translator.dart';
 import '../../../../core/utils/game_snack.dart';
 import '../../../../core/di/dependency_injection.dart';
-import '../../../home/presentation/screens/home_screen.dart';
-import '../../../onboarding/presentation/screens/onboarding_screen.dart';
-import '../../../pet/presentation/screens/pet_configuration_screen.dart';
+import '../../../../main.dart';
 import 'custom_text_field.dart';
 import 'forgot_password_button.dart';
 import 'login_button.dart';
 import 'signup_button.dart';
-import '../../../../core/utils/auth_navigation_utils.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({super.key});
@@ -45,7 +42,15 @@ class _LoginFormState extends State<LoginForm> {
     try {
       await DI.authRepository.login(email, password);
 
-      await AuthNavigationUtils.handlePostAuthRedirect(context);
+      // Rebuilds fresh from `MyApp._getStartRoute()` — the single source of
+      // truth for where a user belongs (meet pet / goal / tutorial /
+      // portfolio choice / home) — instead of a separate, narrower redirect.
+      if (mounted) {
+        await Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => const MyApp()),
+          (route) => false,
+        );
+      }
     } catch (e) {
       if (mounted) {
         GameSnack.show(

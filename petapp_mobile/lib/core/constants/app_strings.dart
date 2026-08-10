@@ -24,15 +24,23 @@ class AppStrings {
   static const String failedToLoadQuestions = "failedToLoadQuestions";
 
   // Pet configuration
+  // Reserved for the future persistent Companion Home screen — the
+  // onboarding "meet your pet" step below uses `meetPetTitle` instead so the
+  // two screens don't share a title before Companion Home exists.
   static const String petProfileTitle = "petProfileTitle";
   static const String failedToSavePet = "failedToSavePet";
 
   // Meet Your Pet (onboarding)
+  static const String meetPetTitle = "meetPetTitle";
   static const String meetPetGreeting = "meetPetGreeting";
   static const String meetPetIntro = "meetPetIntro";
   static const String meetPetNeedName = "meetPetNeedName";
   static const String meetPetSpeciesPrompt = "meetPetSpeciesPrompt";
   static const String meetPetContinue = "meetPetContinue";
+  static const String meetPetPreviewTitle = "meetPetPreviewTitle";
+  static const String meetPetPreviewCelebrate = "meetPetPreviewCelebrate";
+  static const String meetPetPreviewLearn = "meetPetPreviewLearn";
+  static const String meetPetPreviewRemember = "meetPetPreviewRemember";
 
   // Name Your Pet (onboarding)
   static const String namePetTitle = "namePetTitle";
