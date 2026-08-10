@@ -1,6 +1,7 @@
 package com.jf.PetApp.infrastructure.controller.investment;
 
 import com.jf.PetApp.application.investment.usecase.ConfigureInvestmentsUseCase;
+import com.jf.PetApp.application.investment.usecase.GetAssetDetailsUseCase;
 import com.jf.PetApp.application.investment.usecase.GetDividendRadarUseCase;
 import com.jf.PetApp.application.investment.usecase.GetPortfolioAllocationUseCase;
 import com.jf.PetApp.application.investment.usecase.GetPortfolioHistoryUseCase;
@@ -16,6 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.jf.PetApp.infrastructure.controller.investment.dto.AssetRegistrationDto;
 import com.jf.PetApp.application.investment.port.ExternalInvestmentApiPort;
+import com.jf.PetApp.application.investment.dto.AssetDetailsResponseDTO;
 import com.jf.PetApp.application.investment.dto.AssetQuoteResponse;
 import com.jf.PetApp.application.investment.dto.InvestmentLotDTO;
 import com.jf.PetApp.application.investment.dto.PortfolioSummaryDTO;
@@ -43,6 +45,7 @@ public class InvestmentController {
     private final GetPortfolioAllocationUseCase getPortfolioAllocationUseCase;
     private final GetPortfolioHistoryUseCase getPortfolioHistoryUseCase;
     private final GetDividendRadarUseCase getDividendRadarUseCase;
+    private final GetAssetDetailsUseCase getAssetDetailsUseCase;
     private final Validator validator;
 
     public InvestmentController(ConfigureInvestmentsUseCase configureInvestmentsUseCase,
@@ -52,6 +55,7 @@ public class InvestmentController {
                                  GetPortfolioAllocationUseCase getPortfolioAllocationUseCase,
                                  GetPortfolioHistoryUseCase getPortfolioHistoryUseCase,
                                  GetDividendRadarUseCase getDividendRadarUseCase,
+                                 GetAssetDetailsUseCase getAssetDetailsUseCase,
                                  Validator validator) {
         this.configureInvestmentsUseCase = configureInvestmentsUseCase;
         this.externalInvestmentApiPort = externalInvestmentApiPort;
@@ -60,6 +64,7 @@ public class InvestmentController {
         this.getPortfolioAllocationUseCase = getPortfolioAllocationUseCase;
         this.getPortfolioHistoryUseCase = getPortfolioHistoryUseCase;
         this.getDividendRadarUseCase = getDividendRadarUseCase;
+        this.getAssetDetailsUseCase = getAssetDetailsUseCase;
         this.validator = validator;
     }
 
@@ -142,5 +147,11 @@ public class InvestmentController {
     public ResponseEntity<DividendRadarResponseDTO> getDividends() {
         String email = SecurityUtils.getCurrentUserEmail();
         return ResponseEntity.ok(getDividendRadarUseCase.execute(email));
+    }
+
+    @GetMapping("/asset-details/{ticker}")
+    public ResponseEntity<AssetDetailsResponseDTO> getAssetDetails(@PathVariable String ticker) {
+        String email = SecurityUtils.getCurrentUserEmail();
+        return ResponseEntity.ok(getAssetDetailsUseCase.execute(email, ticker));
     }
 }

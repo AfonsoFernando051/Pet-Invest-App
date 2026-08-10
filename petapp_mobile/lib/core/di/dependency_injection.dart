@@ -19,6 +19,8 @@ import 'package:petapp_mobile/features/portfolio/data/repositories/achievements_
 import 'package:petapp_mobile/features/portfolio/data/repositories/portfolio_repository.dart';
 import 'package:petapp_mobile/features/settings/data/datasources/settings_remote_datasource.dart';
 import 'package:petapp_mobile/features/settings/data/repositories/settings_repository.dart';
+import 'package:petapp_mobile/features/asset_details/data/datasources/asset_details_remote_datasource.dart';
+import 'package:petapp_mobile/features/asset_details/data/repositories/asset_details_repository.dart';
 
 class DI {
   static final ApiClient _apiClient = ApiClient();
@@ -79,4 +81,10 @@ class DI {
     remoteDataSource: _mentorRemoteDataSource,
     petPreferencesRepository: petPreferencesRepository,
   );
+
+  static final AssetDetailsRemoteDataSource _assetDetailsRemoteDataSource =
+      AssetDetailsRemoteDataSource(apiClient: _apiClient);
+  // Not `final` so tests can replace it with a mock repository.
+  static AssetDetailsRepository assetDetailsRepository =
+      AssetDetailsRepository(remoteDataSource: _assetDetailsRemoteDataSource);
 }

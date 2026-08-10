@@ -186,4 +186,39 @@ public class BrapiInvestmentApiClient implements ExternalInvestmentApiPort {
             return null;
         }
     }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public Optional<Map<String, Object>> getEnrichedQuote(String ticker) {
+        if (token == null || token.isBlank()) {
+            log.warn("api.brapi.token is not configured; cannot fetch enriched quote for {}", ticker);
+            return Optional.empty();
+        }
+
+        try {
+            // Request all available modules from Brapi for maximum data coverage.
+            // The summaryProfile module provides sector, industry, description, etc.
+            String url = String.format(
+                "https://brapi.dev/api/quote/%s?token=%s&modules=summaryProfile",
+                ticker, token
+            );
+            Map<String, Object> response = restTemplate.getForObject(url, Map.class);
+
+            if (response != null && response.containsKey("results")) {
+                List<Map<String, Object>> results = (List<Map<String, Object>>) response.get("results");
+                if (results != null && !results.isEmpty()) {
+                    return Optional.of(results.get(0));
+                }
+            }
+            return Optional.empty();
+        } catch (HttpClientErrorException e) {
+            log.warn("Brapi enriched quote request failed for {}: HTTP {}", ticker, e.getStatusCode());
+            return Optional.empty();
+        } catch (Exception e) {
+            // Don't log e.getMessage(): connectivity exceptions may embed the token in the URL.
+            log.warn("Brapi enriched quote request failed for {}: {}", ticker, e.getClass().getSimpleName());
+            return Optional.empty();
+        }
+    }
 }
+
