@@ -52,6 +52,31 @@ void main() {
       // assert
       expect(() => call(tEmail, tPassword), throwsA(isA<Exception>()));
     });
+
+    test('should surface the backend\'s specific reason instead of just the status code', () async {
+      // Mirrors the real shape GlobalExceptionHandler returns for a 401 on
+      // bad credentials — previously this detail was discarded entirely and
+      // the user only ever saw "Failed to login. Status Code: 401".
+      when(() => mockApiClient.post(any(), any())).thenAnswer(
+        (_) async => http.Response(jsonEncode({'detail': 'Invalid email or password'}), 401),
+      );
+
+      await expectLater(
+        () => dataSource.login(tEmail, tPassword),
+        throwsA(predicate((e) => e is Exception && e.toString().contains('Invalid email or password'))),
+      );
+    });
+
+    test('falls back to a generic message when the error body has no detail', () async {
+      when(() => mockApiClient.post(any(), any())).thenAnswer(
+        (_) async => http.Response('Bad Request', 400),
+      );
+
+      await expectLater(
+        () => dataSource.login(tEmail, tPassword),
+        throwsA(predicate((e) => e is Exception && e.toString().contains('Status Code: 400'))),
+      );
+    });
   });
 
   group('AuthRemoteDataSource - register', () {
@@ -92,6 +117,35 @@ void main() {
 
       // assert
       expect(() => call(tName, tEmail, tPassword), throwsA(isA<Exception>()));
+    });
+
+    test('should surface the backend\'s validation reason instead of just the status code', () async {
+      // Reproduces the reported bug: registering with a name shorter than
+      // the backend's minimum used to show only "Failed to register. Status
+      // Code: 400", with no indication of what was actually wrong.
+      when(() => mockApiClient.post(any(), any())).thenAnswer(
+        (_) async => http.Response(
+          jsonEncode({'detail': 'username: Username must be between 3 and 50 characters'}),
+          400,
+        ),
+      );
+
+      await expectLater(
+        () => dataSource.register(tName, tEmail, tPassword),
+        throwsA(predicate((e) =>
+            e is Exception && e.toString().contains('Username must be between 3 and 50 characters'))),
+      );
+    });
+
+    test('should surface a duplicate-email conflict reason', () async {
+      when(() => mockApiClient.post(any(), any())).thenAnswer(
+        (_) async => http.Response(jsonEncode({'detail': 'User already exists'}), 409),
+      );
+
+      await expectLater(
+        () => dataSource.register(tName, tEmail, tPassword),
+        throwsA(predicate((e) => e is Exception && e.toString().contains('User already exists'))),
+      );
     });
   });
 }

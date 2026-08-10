@@ -8,6 +8,8 @@ import 'package:petapp_mobile/core/di/dependency_injection.dart';
 import 'package:petapp_mobile/core/utils/game_snack.dart';
 import 'package:petapp_mobile/core/utils/translator.dart';
 import 'package:petapp_mobile/core/widgets/glass_card.dart';
+import 'package:petapp_mobile/core/widgets/app_loading_indicator.dart';
+import 'package:petapp_mobile/core/widgets/confirm_logout_dialog.dart';
 import 'package:petapp_mobile/features/auth/presentation/screens/login_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -107,33 +109,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _confirmLogout() async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (_) => AlertDialog(
-        backgroundColor: AppColors.spaceBlue,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text(
-          Translator.translate(AppStrings.logoutConfirmTitle),
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-        ),
-        content: Text(
-          Translator.translate(AppStrings.logoutConfirmMessage),
-          style: const TextStyle(color: AppColors.subtleText),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(Translator.translate(AppStrings.cancelButton), style: const TextStyle(color: AppColors.neonCyan)),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: Text(Translator.translate(AppStrings.logoutButton), style: const TextStyle(color: AppColors.negativeRed)),
-          ),
-        ],
-      ),
-    );
+    final confirmed = await ConfirmLogoutDialog.show(context);
 
-    if (confirmed == true && mounted) {
+    if (confirmed && mounted) {
       HapticFeedback.mediumImpact();
       await DI.authRepository.logout();
       if (mounted) {
@@ -178,7 +156,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           SafeArea(
             child: _loadingPrefs
-                ? const Center(child: CircularProgressIndicator(color: AppColors.neonCyan))
+                ? const AppLoadingIndicator()
                 : SingleChildScrollView(
                     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                     child: Column(

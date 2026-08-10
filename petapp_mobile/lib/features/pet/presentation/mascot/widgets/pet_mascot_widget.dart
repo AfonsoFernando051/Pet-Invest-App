@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lottie/lottie.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
+import 'package:petapp_mobile/core/utils/pet_assets.dart';
 import 'package:petapp_mobile/features/pet/domain/enums/accessory_type.dart';
 import 'package:petapp_mobile/features/pet/domain/enums/pet_accessory_id.dart';
 import 'package:petapp_mobile/features/pet/domain/enums/pet_animation_state.dart';
@@ -218,7 +219,7 @@ class _EvolutionFallback extends StatelessWidget {
       height: size,
       fit: BoxFit.contain,
       errorBuilder: (context, error, stackTrace) => Image.asset(
-        'assets/images/generated_dog.png',
+        PetAssets.imageFor(null),
         width: size,
         height: size,
         fit: BoxFit.contain,

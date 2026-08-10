@@ -10,6 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class ConfigurePetUseCaseImpl implements ConfigurePetUseCase {
 
+    private static final int DEFAULT_PET_HEALTH = 100;
+
     private final UserRepository userRepository;
 
     public ConfigurePetUseCaseImpl(UserRepository userRepository) {
@@ -26,7 +28,7 @@ public class ConfigurePetUseCaseImpl implements ConfigurePetUseCase {
         if (pet == null) {
             pet = new Pet();
             pet.setUser(user);
-            pet.setHealth(100);
+            pet.setHealth(DEFAULT_PET_HEALTH);
             pet.setName(specie.name() + " Companion");
             user.setPet(pet);
         }

@@ -7,6 +7,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
@@ -56,11 +57,22 @@ public class GeminiChatClient implements GeminiChatPort {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
+        // The key travels as a header, never in the URL — a URL is far more likely to end
+        // up verbatim in logs, error messages, proxies, or browser/HTTP-client history.
+        headers.set("x-goog-api-key", apiKey);
 
-        String url = String.format("%s/models/%s:generateContent?key=%s", baseUrl, model, apiKey);
+        String url = String.format("%s/models/%s:generateContent", baseUrl, model);
 
         @SuppressWarnings("rawtypes")
-        Map response = restTemplate.postForObject(url, new HttpEntity<>(body, headers), Map.class);
+        Map response;
+        try {
+            response = restTemplate.postForObject(url, new HttpEntity<>(body, headers), Map.class);
+        } catch (RestClientException e) {
+            // RestTemplate's exception messages already include the request URL; since the
+            // key is now header-only, the URL is safe, but keep it explicit that nothing
+            // header-related (i.e. the key) is ever part of this message.
+            throw new IllegalStateException("Gemini request failed: " + e.getClass().getSimpleName(), e);
+        }
 
         return extractReply(response);
     }

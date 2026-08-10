@@ -1,6 +1,8 @@
 package com.jf.PetApp.infrastructure.external;
 
 import com.jf.PetApp.application.translation.port.TranslationClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -19,6 +21,8 @@ import java.util.Optional;
  */
 @Service
 public class LibreTranslateClient implements TranslationClient {
+
+    private static final Logger log = LoggerFactory.getLogger(LibreTranslateClient.class);
 
     private final RestTemplate restTemplate;
 
@@ -63,7 +67,8 @@ public class LibreTranslateClient implements TranslationClient {
             }
             return Optional.empty();
         } catch (Exception e) {
-            System.err.println("WARN: LibreTranslate call failed (" + sourceLang + "->" + targetLang + "): " + e.getMessage());
+            // The API key travels in the POST body, not the URL, so this message is safe to log.
+            log.warn("LibreTranslate call failed ({} -> {}): {}", sourceLang, targetLang, e.getMessage());
             return Optional.empty();
         }
     }

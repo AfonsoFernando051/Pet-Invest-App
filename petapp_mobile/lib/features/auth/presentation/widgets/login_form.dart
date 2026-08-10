@@ -3,6 +3,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/utils/translator.dart';
 import '../../../../core/utils/game_snack.dart';
+import '../../../../core/utils/friendly_error_message.dart';
 import '../../../../core/di/dependency_injection.dart';
 import '../../../../main.dart';
 import 'custom_text_field.dart';
@@ -55,7 +56,7 @@ class _LoginFormState extends State<LoginForm> {
       if (mounted) {
         GameSnack.show(
           context,
-          'Login falhou: ${e.toString().replaceAll('Exception: ', '')}',
+          'Login falhou: ${friendlyErrorMessage(e)}',
           isError: true,
         );
       }

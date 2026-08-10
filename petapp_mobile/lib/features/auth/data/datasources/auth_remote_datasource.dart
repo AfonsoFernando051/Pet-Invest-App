@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:petapp_mobile/core/network/api_client.dart';
+import 'package:petapp_mobile/core/network/api_error_parser.dart';
 import 'package:petapp_mobile/core/constants/api_constants.dart';
 import 'package:petapp_mobile/features/auth/data/models/user_model.dart';
 
@@ -21,7 +22,7 @@ class AuthRemoteDataSource {
       final data = jsonDecode(response.body);
       return UserModel.fromJson(data);
     } else {
-      throw Exception('Failed to login. Status Code: ${response.statusCode}');
+      throw Exception(extractErrorDetail(response, fallback: 'Failed to login. Status Code: ${response.statusCode}'));
     }
   }
 
@@ -39,7 +40,7 @@ class AuthRemoteDataSource {
       final data = jsonDecode(response.body);
       return UserModel.fromJson(data);
     } else {
-      throw Exception('Failed to register. Status Code: ${response.statusCode}');
+      throw Exception(extractErrorDetail(response, fallback: 'Failed to register. Status Code: ${response.statusCode}'));
     }
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
+import 'package:petapp_mobile/core/widgets/app_loading_indicator.dart';
 import 'package:petapp_mobile/features/portfolio/domain/entities/dividend_event.dart';
 import 'package:petapp_mobile/features/portfolio/presentation/widgets/dividend_event_tile.dart';
 
@@ -74,7 +75,7 @@ class DividendNotificationsSheet extends StatelessWidget {
     if (isLoading && upcoming.isEmpty) {
       return const Padding(
         padding: EdgeInsets.symmetric(vertical: 32),
-        child: Center(child: CircularProgressIndicator(color: AppColors.neonCyan, strokeWidth: 2)),
+        child: AppLoadingIndicator(strokeWidth: 2),
       );
     }
 

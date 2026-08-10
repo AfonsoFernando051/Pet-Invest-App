@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
+import 'package:petapp_mobile/core/widgets/app_loading_indicator.dart';
 import 'package:petapp_mobile/features/portfolio/presentation/controllers/portfolio_controller.dart';
 import 'package:petapp_mobile/features/portfolio/presentation/widgets/dividend_radar_section.dart';
 import 'package:petapp_mobile/features/portfolio/presentation/widgets/passive_income_card.dart';
@@ -39,7 +40,7 @@ class _PassiveIncomeScreenState extends State<PassiveIncomeScreen> {
     final controller = widget.controller;
 
     if (controller.isLoading && controller.holdings.isEmpty && controller.error == null) {
-      return const Center(child: CircularProgressIndicator(color: AppColors.neonCyan));
+      return const AppLoadingIndicator();
     }
 
     return RefreshIndicator(

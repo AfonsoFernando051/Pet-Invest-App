@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
 import 'package:petapp_mobile/core/di/dependency_injection.dart';
+import 'package:petapp_mobile/core/navigation/start_route_resolver.dart';
 import 'package:petapp_mobile/core/utils/translator.dart';
 import 'package:petapp_mobile/features/auth/presentation/screens/login_screen.dart';
 import 'package:petapp_mobile/features/dashboard/presentation/screens/dashboard_screen.dart';
@@ -17,43 +18,8 @@ void main() async {
   runApp(const MyApp());
 }
 
-/// The redesigned onboarding sequence: configure the pet (species + name,
-/// in one screen right after registering) and pick a goal — all
-/// emotional/low-friction steps — before the (now fully optional) portfolio
-/// step. The old risk-assessment questionnaire (`OnboardingScreen`) no
-/// longer gates this chain; it's reachable later as a suggested action on
-/// Home, since it's financial data collection too and shouldn't block
-/// reaching Home in under a minute.
-enum StartRoute { login, meetPet, financialGoal, tutorial, portfolioChoice, home }
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
-  Future<StartRoute> _getStartRoute() async {
-    final loggedIn = await DI.authRepository.isLoggedIn();
-    if (!loggedIn) return StartRoute.login;
-
-    try {
-      final hasPet = await DI.petRepository.getPetStatus();
-      final profile = await DI.mascotRepository.loadProfile();
-      final hasName = profile.name != null && profile.name!.trim().isNotEmpty;
-      if (!hasPet || !hasName) return StartRoute.meetPet;
-
-      final hasSetGoal = await DI.onboardingStateRepository.hasSetGoal();
-      if (!hasSetGoal) return StartRoute.financialGoal;
-
-      final tutorialDone = await DI.onboardingStateRepository.isTutorialCompleted();
-      if (!tutorialDone) return StartRoute.tutorial;
-
-      final portfolioStepDone = await DI.onboardingStateRepository.isPortfolioStepDone();
-      if (!portfolioStepDone) return StartRoute.portfolioChoice;
-
-      return StartRoute.home;
-    } catch (_) {
-      await DI.authRepository.logout();
-      return StartRoute.login;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -84,7 +50,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
         home: FutureBuilder<StartRoute>(
-          future: _getStartRoute(),
+          future: StartRouteResolver().resolve(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const _SplashScreen();

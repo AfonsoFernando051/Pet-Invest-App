@@ -1,47 +1,36 @@
 package com.jf.PetApp.application.investment.usecase;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.jf.PetApp.infrastructure.controller.investment.dto.AssetRegistrationDto;
-import com.jf.PetApp.infrastructure.entity.InvestmentJpaEntity;
-import com.jf.PetApp.infrastructure.entity.UserJpaEntity;
-import com.jf.PetApp.infrastructure.repository.InvestmentRepository;
-import com.jf.PetApp.infrastructure.repository.user.SpringUserJpaRepository;
+import com.jf.PetApp.application.investment.port.InvestmentRepositoryPort;
+import com.jf.PetApp.application.user.port.UserRepository;
+import com.jf.PetApp.core.domain.Investment;
 
 @Service
 public class ConfigureInvestmentsUseCaseImpl implements ConfigureInvestmentsUseCase {
 
-    private final InvestmentRepository investmentRepository;
-    private final SpringUserJpaRepository userRepository;
+    private final InvestmentRepositoryPort investmentRepositoryPort;
+    private final UserRepository userRepository;
 
-    public ConfigureInvestmentsUseCaseImpl(InvestmentRepository investmentRepository, SpringUserJpaRepository userRepository) {
-        this.investmentRepository = investmentRepository;
+    public ConfigureInvestmentsUseCaseImpl(InvestmentRepositoryPort investmentRepositoryPort, UserRepository userRepository) {
+        this.investmentRepositoryPort = investmentRepositoryPort;
         this.userRepository = userRepository;
     }
 
     @Override
     @Transactional
-    public void execute(String email, List<AssetRegistrationDto> types) {
-        UserJpaEntity user = userRepository.findByEmail(email)
+    public void execute(String email, List<ConfigureInvestmentCommand> commands) {
+        userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("User not found for email: " + email));
 
-        investmentRepository.deleteByUserEmail(email);
+        List<Investment> investments = commands.stream()
+                .map(c -> new Investment(null, email, c.name(), c.quantity(), c.purchasePrice(), c.purchaseDate(), c.type()))
+                .toList();
 
-        List<InvestmentJpaEntity> newEntities = types.stream().map(dto -> {
-            InvestmentJpaEntity entity = new InvestmentJpaEntity();
-            entity.setUser(user);
-            entity.setType(dto.type());
-            entity.setName(dto.name());
-            entity.setQuantity(dto.quantity());
-            entity.setPurchasePrice(dto.purchasePrice());
-            entity.setPurchaseDate(dto.purchaseDate());
-            return entity;
-        }).collect(Collectors.toList());
-
-        investmentRepository.saveAll(newEntities);
+        investmentRepositoryPort.deleteByUserEmail(email);
+        investmentRepositoryPort.saveAll(email, investments);
     }
 }

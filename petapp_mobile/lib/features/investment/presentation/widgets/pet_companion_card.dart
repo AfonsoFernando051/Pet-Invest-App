@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
 import 'package:petapp_mobile/core/di/dependency_injection.dart';
+import 'package:petapp_mobile/core/utils/pet_assets.dart';
 
 /// The animated pet + speech bubble that reacts to portfolio-setup
 /// progress — the emotional guide through onboarding, per the brief. Reuses
@@ -45,9 +46,9 @@ class _PetCompanionCardState extends State<PetCompanionCard> with TickerProvider
   Future<void> _fetchSpecie() async {
     try {
       final petData = await DI.petRepository.getMyPet();
-      final specie = petData?['specie']?.toString().toLowerCase();
+      final specie = petData?['specie']?.toString();
       if (specie != null && mounted) {
-        setState(() => _petAsset = 'assets/images/generated_$specie.png');
+        setState(() => _petAsset = PetAssets.imageFor(specie));
       }
     } catch (_) {
       // Keep the fallback compass-fox illustration.

@@ -4,6 +4,8 @@ import com.jf.PetApp.application.investment.dto.AssetQuoteResponse;
 import com.jf.PetApp.application.investment.dto.DividendDTO;
 import com.jf.PetApp.application.investment.port.ExternalInvestmentApiPort;
 import com.jf.PetApp.core.domain.enums.DividendType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -20,6 +22,8 @@ import java.util.Optional;
 @Service
 public class BrapiInvestmentApiClient implements ExternalInvestmentApiPort {
 
+    private static final Logger log = LoggerFactory.getLogger(BrapiInvestmentApiClient.class);
+
     private final RestTemplate restTemplate;
     
     @Value("${api.brapi.token:}")
@@ -32,7 +36,7 @@ public class BrapiInvestmentApiClient implements ExternalInvestmentApiPort {
     @Override
     public Optional<AssetQuoteResponse> getQuote(String ticker) {
         if (token == null || token.isBlank()) {
-            System.err.println("WARN: api.brapi.token is missing in application.properties. Providing mock data for " + ticker);
+            log.warn("api.brapi.token is not configured; returning mock data for {}", ticker);
             // Provide a mock response if no token is configured yet.
             return Optional.of(new AssetQuoteResponse(ticker.toUpperCase(), "Simulated " + ticker.toUpperCase(), 50.0, "BRL"));
         }
@@ -67,10 +71,12 @@ public class BrapiInvestmentApiClient implements ExternalInvestmentApiPort {
             }
             return Optional.empty();
         } catch (HttpClientErrorException e) {
-            System.err.println("Error fetching quote from Brapi: " + e.getStatusCode());
+            log.warn("Brapi quote request failed for {}: HTTP {}", ticker, e.getStatusCode());
             return Optional.empty();
         } catch (Exception e) {
-            e.printStackTrace();
+            // Don't log e.getMessage()/stack trace here: connectivity exceptions from
+            // RestTemplate commonly embed the full request URL, which includes the token.
+            log.warn("Brapi quote request failed for {}: {}", ticker, e.getClass().getSimpleName());
             return Optional.empty();
         }
     }
@@ -102,8 +108,8 @@ public class BrapiInvestmentApiClient implements ExternalInvestmentApiPort {
             }
             return resultList;
         } catch (Exception e) {
-            System.err.println("Error fetching search list from Brapi");
-            e.printStackTrace();
+            // No token in this URL (search doesn't require one), so the message is safe to log.
+            log.warn("Brapi search request failed for query '{}': {}", query, e.getMessage());
             return new ArrayList<>();
         }
     }
@@ -157,7 +163,8 @@ public class BrapiInvestmentApiClient implements ExternalInvestmentApiPort {
             }
             return result;
         } catch (Exception e) {
-            System.err.println("WARN: Failed to fetch dividends from Brapi for " + ticker + ": " + e.getMessage());
+            // This URL may include the token; log the exception type only, never its message.
+            log.warn("Failed to fetch dividends from Brapi for {}: {}", ticker, e.getClass().getSimpleName());
             return new ArrayList<>();
         }
     }

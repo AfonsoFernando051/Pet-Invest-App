@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:petapp_mobile/core/network/api_client.dart';
-import 'package:petapp_mobile/core/constants/api_constants.dart';
 import 'package:petapp_mobile/features/pet/data/models/pet_specie_enum.dart';
 
 class PetRemoteDataSource {

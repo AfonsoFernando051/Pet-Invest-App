@@ -3,7 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
 import 'package:petapp_mobile/core/constants/app_strings.dart';
 import 'package:petapp_mobile/core/di/dependency_injection.dart';
+import 'package:petapp_mobile/core/utils/friendly_error_message.dart';
 import 'package:petapp_mobile/core/utils/game_snack.dart';
+import 'package:petapp_mobile/core/utils/pet_assets.dart';
 import 'package:petapp_mobile/core/utils/translator.dart';
 import 'package:petapp_mobile/features/pet/data/models/pet_specie_enum.dart';
 import 'package:petapp_mobile/features/pet/presentation/screens/financial_goal_screen.dart';
@@ -84,7 +86,7 @@ class _PetConfigurationScreenState extends State<PetConfigurationScreen> with Si
       if (mounted) {
         GameSnack.show(
           context,
-          '${Translator.translate(AppStrings.failedToSavePet)}: ${e.toString()}',
+          '${Translator.translate(AppStrings.failedToSavePet)}: ${friendlyErrorMessage(e)}',
           isError: true,
         );
       }
@@ -303,7 +305,7 @@ class _PetConfigurationScreenState extends State<PetConfigurationScreen> with Si
               ),
               padding: const EdgeInsets.all(20),
               child: Image.asset(
-                'assets/images/generated_${_selectedSpecie.name.toLowerCase()}.png',
+                PetAssets.imageFor(_selectedSpecie.name),
                 fit: BoxFit.contain,
               ),
             ),
@@ -344,7 +346,7 @@ class _PetConfigurationScreenState extends State<PetConfigurationScreen> with Si
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       image: DecorationImage(
-                        image: AssetImage('assets/images/generated_${specie.name.toLowerCase()}.png'),
+                        image: AssetImage(PetAssets.imageFor(specie.name)),
                         fit: BoxFit.cover,
                       ),
                       border: Border.all(color: Colors.white24, width: 1),

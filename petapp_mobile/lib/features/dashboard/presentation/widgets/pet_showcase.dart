@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/utils/pet_assets.dart';
 import '../../../../core/widgets/glass_card.dart';
 import '../../../../core/di/dependency_injection.dart';
 
@@ -20,7 +21,7 @@ class PetShowcase extends StatefulWidget {
 class _PetShowcaseState extends State<PetShowcase> with TickerProviderStateMixin {
   // Data
   bool _isLoadingPet = true;
-  String _petAsset = 'assets/images/generated_dog.png';
+  String _petAsset = PetAssets.imageFor(null);
 
   // Pet stat value (0.0 – 1.0), sourced from the backend `health` field —
   // see `_fetchMyPet`. There is no real "Mood" figure to show yet (that
@@ -154,13 +155,13 @@ class _PetShowcaseState extends State<PetShowcase> with TickerProviderStateMixin
     try {
       final petData = await DI.petRepository.getMyPet();
       if (petData != null && mounted) {
-        final specie = (petData['specie'] as String).toLowerCase();
+        final specie = petData['specie'] as String?;
         // Derive health from API if present
         final rawHealth = petData['health'];
         setState(() {
-          _petAsset = 'assets/images/generated_$specie.png';
-          if (rawHealth != null) {
-            _health = (rawHealth as num).toDouble().clamp(0.0, 100.0) / 100.0;
+          _petAsset = PetAssets.imageFor(specie);
+          if (rawHealth is num) {
+            _health = rawHealth.toDouble().clamp(0.0, 100.0) / 100.0;
           }
           _isLoadingPet = false;
         });

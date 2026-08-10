@@ -70,8 +70,8 @@ void main() {
       // Fill in the form
       await tester.enterText(nameField, 'Test User');
       await tester.enterText(emailField, 'test@example.com');
-      await tester.enterText(passwordField, 'password123');
-      await tester.enterText(confirmPasswordField, 'password123');
+      await tester.enterText(passwordField, 'Str0ngPass1');
+      await tester.enterText(confirmPasswordField, 'Str0ngPass1');
       await tester.pump();
 
       // Tap the signup button — a `GameButton` (premium gradient/glow CTA)
@@ -83,7 +83,7 @@ void main() {
       await tester.pump(); // UI updates with loading state
       await tester.pump(); // UI updates with success snackbar
 
-      verify(() => mockAuthRepository.register('Test User', 'test@example.com', 'password123')).called(1);
+      verify(() => mockAuthRepository.register('Test User', 'test@example.com', 'Str0ngPass1')).called(1);
     });
   });
 }

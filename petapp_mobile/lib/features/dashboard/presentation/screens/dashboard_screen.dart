@@ -6,6 +6,8 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/utils/translator.dart';
 import '../../../../core/utils/game_snack.dart';
+import '../../../../core/widgets/app_loading_indicator.dart';
+import '../../../../core/widgets/confirm_logout_dialog.dart';
 import '../../../../core/widgets/cosmic_background.dart';
 import '../../../../core/widgets/glass_card.dart';
 import '../../../../core/di/dependency_injection.dart';
@@ -91,7 +93,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     if (event is UserLeveledUpEvent) {
       GameSnack.showWithHaptic(
         context,
-        'Nível ${event.newLevel} alcançado!',
+        Translator.translate(AppStrings.levelUpAchieved, params: {'level': '${event.newLevel}'}),
         isSuccess: true,
       );
     }
@@ -165,33 +167,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   // ── Logout ────────────────────────────────────────────────────────────────
   Future<void> _confirmLogout() async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (_) => AlertDialog(
-        backgroundColor: AppColors.spaceBlue,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text(
-          'Sair do Invest Game?',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-        ),
-        content: const Text(
-          'Tem certeza que deseja encerrar sua sessão?',
-          style: TextStyle(color: AppColors.subtleText),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancelar', style: TextStyle(color: AppColors.neonCyan)),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Sair', style: TextStyle(color: AppColors.negativeRed)),
-          ),
-        ],
-      ),
-    );
+    final confirmed = await ConfirmLogoutDialog.show(context);
 
-    if (confirmed == true && mounted) {
+    if (confirmed && mounted) {
       HapticFeedback.mediumImpact();
       await DI.authRepository.logout();
       if (mounted) {
@@ -363,7 +341,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     if (_portfolioController.isLoading &&
         _portfolioController.holdings.isEmpty &&
         _portfolioController.error == null) {
-      return const Center(child: CircularProgressIndicator(color: AppColors.neonCyan));
+      return const AppLoadingIndicator();
     }
 
     // No real holdings yet — whether the user skipped portfolio setup or

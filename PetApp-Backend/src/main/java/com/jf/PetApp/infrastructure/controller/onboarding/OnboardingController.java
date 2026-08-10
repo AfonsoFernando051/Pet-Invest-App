@@ -1,16 +1,13 @@
 package com.jf.PetApp.infrastructure.controller.onboarding;
 
-import com.jf.PetApp.application.onboarding.usecase.CalculateInvestorProfileUseCase;
+import com.jf.PetApp.application.onboarding.usecase.SubmitAssessmentUseCase;
 import com.jf.PetApp.application.translation.service.TranslationCacheService;
 import com.jf.PetApp.application.user.port.UserRepository;
 import com.jf.PetApp.core.domain.assessment.InvestorProfile;
-import com.jf.PetApp.core.domain.assessment.UserAssessment;
 import com.jf.PetApp.core.domain.User;
 import com.jf.PetApp.core.port.QuestionRepository;
+import com.jf.PetApp.core.security.SecurityUtils;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -22,17 +19,17 @@ import java.util.stream.Collectors;
 public class OnboardingController {
 
     private final QuestionRepository questionRepository;
-    private final CalculateInvestorProfileUseCase calculateInvestorProfileUseCase;
+    private final SubmitAssessmentUseCase submitAssessmentUseCase;
     private final UserRepository userRepository;
     private final TranslationCacheService translationCacheService;
 
     public OnboardingController(
             QuestionRepository questionRepository,
-            CalculateInvestorProfileUseCase calculateInvestorProfileUseCase,
+            SubmitAssessmentUseCase submitAssessmentUseCase,
             UserRepository userRepository,
             TranslationCacheService translationCacheService) {
         this.questionRepository = questionRepository;
-        this.calculateInvestorProfileUseCase = calculateInvestorProfileUseCase;
+        this.submitAssessmentUseCase = submitAssessmentUseCase;
         this.userRepository = userRepository;
         this.translationCacheService = translationCacheService;
     }
@@ -55,20 +52,8 @@ public class OnboardingController {
 
     @PostMapping("/submit")
     public ResponseEntity<ProfileResponseDTO> submitAssessment(@RequestBody SubmitAssessmentRequestDTO request) {
-        User user = resolveCurrentUser();
-
-        // If the user already completed the onboarding, return their existing profile.
-        if (user.hasAnsweredOnboarding() && user.getInvestorProfile() != null) {
-            return ResponseEntity.ok(new ProfileResponseDTO(user.getInvestorProfile().name()));
-        }
-
-        UserAssessment assessment = new UserAssessment(user.getId(), request.selectedOptionIds());
-        InvestorProfile profile = calculateInvestorProfileUseCase.execute(assessment);
-
-        user.setHasAnsweredOnboarding(true);
-        user.setInvestorProfile(profile);
-        userRepository.save(user);
-
+        String email = SecurityUtils.getCurrentUserEmail();
+        InvestorProfile profile = submitAssessmentUseCase.execute(email, request.selectedOptionIds());
         return ResponseEntity.ok(new ProfileResponseDTO(profile.name()));
     }
 
@@ -80,27 +65,7 @@ public class OnboardingController {
     }
 
     private User resolveCurrentUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            throw new ResponseStatusException(org.springframework.http.HttpStatus.UNAUTHORIZED, "Not authenticated");
-        }
-
-        Object principal = authentication.getPrincipal();
-        if (principal instanceof User domainUser) {
-            return domainUser;
-        }
-
-        String email = null;
-        if (principal instanceof UserDetails userDetails) {
-            email = userDetails.getUsername();
-        } else if (principal instanceof String principalString) {
-            email = principalString;
-        }
-
-        if (email == null || email.isBlank()) {
-            throw new ResponseStatusException(org.springframework.http.HttpStatus.UNAUTHORIZED, "User identity not available");
-        }
-
+        String email = SecurityUtils.getCurrentUserEmail();
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResponseStatusException(org.springframework.http.HttpStatus.UNAUTHORIZED, "User not found"));
     }

@@ -119,4 +119,7 @@ class AppStrings {
   static const String logoutConfirmTitle = "logoutConfirmTitle";
   static const String logoutConfirmMessage = "logoutConfirmMessage";
   static const String cancelButton = "cancelButton";
+
+  // Dashboard
+  static const String levelUpAchieved = "levelUpAchieved";
 }

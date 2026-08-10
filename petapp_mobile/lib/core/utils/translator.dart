@@ -147,6 +147,8 @@ class Translator {
       AppStrings.logoutConfirmTitle: "Sair do Invest Game?",
       AppStrings.logoutConfirmMessage: "Tem certeza que deseja encerrar sua sessão?",
       AppStrings.cancelButton: "Cancelar",
+
+      AppStrings.levelUpAchieved: "Nível {level} alcançado!",
     },
     'en': {
       AppStrings.welcomeBack: "Welcome back",
@@ -251,6 +253,8 @@ class Translator {
       AppStrings.logoutConfirmTitle: "Leave Invest Game?",
       AppStrings.logoutConfirmMessage: "Are you sure you want to end your session?",
       AppStrings.cancelButton: "Cancel",
+
+      AppStrings.levelUpAchieved: "Level {level} reached!",
     },
     'es': {
       AppStrings.welcomeBack: "Bienvenido de nuevo",
@@ -355,6 +359,8 @@ class Translator {
       AppStrings.logoutConfirmTitle: "¿Salir de Invest Game?",
       AppStrings.logoutConfirmMessage: "¿Seguro que deseas cerrar tu sesión?",
       AppStrings.cancelButton: "Cancelar",
+
+      AppStrings.levelUpAchieved: "¡Nivel {level} alcanzado!",
     },
   };
 

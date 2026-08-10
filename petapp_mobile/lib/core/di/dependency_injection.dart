@@ -53,11 +53,13 @@ class DI {
 
   static final InvestmentRemoteDataSource _investmentRemoteDataSource =
       InvestmentRemoteDataSource(apiClient: _apiClient);
+  // Not `final` so tests can replace it with a mock repository.
   static InvestmentRepository investmentRepository =
       InvestmentRepository(remoteDataSource: _investmentRemoteDataSource);
 
   static final SettingsRemoteDataSource _settingsRemoteDataSource =
       SettingsRemoteDataSource(apiClient: _apiClient);
+  // Not `final` so tests can replace it with a mock repository.
   static SettingsRepository settingsRepository =
       SettingsRepository(remoteDataSource: _settingsRemoteDataSource);
 

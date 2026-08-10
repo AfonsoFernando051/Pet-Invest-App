@@ -1,6 +1,7 @@
 package com.jf.PetApp.infrastructure.controller.onboarding;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -19,11 +20,11 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jf.PetApp.application.onboarding.usecase.CalculateInvestorProfileUseCase;
+import com.jf.PetApp.application.onboarding.usecase.SubmitAssessmentUseCase;
+import com.jf.PetApp.application.translation.service.TranslationCacheService;
 import com.jf.PetApp.core.domain.assessment.InvestorProfile;
 import com.jf.PetApp.core.domain.assessment.Option;
 import com.jf.PetApp.core.domain.assessment.Question;
-import com.jf.PetApp.core.domain.User;
 import com.jf.PetApp.core.port.QuestionRepository;
 import com.jf.PetApp.application.user.port.UserRepository;
 import com.jf.PetApp.infrastructure.security.jwt.JwtAuthenticationFilter;
@@ -41,17 +42,25 @@ class OnboardingControllerTest {
     private QuestionRepository questionRepository;
 
     @MockitoBean
-    private CalculateInvestorProfileUseCase calculateInvestorProfileUseCase;
+    private SubmitAssessmentUseCase submitAssessmentUseCase;
 
     @MockitoBean
     private UserRepository userRepository;
-    
+
+    @MockitoBean
+    private TranslationCacheService translationCacheService;
+
     @MockitoBean
     private JwtAuthenticationFilter jwtAuthenticationFilter; // mock the exact filter that security config uses
 
     @Test
     @WithMockUser
     void shouldReturnQuestionsWithoutPoints() throws Exception {
+        // Pass-through: this slice only verifies the web layer wiring, not
+        // real translation.
+        when(translationCacheService.translate(any(), any()))
+            .thenAnswer(invocation -> invocation.getArgument(0));
+
         when(questionRepository.findAll()).thenReturn(List.of(
             new Question("q1", "Test Question", List.of(
                 new Option("opt1", "Test Option", 5)
@@ -71,17 +80,10 @@ class OnboardingControllerTest {
     @Test
     @WithMockUser(username = "test@example.com")
     void shouldSubmitAssessmentAndReturnProfile() throws Exception {
-        when(calculateInvestorProfileUseCase.execute(any())).thenReturn(InvestorProfile.TACTICIAN);
+        when(submitAssessmentUseCase.execute(eq("test@example.com"), eq(List.of("opt1", "opt2"))))
+            .thenReturn(InvestorProfile.TACTICIAN);
 
-        User user = new User();
-        user.setId(1L);
-        user.setEmail("test@example.com");
-        user.setHasAnsweredOnboarding(false);
-
-        when(userRepository.findByEmail("test@example.com")).thenReturn(java.util.Optional.of(user));
-        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
-
-        OnboardingController.SubmitAssessmentRequestDTO request = 
+        OnboardingController.SubmitAssessmentRequestDTO request =
             new OnboardingController.SubmitAssessmentRequestDTO(List.of("opt1", "opt2"));
 
         mockMvc.perform(post("/api/onboarding/submit")

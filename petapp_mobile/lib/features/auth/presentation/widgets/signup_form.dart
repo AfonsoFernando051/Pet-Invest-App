@@ -3,6 +3,8 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/utils/translator.dart';
 import '../../../../core/utils/game_snack.dart';
+import '../../../../core/utils/friendly_error_message.dart';
+import '../../../../core/utils/password_policy.dart';
 import '../../../../core/di/dependency_injection.dart';
 import '../../../../main.dart';
 import 'custom_text_field.dart';
@@ -48,6 +50,12 @@ class _SignupFormState extends State<SignupForm> {
       return;
     }
 
+    final passwordError = PasswordPolicy.validate(password);
+    if (passwordError != null) {
+      GameSnack.show(context, passwordError, isError: true);
+      return;
+    }
+
     setState(() => _isLoading = true);
     try {
       await DI.authRepository.register(name, email, password);
@@ -68,7 +76,7 @@ class _SignupFormState extends State<SignupForm> {
       if (mounted) {
         GameSnack.show(
           context,
-          'Cadastro falhou: ${e.toString().replaceAll('Exception: ', '')}',
+          'Cadastro falhou: ${friendlyErrorMessage(e)}',
           isError: true,
         );
       }

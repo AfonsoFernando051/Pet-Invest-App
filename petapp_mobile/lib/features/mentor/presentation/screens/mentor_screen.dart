@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
 import 'package:petapp_mobile/core/di/dependency_injection.dart';
+import 'package:petapp_mobile/core/utils/pet_assets.dart';
+import 'package:petapp_mobile/core/widgets/app_loading_indicator.dart';
 import 'package:petapp_mobile/core/widgets/glass_card.dart';
 import 'package:petapp_mobile/features/mentor/domain/entities/chat_message.dart';
 import 'package:petapp_mobile/features/mentor/presentation/controllers/mentor_chat_controller.dart';
@@ -34,7 +36,7 @@ class _MentorScreenState extends State<MentorScreen> {
   final TextEditingController _textController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 
-  String _petAsset = 'assets/images/generated_dog.png';
+  String _petAsset = PetAssets.imageFor(null);
 
   @override
   void initState() {
@@ -48,9 +50,9 @@ class _MentorScreenState extends State<MentorScreen> {
   Future<void> _fetchPetAvatar() async {
     try {
       final petData = await DI.petRepository.getMyPet();
-      final specie = (petData?['specie'] as String?)?.toLowerCase();
+      final specie = petData?['specie'] as String?;
       if (specie != null && mounted) {
-        setState(() => _petAsset = 'assets/images/generated_$specie.png');
+        setState(() => _petAsset = PetAssets.imageFor(specie));
       }
     } catch (_) {
       // Keep the default avatar — a missing pet image is cosmetic, not fatal.
@@ -198,7 +200,7 @@ class _MentorScreenState extends State<MentorScreen> {
 
   Widget _buildBody() {
     if (_controller.isLoadingHistory) {
-      return const Center(child: CircularProgressIndicator(color: AppColors.neonCyan));
+      return const AppLoadingIndicator();
     }
 
     if (_controller.messages.isEmpty) {

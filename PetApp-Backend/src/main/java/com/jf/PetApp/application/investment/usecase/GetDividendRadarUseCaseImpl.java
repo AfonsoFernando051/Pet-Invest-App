@@ -4,8 +4,10 @@ import com.jf.PetApp.application.investment.dto.DividendDTO;
 import com.jf.PetApp.application.investment.dto.DividendRadarEntryDTO;
 import com.jf.PetApp.application.investment.dto.DividendRadarResponseDTO;
 import com.jf.PetApp.application.investment.port.ExternalInvestmentApiPort;
-import com.jf.PetApp.infrastructure.entity.InvestmentJpaEntity;
-import com.jf.PetApp.infrastructure.repository.InvestmentRepository;
+import com.jf.PetApp.application.investment.port.InvestmentRepositoryPort;
+import com.jf.PetApp.core.domain.Investment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -28,33 +30,35 @@ import java.util.stream.Collectors;
 @Service
 public class GetDividendRadarUseCaseImpl implements GetDividendRadarUseCase {
 
+    private static final Logger log = LoggerFactory.getLogger(GetDividendRadarUseCaseImpl.class);
+
     /** Bounds payload size for long-lived tickers with decades of history (e.g. PETR4). */
     private static final int MAX_HISTORY_PER_TICKER = 12;
 
-    private final InvestmentRepository investmentRepository;
+    private final InvestmentRepositoryPort investmentRepositoryPort;
     private final ExternalInvestmentApiPort externalInvestmentApiPort;
 
-    public GetDividendRadarUseCaseImpl(InvestmentRepository investmentRepository,
+    public GetDividendRadarUseCaseImpl(InvestmentRepositoryPort investmentRepositoryPort,
                                         ExternalInvestmentApiPort externalInvestmentApiPort) {
-        this.investmentRepository = investmentRepository;
+        this.investmentRepositoryPort = investmentRepositoryPort;
         this.externalInvestmentApiPort = externalInvestmentApiPort;
     }
 
     @Override
     public DividendRadarResponseDTO execute(String email) {
-        List<InvestmentJpaEntity> lots = investmentRepository.findByUser_Email(email);
+        List<Investment> lots = investmentRepositoryPort.findByUserEmail(email);
 
-        Map<String, List<InvestmentJpaEntity>> lotsByTicker = lots.stream()
-                .collect(Collectors.groupingBy(InvestmentJpaEntity::getName));
+        Map<String, List<Investment>> lotsByTicker = lots.stream()
+                .collect(Collectors.groupingBy(Investment::name));
 
         LocalDate today = LocalDate.now();
         List<DividendRadarEntryDTO> upcoming = new ArrayList<>();
         List<DividendRadarEntryDTO> history = new ArrayList<>();
 
-        for (Map.Entry<String, List<InvestmentJpaEntity>> holding : lotsByTicker.entrySet()) {
+        for (Map.Entry<String, List<Investment>> holding : lotsByTicker.entrySet()) {
             String ticker = holding.getKey();
-            List<InvestmentJpaEntity> tickerLots = holding.getValue();
-            double currentQuantity = tickerLots.stream().mapToDouble(InvestmentJpaEntity::getQuantity).sum();
+            List<Investment> tickerLots = holding.getValue();
+            double currentQuantity = tickerLots.stream().mapToDouble(Investment::quantity).sum();
             if (currentQuantity <= 0) continue;
 
             List<DividendDTO> dividends = fetchDividends(ticker);
@@ -94,11 +98,11 @@ public class GetDividendRadarUseCaseImpl implements GetDividendRadarUseCase {
      * data-com date at all — an honest best effort, not a fabrication, since
      * there's no eligibility cutoff to check the purchase history against.
      */
-    private double quantityHeldAsOf(List<InvestmentJpaEntity> tickerLots, LocalDate dataCom, double currentQuantity) {
+    private double quantityHeldAsOf(List<Investment> tickerLots, LocalDate dataCom, double currentQuantity) {
         if (dataCom == null) return currentQuantity;
         return tickerLots.stream()
-                .filter(lot -> lot.getPurchaseDate() != null && !lot.getPurchaseDate().isAfter(dataCom))
-                .mapToDouble(InvestmentJpaEntity::getQuantity)
+                .filter(lot -> lot.purchaseDate() != null && !lot.purchaseDate().isAfter(dataCom))
+                .mapToDouble(Investment::quantity)
                 .sum();
     }
 
@@ -121,7 +125,7 @@ public class GetDividendRadarUseCaseImpl implements GetDividendRadarUseCase {
         try {
             return externalInvestmentApiPort.getDividends(ticker);
         } catch (Exception e) {
-            System.err.println("WARN: Dividend radar failed to fetch " + ticker + ", skipping. Cause: " + e.getMessage());
+            log.warn("Dividend radar failed to fetch {}, skipping: {}", ticker, e.getMessage());
             return List.of();
         }
     }

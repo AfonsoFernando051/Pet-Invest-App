@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
 import 'package:petapp_mobile/core/constants/app_strings.dart';
 import 'package:petapp_mobile/core/di/dependency_injection.dart';
+import 'package:petapp_mobile/core/utils/financial_input_validators.dart';
+import 'package:petapp_mobile/core/utils/friendly_error_message.dart';
 import 'package:petapp_mobile/core/utils/game_snack.dart';
 import 'package:petapp_mobile/core/utils/translator.dart';
 import 'package:petapp_mobile/core/widgets/game_button.dart';
@@ -78,35 +80,52 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
   String _formatNum(double value) => value.truncateToDouble() == value ? value.toInt().toString() : value.toString();
 
   void _addAsset() {
-    if (_formKey.currentState!.validate() && _selectedType != null && _selectedDate != null) {
-      final asset = AssetRegistrationModel(
-        name: _nameController.text,
-        quantity: double.tryParse(_quantityController.text) ?? 0.0,
-        purchasePrice: double.tryParse(_priceController.text) ?? 0.0,
-        purchaseDate: _formatDate(_selectedDate!),
-        type: _selectedType!,
+    // Field-level validators (name required, quantity/price must be valid
+    // positive numbers — see FinancialInputValidators) already show their
+    // own message under the field; a failure here means one of those.
+    if (!_formKey.currentState!.validate()) return;
+
+    if (_selectedType == null || _selectedDate == null) {
+      GameSnack.show(
+        context,
+        _selectedType == null ? 'Selecione um tipo de ativo.' : 'Selecione uma data de compra.',
+        isError: true,
       );
-
-      final wasEditing = _editingIndex != null;
-
-      setState(() {
-        if (_editingIndex != null) {
-          _assets.insert(_editingIndex!.clamp(0, _assets.length), asset);
-          _editingIndex = null;
-        } else {
-          _assets.add(asset);
-        }
-        _nameController.clear();
-        _quantityController.clear();
-        _priceController.clear();
-        _selectedType = null;
-        _selectedDate = null;
-      });
-
-      if (!wasEditing) _showAddFeedback(_assets.length);
-    } else {
-      GameSnack.show(context, 'Preencha todos os campos e selecione uma data/tipo.', isError: true);
+      return;
     }
+
+    // Never fall back to 0.0 for malformed input — the validators above
+    // already guarantee these parse to a valid, positive number, so a null
+    // here would mean the form validated something it shouldn't have.
+    final quantity = FinancialInputValidators.parsePositiveDecimal(_quantityController.text);
+    final price = FinancialInputValidators.parsePositiveDecimal(_priceController.text);
+    if (quantity == null || price == null) return;
+
+    final asset = AssetRegistrationModel(
+      name: _nameController.text,
+      quantity: quantity,
+      purchasePrice: price,
+      purchaseDate: _formatDate(_selectedDate!),
+      type: _selectedType!,
+    );
+
+    final wasEditing = _editingIndex != null;
+
+    setState(() {
+      if (_editingIndex != null) {
+        _assets.insert(_editingIndex!.clamp(0, _assets.length), asset);
+        _editingIndex = null;
+      } else {
+        _assets.add(asset);
+      }
+      _nameController.clear();
+      _quantityController.clear();
+      _priceController.clear();
+      _selectedType = null;
+      _selectedDate = null;
+    });
+
+    if (!wasEditing) _showAddFeedback(_assets.length);
   }
 
   void _showAddFeedback(int newCount) {
@@ -179,7 +198,7 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
       if (mounted) _goHome();
     } catch (e) {
       if (mounted) {
-        GameSnack.show(context, 'Falha ao salvar investimentos: ${e.toString()}', isError: true);
+        GameSnack.show(context, 'Falha ao salvar investimentos: ${friendlyErrorMessage(e)}', isError: true);
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -319,7 +338,13 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String label, TextInputType type, {Widget? suffixIcon}) {
+  Widget _buildTextField(
+    TextEditingController controller,
+    String label,
+    TextInputType type, {
+    Widget? suffixIcon,
+    String? Function(String?)? validator,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
       child: TextFormField(
@@ -345,7 +370,7 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
             borderSide: const BorderSide(color: AppColors.neonCyan, width: 1.5),
           ),
         ),
-        validator: (value) => value == null || value.isEmpty ? 'Campo obrigatório' : null,
+        validator: validator ?? (value) => value == null || value.isEmpty ? 'Campo obrigatório' : null,
       ),
     );
   }
@@ -519,6 +544,7 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
                               _quantityController,
                               'Qtd.',
                               const TextInputType.numberWithOptions(decimal: true),
+                              validator: FinancialInputValidators.quantity,
                             ),
                           ),
                           const SizedBox(width: 8),
@@ -527,6 +553,7 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
                               _priceController,
                               'Preço (R\$)',
                               const TextInputType.numberWithOptions(decimal: true),
+                              validator: FinancialInputValidators.price,
                             ),
                           ),
                         ],

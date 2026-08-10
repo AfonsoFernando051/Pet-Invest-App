@@ -6,18 +6,13 @@ import com.jf.PetApp.application.investment.usecase.GetPortfolioAllocationUseCas
 import com.jf.PetApp.application.investment.usecase.GetPortfolioHistoryUseCase;
 import com.jf.PetApp.application.investment.usecase.GetPortfolioHoldingsUseCase;
 import com.jf.PetApp.application.investment.usecase.GetPortfolioSummaryUseCase;
-import com.jf.PetApp.core.domain.User;
-import com.jf.PetApp.core.domain.enums.InvestmentType;
+import com.jf.PetApp.application.investment.usecase.ConfigureInvestmentCommand;
+import com.jf.PetApp.core.security.SecurityUtils;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 import com.jf.PetApp.infrastructure.controller.investment.dto.AssetRegistrationDto;
 import com.jf.PetApp.application.investment.port.ExternalInvestmentApiPort;
@@ -27,8 +22,15 @@ import com.jf.PetApp.application.investment.dto.PortfolioSummaryDTO;
 import com.jf.PetApp.application.investment.dto.AllocationSliceDTO;
 import com.jf.PetApp.application.investment.dto.PortfolioHistoryPointDTO;
 import com.jf.PetApp.application.investment.dto.DividendRadarResponseDTO;
-import java.util.Optional;
+
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Validator;
+
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/investments")
@@ -41,6 +43,7 @@ public class InvestmentController {
     private final GetPortfolioAllocationUseCase getPortfolioAllocationUseCase;
     private final GetPortfolioHistoryUseCase getPortfolioHistoryUseCase;
     private final GetDividendRadarUseCase getDividendRadarUseCase;
+    private final Validator validator;
 
     public InvestmentController(ConfigureInvestmentsUseCase configureInvestmentsUseCase,
                                  ExternalInvestmentApiPort externalInvestmentApiPort,
@@ -48,7 +51,8 @@ public class InvestmentController {
                                  GetPortfolioSummaryUseCase getPortfolioSummaryUseCase,
                                  GetPortfolioAllocationUseCase getPortfolioAllocationUseCase,
                                  GetPortfolioHistoryUseCase getPortfolioHistoryUseCase,
-                                 GetDividendRadarUseCase getDividendRadarUseCase) {
+                                 GetDividendRadarUseCase getDividendRadarUseCase,
+                                 Validator validator) {
         this.configureInvestmentsUseCase = configureInvestmentsUseCase;
         this.externalInvestmentApiPort = externalInvestmentApiPort;
         this.getPortfolioHoldingsUseCase = getPortfolioHoldingsUseCase;
@@ -56,17 +60,45 @@ public class InvestmentController {
         this.getPortfolioAllocationUseCase = getPortfolioAllocationUseCase;
         this.getPortfolioHistoryUseCase = getPortfolioHistoryUseCase;
         this.getDividendRadarUseCase = getDividendRadarUseCase;
+        this.validator = validator;
     }
 
     @PostMapping("/configure")
     public ResponseEntity<Void> configureInvestments(@RequestBody List<AssetRegistrationDto> request) {
-        String email = com.jf.PetApp.core.security.SecurityUtils.getCurrentUserEmail();
+        String email = SecurityUtils.getCurrentUserEmail();
+        validateAssets(request);
         try {
-            configureInvestmentsUseCase.execute(email, request);
+            configureInvestmentsUseCase.execute(email, toCommands(request));
             return ResponseEntity.ok().build();
         } catch (IllegalArgumentException e) {
-            throw new ResponseStatusException(org.springframework.http.HttpStatus.BAD_REQUEST, "Invalid investment data");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid investment data");
         }
+    }
+
+    // The request body is a raw List<AssetRegistrationDto>, not a wrapper object — Bean
+    // Validation's @Valid does not reliably cascade into elements of a top-level List
+    // request body, so each element is validated explicitly here instead of trusting an
+    // annotation that may silently no-op. The financial rules themselves still live as
+    // constraint annotations on AssetRegistrationDto (single source of truth); this just
+    // guarantees they're actually enforced.
+    private void validateAssets(List<AssetRegistrationDto> request) {
+        if (request == null || request.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "At least one investment is required");
+        }
+        Set<ConstraintViolation<AssetRegistrationDto>> violations = new LinkedHashSet<>();
+        for (AssetRegistrationDto dto : request) {
+            violations.addAll(validator.validate(dto));
+        }
+        if (!violations.isEmpty()) {
+            throw new ConstraintViolationException(violations);
+        }
+    }
+
+    private List<ConfigureInvestmentCommand> toCommands(List<AssetRegistrationDto> request) {
+        return request.stream()
+                .map(dto -> new ConfigureInvestmentCommand(
+                        dto.name(), dto.quantity(), dto.purchasePrice(), dto.purchaseDate(), dto.type()))
+                .toList();
     }
 
     @GetMapping("/quote/{ticker}")
@@ -83,32 +115,32 @@ public class InvestmentController {
 
     @GetMapping
     public ResponseEntity<List<InvestmentLotDTO>> getHoldings() {
-        String email = com.jf.PetApp.core.security.SecurityUtils.getCurrentUserEmail();
+        String email = SecurityUtils.getCurrentUserEmail();
         return ResponseEntity.ok(getPortfolioHoldingsUseCase.execute(email));
     }
 
     @GetMapping("/summary")
     public ResponseEntity<PortfolioSummaryDTO> getSummary() {
-        String email = com.jf.PetApp.core.security.SecurityUtils.getCurrentUserEmail();
+        String email = SecurityUtils.getCurrentUserEmail();
         return ResponseEntity.ok(getPortfolioSummaryUseCase.execute(email));
     }
 
     @GetMapping("/allocation")
     public ResponseEntity<List<AllocationSliceDTO>> getAllocation() {
-        String email = com.jf.PetApp.core.security.SecurityUtils.getCurrentUserEmail();
+        String email = SecurityUtils.getCurrentUserEmail();
         return ResponseEntity.ok(getPortfolioAllocationUseCase.execute(email));
     }
 
     @GetMapping("/history")
     public ResponseEntity<List<PortfolioHistoryPointDTO>> getHistory(
             @RequestParam(required = false, defaultValue = "ALL") String range) {
-        String email = com.jf.PetApp.core.security.SecurityUtils.getCurrentUserEmail();
+        String email = SecurityUtils.getCurrentUserEmail();
         return ResponseEntity.ok(getPortfolioHistoryUseCase.execute(email, range));
     }
 
     @GetMapping("/dividends")
     public ResponseEntity<DividendRadarResponseDTO> getDividends() {
-        String email = com.jf.PetApp.core.security.SecurityUtils.getCurrentUserEmail();
+        String email = SecurityUtils.getCurrentUserEmail();
         return ResponseEntity.ok(getDividendRadarUseCase.execute(email));
     }
 }

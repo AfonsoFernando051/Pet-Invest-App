@@ -3,15 +3,12 @@ package com.jf.PetApp.infrastructure.controller.pet;
 import com.jf.PetApp.application.pet.usecase.ConfigurePetUseCase;
 import com.jf.PetApp.application.pet.usecase.GetPetStatusUseCase;
 import com.jf.PetApp.application.pet.usecase.GetMyPetUseCase;
-import com.jf.PetApp.core.domain.User;
 import com.jf.PetApp.core.domain.Pet;
 import com.jf.PetApp.core.domain.enums.PetSpecieEnum;
+import com.jf.PetApp.core.security.SecurityUtils;
 import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -31,7 +28,7 @@ public class PetController {
 
     @PostMapping("/configure")
     public ResponseEntity<Void> configurePet(@RequestBody ConfigurePetRequestDTO request) {
-        String email = com.jf.PetApp.core.security.SecurityUtils.getCurrentUserEmail();
+        String email = SecurityUtils.getCurrentUserEmail();
         try {
             PetSpecieEnum specie = PetSpecieEnum.valueOf(request.specie().toUpperCase());
             configurePetUseCase.execute(email, specie);
@@ -43,14 +40,14 @@ public class PetController {
 
     @GetMapping("/status")
     public ResponseEntity<PetStatusResponseDTO> getStatus() {
-        String email = com.jf.PetApp.core.security.SecurityUtils.getCurrentUserEmail();
+        String email = SecurityUtils.getCurrentUserEmail();
         boolean hasPet = getPetStatusUseCase.execute(email);
         return ResponseEntity.ok(new PetStatusResponseDTO(hasPet));
     }
 
     @GetMapping("/my-pet")
     public ResponseEntity<PetDetailResponseDTO> getMyPet() {
-        String email = com.jf.PetApp.core.security.SecurityUtils.getCurrentUserEmail();
+        String email = SecurityUtils.getCurrentUserEmail();
         Optional<Pet> petOpt = getMyPetUseCase.execute(email);
         if (petOpt.isEmpty()) {
             return ResponseEntity.notFound().build();

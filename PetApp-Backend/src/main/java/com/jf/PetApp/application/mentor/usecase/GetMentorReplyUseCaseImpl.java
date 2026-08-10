@@ -12,6 +12,8 @@ import com.jf.PetApp.application.pet.usecase.GetMyPetUseCase;
 import com.jf.PetApp.application.user.port.UserRepository;
 import com.jf.PetApp.core.domain.Pet;
 import com.jf.PetApp.core.domain.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,6 +21,7 @@ import java.util.List;
 @Service
 public class GetMentorReplyUseCaseImpl implements GetMentorReplyUseCase {
 
+    private static final Logger log = LoggerFactory.getLogger(GetMentorReplyUseCaseImpl.class);
     private static final int MAX_HISTORY_TURNS = 10;
     private static final String FALLBACK_REPLY =
             "Hmm, I'm having a little trouble thinking right now 🐾 Let's try again in a moment.";
@@ -58,7 +61,9 @@ public class GetMentorReplyUseCaseImpl implements GetMentorReplyUseCase {
         try {
             return geminiChatPort.generateReply(systemPrompt, history, request.message());
         } catch (Exception e) {
-            System.err.println("WARN: Gemini call failed: " + e.getMessage());
+            // e.getMessage() here is safe to log: GeminiChatClient never lets the API key
+            // reach an exception message (see its own catch block).
+            log.warn("Gemini call failed, falling back to canned reply: {}", e.getMessage());
             return FALLBACK_REPLY;
         }
     }

@@ -1,5 +1,8 @@
 package com.jf.PetApp.infrastructure.config;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -24,6 +27,7 @@ import java.nio.file.Path;
  */
 public final class DotenvLoader {
 
+    private static final Logger log = LoggerFactory.getLogger(DotenvLoader.class);
     private static final String DOTENV_FILENAME = ".env";
 
     private DotenvLoader() {
@@ -53,7 +57,7 @@ public final class DotenvLoader {
                 }
             }
         } catch (IOException e) {
-            System.err.println("WARN: failed to read .env: " + e.getMessage());
+            log.warn("Failed to read .env: {}", e.getMessage());
         }
     }
 }

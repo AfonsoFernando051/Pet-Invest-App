@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:petapp_mobile/core/network/api_client.dart';
-import 'package:petapp_mobile/features/investment/data/models/investment_type_enum.dart';
 import 'package:petapp_mobile/features/investment/data/models/asset_registration_model.dart';
 
 class InvestmentRemoteDataSource {
