@@ -30,6 +30,12 @@ public class UserJpaRepository implements UserRepository {
     }
 
     @Override
+    public Optional<User> findByUsername(String username) {
+        return jpa.findByUsername(username)
+                .map(UserJpaEntity::toDomain);
+    }
+
+    @Override
     public User save(User user) {
         UserJpaEntity entity = UserJpaEntity.fromDomain(user);
         jpa.save(entity);

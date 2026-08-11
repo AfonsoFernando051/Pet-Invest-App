@@ -27,6 +27,7 @@ public class LoginUseCaseImpl implements LoginUseCase {
     public LoginResult execute(LoginCommand command) throws AuthenticationException {
 
         User user = userRepository.findByEmail(command.email())
+                .or(() -> userRepository.findByUsername(command.email()))
                 .orElseThrow(AuthenticationException::new);
 
         if (!passwordEncoder.matches(

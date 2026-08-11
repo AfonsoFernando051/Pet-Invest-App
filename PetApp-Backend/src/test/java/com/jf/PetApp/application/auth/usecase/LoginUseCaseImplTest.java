@@ -71,6 +71,7 @@ class LoginUseCaseImplTest {
     @Test
     void execute_WithUnknownEmail_ShouldThrowAuthenticationExceptionWithoutLeakingWhichFieldWasWrong() {
         when(userRepository.findByEmail("missing@test.com")).thenReturn(Optional.empty());
+        when(userRepository.findByUsername("missing@test.com")).thenReturn(Optional.empty());
 
         // Same exception as a wrong password: the API must not reveal whether the
         // email or the password was the invalid part of the credentials pair.
@@ -78,5 +79,22 @@ class LoginUseCaseImplTest {
             loginUseCase.execute(new LoginCommand("missing@test.com", "any-password")));
 
         verifyNoInteractions(passwordEncoder, tokenProvider);
+    }
+
+    @Test
+    void execute_WithUsernameInsteadOfEmail_ShouldReturnAccessToken() {
+        User user = new User();
+        user.setUsername("investor");
+        user.setEmail("investor@test.com");
+        user.setPassword("hashed-password");
+
+        when(userRepository.findByEmail("investor")).thenReturn(Optional.empty());
+        when(userRepository.findByUsername("investor")).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches("correct-password", "hashed-password")).thenReturn(true);
+        when(tokenProvider.generateToken(user)).thenReturn("jwt-token");
+
+        LoginResult result = loginUseCase.execute(new LoginCommand("investor", "correct-password"));
+
+        assertEquals("jwt-token", result.accessToken());
     }
 }
