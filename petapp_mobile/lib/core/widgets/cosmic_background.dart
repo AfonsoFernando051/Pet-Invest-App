@@ -17,6 +17,7 @@ class CosmicBackground extends StatefulWidget {
     this.darken = 0.5,
     this.starCount = 46,
     this.errorBuilder,
+    this.showArtworkInLightMode = false,
   });
 
   final Widget child;
@@ -27,6 +28,14 @@ class CosmicBackground extends StatefulWidget {
   final double darken;
   final int starCount;
   final ImageErrorWidgetBuilder? errorBuilder;
+
+  /// When true, Light theme reuses [assetPath] (with a lightened, white-wash
+  /// treatment) instead of the generic abstract aurora — for screens like
+  /// Login where the artwork itself (not just ambient color) is the point.
+  /// Defaults to false: most `CosmicBackground` call sites use the generic
+  /// dark-space `bg_nebula.png`, which reads as heavy even lightened, so
+  /// they keep the abstract aurora treatment instead.
+  final bool showArtworkInLightMode;
 
   @override
   State<CosmicBackground> createState() => _CosmicBackgroundState();
@@ -84,6 +93,14 @@ class _CosmicBackgroundState extends State<CosmicBackground> with TickerProvider
   @override
   Widget build(BuildContext context) {
     if (!context.isDarkMode) {
+      if (widget.showArtworkInLightMode) {
+        return _LightImageBackground(
+          driftController: _driftController,
+          assetPath: widget.assetPath,
+          errorBuilder: widget.errorBuilder,
+          child: widget.child,
+        );
+      }
       return _LightAuroraBackground(driftController: _driftController, child: widget.child);
     }
 
@@ -163,6 +180,55 @@ class _LightAuroraBackground extends StatelessWidget {
             );
           },
         ),
+        child,
+      ],
+    );
+  }
+}
+
+/// Light-theme treatment for screens that want their own artwork as ambient
+/// wallpaper (e.g. Login's fox-and-compass illustration) rather than the
+/// generic aurora — same Ken-Burns drift as Dark theme's nebula, but a soft
+/// white wash instead of a black darken pass, so the art reads as bright and
+/// dreamy instead of heavy. No starfield: white twinkles would disappear
+/// against a light wash.
+class _LightImageBackground extends StatelessWidget {
+  const _LightImageBackground({
+    required this.driftController,
+    required this.assetPath,
+    required this.child,
+    this.errorBuilder,
+  });
+
+  final AnimationController driftController;
+  final String assetPath;
+  final Widget child;
+  final ImageErrorWidgetBuilder? errorBuilder;
+
+  @override
+  Widget build(BuildContext context) {
+    final tokens = context.colors;
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        Container(color: tokens.backgroundPrimary),
+        AnimatedBuilder(
+          animation: driftController,
+          builder: (context, child) {
+            final t = driftController.value * 2 * pi;
+            final dx = sin(t) * 10;
+            final dy = cos(t * 0.7) * 6;
+            return Transform.scale(
+              scale: 1.06,
+              child: Transform.translate(offset: Offset(dx, dy), child: child),
+            );
+          },
+          child: ColorFiltered(
+            colorFilter: ColorFilter.matrix(_CosmicBackgroundState._desaturationMatrix(0.08)),
+            child: Image.asset(assetPath, fit: BoxFit.cover, errorBuilder: errorBuilder),
+          ),
+        ),
+        Container(color: tokens.backgroundPrimary.withValues(alpha: 0.62)),
         child,
       ],
     );

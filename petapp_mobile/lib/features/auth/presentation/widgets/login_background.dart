@@ -10,6 +10,7 @@ class LoginBackground extends StatelessWidget {
     return CosmicBackground(
       assetPath: 'assets/images/questionary_space_paw.png',
       darken: 0.2,
+      showArtworkInLightMode: true,
       errorBuilder: (context, error, stackTrace) {
         final tokens = context.colors;
         return Container(
