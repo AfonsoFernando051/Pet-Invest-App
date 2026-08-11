@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
+import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
 import 'package:petapp_mobile/core/widgets/glass_card.dart';
 import 'package:petapp_mobile/features/asset_details/domain/entities/asset_details.dart';
 import 'package:petapp_mobile/features/asset_details/domain/entities/asset_indicator.dart';
@@ -22,8 +23,8 @@ class KeyIndicatorsSection extends StatelessWidget {
 
     if (indicators.isEmpty) {
       return GlassCard(
-        backgroundColor: AppColors.spaceDark.withValues(alpha: 0.55),
-        borderColor: Colors.white.withValues(alpha: 0.1),
+        backgroundColor: context.colors.surface.withValues(alpha: context.isDarkMode ? 0.55 : 0.94),
+        borderColor: context.colors.border,
         borderRadius: 18,
         borderWidth: 1,
         child: Padding(
@@ -35,7 +36,7 @@ class KeyIndicatorsSection extends StatelessWidget {
               const SizedBox(height: 12),
               Text(
                 'Indicadores não disponíveis para este ativo.',
-                style: TextStyle(color: AppColors.subtleText, fontSize: 12),
+                style: TextStyle(color: context.colors.textSecondary, fontSize: 12),
               ),
             ],
           ),
@@ -44,7 +45,7 @@ class KeyIndicatorsSection extends StatelessWidget {
     }
 
     return GlassCard(
-      backgroundColor: AppColors.spaceDark.withValues(alpha: 0.55),
+      backgroundColor: context.colors.surface.withValues(alpha: context.isDarkMode ? 0.55 : 0.94),
       borderColor: AppColors.neonPurple.withValues(alpha: 0.2),
       borderRadius: 18,
       borderWidth: 1,
@@ -104,12 +105,12 @@ class _IndicatorChip extends StatelessWidget {
           duration: const Duration(milliseconds: 200),
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.05),
+            color: context.colors.textPrimary.withValues(alpha: 0.05),
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
               color: hasExplanation
                   ? AppColors.neonCyan.withValues(alpha: 0.2)
-                  : Colors.white.withValues(alpha: 0.08),
+                  : context.colors.textPrimary.withValues(alpha: 0.08),
             ),
           ),
           child: Column(
@@ -121,7 +122,7 @@ class _IndicatorChip extends StatelessWidget {
                 children: [
                   Text(
                     indicator.label,
-                    style: TextStyle(color: AppColors.subtleText, fontSize: 10),
+                    style: TextStyle(color: context.colors.textSecondary, fontSize: 10),
                   ),
                   if (hasExplanation) ...[
                     const SizedBox(width: 3),
@@ -136,8 +137,8 @@ class _IndicatorChip extends StatelessWidget {
               const SizedBox(height: 2),
               Text(
                 indicator.value ?? '--',
-                style: const TextStyle(
-                  color: Colors.white,
+                style: TextStyle(
+                  color: context.colors.textPrimary,
                   fontWeight: FontWeight.bold,
                   fontSize: 14,
                 ),

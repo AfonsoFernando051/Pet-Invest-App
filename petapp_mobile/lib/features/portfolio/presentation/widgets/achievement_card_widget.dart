@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
+import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
 import 'package:petapp_mobile/features/portfolio/domain/entities/achievement.dart';
 
 class AchievementCardWidget extends StatelessWidget {
@@ -9,13 +10,16 @@ class AchievementCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = achievement.unlocked ? AppColors.goldenBorder : Colors.white24;
+    final tokens = context.colors;
+    final color = achievement.unlocked ? AppColors.goldenBorder : tokens.textTertiary;
 
     return Container(
       width: 108,
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: achievement.unlocked ? AppColors.goldenBorder.withValues(alpha: 0.1) : AppColors.spaceDark.withValues(alpha: 0.4),
+        color: achievement.unlocked
+            ? AppColors.goldenBorder.withValues(alpha: 0.1)
+            : tokens.surface.withValues(alpha: context.isDarkMode ? 0.4 : 0.94),
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: color.withValues(alpha: achievement.unlocked ? 0.5 : 0.15)),
         boxShadow: achievement.unlocked
@@ -27,7 +31,7 @@ class AchievementCardWidget extends StatelessWidget {
         children: [
           Icon(
             achievement.unlocked ? achievement.icon : Icons.lock_outline,
-            color: achievement.unlocked ? AppColors.goldenBorder : Colors.white38,
+            color: achievement.unlocked ? AppColors.goldenBorder : tokens.textTertiary,
             size: 26,
           ),
           const SizedBox(height: 8),
@@ -37,7 +41,7 @@ class AchievementCardWidget extends StatelessWidget {
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
-              color: achievement.unlocked ? Colors.white : Colors.white38,
+              color: achievement.unlocked ? tokens.textPrimary : tokens.textTertiary,
               fontSize: 10,
               fontWeight: FontWeight.bold,
             ),
@@ -45,7 +49,7 @@ class AchievementCardWidget extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             '+${achievement.xpReward} XP',
-            style: TextStyle(color: achievement.unlocked ? AppColors.goldenBorder : Colors.white24, fontSize: 9),
+            style: TextStyle(color: achievement.unlocked ? AppColors.goldenBorder : tokens.textTertiary, fontSize: 9),
           ),
         ],
       ),

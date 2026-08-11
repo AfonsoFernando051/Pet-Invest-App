@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
+import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
 import 'package:petapp_mobile/features/asset_details/domain/entities/asset_indicator.dart';
 import 'package:petapp_mobile/features/asset_details/domain/entities/educational_explanation.dart';
 import 'package:petapp_mobile/features/asset_details/domain/services/indicator_education_catalog.dart';
@@ -25,10 +26,11 @@ class IndicatorEducationSheet extends StatelessWidget {
       minChildSize: 0.3,
       maxChildSize: 0.85,
       builder: (context, scrollController) {
+        final tokens = context.colors;
         return Container(
-          decoration: const BoxDecoration(
-            color: AppColors.spaceBlue,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+          decoration: BoxDecoration(
+            color: tokens.surfaceElevated,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
           ),
           child: ListView(
             controller: scrollController,
@@ -39,7 +41,7 @@ class IndicatorEducationSheet extends StatelessWidget {
                 child: Container(
                   width: 40, height: 4,
                   decoration: BoxDecoration(
-                    color: Colors.white24,
+                    color: tokens.divider,
                     borderRadius: BorderRadius.circular(4),
                   ),
                 ),
@@ -68,8 +70,8 @@ class IndicatorEducationSheet extends StatelessWidget {
                   const SizedBox(width: 12),
                   Text(
                     indicator.value ?? '--',
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: tokens.textPrimary,
                       fontWeight: FontWeight.bold,
                       fontSize: 20,
                     ),
@@ -103,7 +105,7 @@ class IndicatorEducationSheet extends StatelessWidget {
                   icon: Icons.warning_amber_outlined,
                   title: 'Importante',
                   content: explanation.caveat,
-                  accentColor: AppColors.warningAmber,
+                  accentColor: context.colors.warning,
                 ),
 
                 // ── Pet dialogue ─────────────────────────────────
@@ -125,7 +127,7 @@ class IndicatorEducationSheet extends StatelessWidget {
                           child: Text(
                             explanation.petDialogue!,
                             style: TextStyle(
-                              color: AppColors.subtleText,
+                              color: tokens.textSecondary,
                               fontSize: 12,
                               fontStyle: FontStyle.italic,
                             ),
@@ -138,7 +140,7 @@ class IndicatorEducationSheet extends StatelessWidget {
               ] else
                 Text(
                   'Explicação educacional em breve.',
-                  style: TextStyle(color: AppColors.subtleText, fontSize: 13),
+                  style: TextStyle(color: tokens.textSecondary, fontSize: 13),
                 ),
 
               const SizedBox(height: 24),
@@ -187,7 +189,7 @@ class _EducationSection extends StatelessWidget {
         const SizedBox(height: 8),
         Text(
           content,
-          style: TextStyle(color: AppColors.subtleText, fontSize: 13, height: 1.5),
+          style: TextStyle(color: context.colors.textSecondary, fontSize: 13, height: 1.5),
         ),
       ],
     );

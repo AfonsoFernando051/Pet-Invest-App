@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
 import 'package:petapp_mobile/core/constants/app_strings.dart';
 import 'package:petapp_mobile/core/di/dependency_injection.dart';
+import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
 import 'package:petapp_mobile/core/utils/translator.dart';
+import 'package:petapp_mobile/core/widgets/cosmic_background.dart';
 import 'package:petapp_mobile/core/widgets/game_button.dart';
 import 'package:petapp_mobile/features/investment/presentation/screens/portfolio_choice_screen.dart';
 
@@ -71,11 +73,9 @@ class _TutorialScreenState extends State<TutorialScreen> {
   @override
   Widget build(BuildContext context) {
     final isLast = _index == _steps.length - 1;
+    final tokens = context.colors;
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          image: DecorationImage(image: AssetImage('assets/images/bg_nebula.png'), fit: BoxFit.cover),
-        ),
+      body: CosmicBackground(
         child: SafeArea(
           child: Column(
             children: [
@@ -87,7 +87,7 @@ class _TutorialScreenState extends State<TutorialScreen> {
                     onPressed: _finish,
                     child: Text(
                       Translator.translate(AppStrings.tutorialSkip),
-                      style: const TextStyle(color: Colors.white70),
+                      style: TextStyle(color: tokens.textSecondary),
                     ),
                   ),
                 ),
@@ -97,7 +97,7 @@ class _TutorialScreenState extends State<TutorialScreen> {
                   controller: _pageController,
                   itemCount: _steps.length,
                   onPageChanged: (i) => setState(() => _index = i),
-                  itemBuilder: (context, i) => _buildStep(_steps[i]),
+                  itemBuilder: (context, i) => _buildStep(context, _steps[i]),
                 ),
               ),
               Padding(
@@ -112,7 +112,7 @@ class _TutorialScreenState extends State<TutorialScreen> {
                       width: active ? 22 : 8,
                       height: 8,
                       decoration: BoxDecoration(
-                        color: active ? AppColors.neonCyan : Colors.white24,
+                        color: active ? AppColors.neonCyan : tokens.border,
                         borderRadius: BorderRadius.circular(4),
                       ),
                     );
@@ -136,7 +136,8 @@ class _TutorialScreenState extends State<TutorialScreen> {
     );
   }
 
-  Widget _buildStep(_TutorialStep step) {
+  Widget _buildStep(BuildContext context, _TutorialStep step) {
+    final tokens = context.colors;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 32),
       child: Column(
@@ -156,13 +157,13 @@ class _TutorialScreenState extends State<TutorialScreen> {
           Text(
             Translator.translate(step.titleKey),
             textAlign: TextAlign.center,
-            style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
+            style: TextStyle(color: tokens.textPrimary, fontSize: 22, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 12),
           Text(
             Translator.translate(step.bodyKey),
             textAlign: TextAlign.center,
-            style: const TextStyle(color: AppColors.subtleText, fontSize: 14, height: 1.5),
+            style: TextStyle(color: tokens.textSecondary, fontSize: 14, height: 1.5),
           ),
         ],
       ),

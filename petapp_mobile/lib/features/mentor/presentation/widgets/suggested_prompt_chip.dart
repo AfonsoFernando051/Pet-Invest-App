@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
+import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
 
 /// A tappable suggested-question chip shown when the conversation is empty,
 /// so a new user isn't staring at a blank input field.
@@ -23,13 +24,13 @@ class SuggestedPromptChip extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
           decoration: BoxDecoration(
-            color: AppColors.spaceDark.withValues(alpha: 0.5),
+            color: context.colors.surface.withValues(alpha: context.isDarkMode ? 0.5 : 0.9),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(color: AppColors.neonCyan.withValues(alpha: 0.35)),
           ),
           child: Text(
             label,
-            style: const TextStyle(color: AppColors.subtleText, fontSize: 13, fontWeight: FontWeight.w500),
+            style: TextStyle(color: context.colors.textSecondary, fontSize: 13, fontWeight: FontWeight.w500),
           ),
         ),
       ),

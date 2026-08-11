@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
 import 'package:petapp_mobile/core/constants/app_strings.dart';
 import 'package:petapp_mobile/core/di/dependency_injection.dart';
+import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
 import 'package:petapp_mobile/core/utils/translator.dart';
 import 'package:petapp_mobile/core/widgets/game_button.dart';
 import 'package:petapp_mobile/features/onboarding/presentation/screens/tutorial_screen.dart';
@@ -82,13 +83,13 @@ class _FinancialGoalScreenState extends State<FinancialGoalScreen> {
                     Text(
                       Translator.translate(AppStrings.financialGoalTitle),
                       textAlign: TextAlign.center,
-                      style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+                      style: TextStyle(color: context.colors.textPrimary, fontSize: 24, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       Translator.translate(AppStrings.financialGoalSubtitle),
                       textAlign: TextAlign.center,
-                      style: const TextStyle(color: AppColors.subtleText, fontSize: 13, height: 1.4),
+                      style: TextStyle(color: context.colors.textSecondary, fontSize: 13, height: 1.4),
                     ),
                   ],
                 ),
@@ -126,6 +127,7 @@ class _FinancialGoalScreenState extends State<FinancialGoalScreen> {
 
   Widget _buildGoalCard(PetGoalEnum goal) {
     final isSelected = goal == _selectedGoal;
+    final tokens = context.colors;
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Material(
@@ -136,10 +138,10 @@ class _FinancialGoalScreenState extends State<FinancialGoalScreen> {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             decoration: BoxDecoration(
-              color: isSelected ? AppColors.neonCyan.withValues(alpha: 0.14) : Colors.white.withValues(alpha: 0.05),
+              color: isSelected ? AppColors.neonCyan.withValues(alpha: 0.14) : tokens.textPrimary.withValues(alpha: 0.05),
               borderRadius: BorderRadius.circular(18),
               border: Border.all(
-                color: isSelected ? AppColors.neonCyan : Colors.white.withValues(alpha: 0.12),
+                color: isSelected ? AppColors.neonCyan : tokens.textPrimary.withValues(alpha: 0.12),
                 width: isSelected ? 1.5 : 1,
               ),
             ),
@@ -149,10 +151,10 @@ class _FinancialGoalScreenState extends State<FinancialGoalScreen> {
                   width: 44,
                   height: 44,
                   decoration: BoxDecoration(
-                    color: (isSelected ? AppColors.neonCyan : Colors.white).withValues(alpha: 0.12),
+                    color: (isSelected ? AppColors.neonCyan : tokens.textPrimary).withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(14),
                   ),
-                  child: Icon(goal.icon, color: isSelected ? AppColors.neonCyan : Colors.white70),
+                  child: Icon(goal.icon, color: isSelected ? AppColors.neonCyan : tokens.textSecondary),
                 ),
                 const SizedBox(width: 14),
                 Expanded(
@@ -162,13 +164,13 @@ class _FinancialGoalScreenState extends State<FinancialGoalScreen> {
                       Text(
                         goal.label,
                         style: TextStyle(
-                          color: Colors.white,
+                          color: tokens.textPrimary,
                           fontSize: 15,
                           fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
                         ),
                       ),
                       const SizedBox(height: 2),
-                      Text(goal.description, style: const TextStyle(color: AppColors.subtleText, fontSize: 12)),
+                      Text(goal.description, style: TextStyle(color: tokens.textSecondary, fontSize: 12)),
                     ],
                   ),
                 ),
@@ -182,6 +184,7 @@ class _FinancialGoalScreenState extends State<FinancialGoalScreen> {
   }
 
   Widget _buildHorizonRow() {
+    final tokens = context.colors;
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -190,18 +193,18 @@ class _FinancialGoalScreenState extends State<FinancialGoalScreen> {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.04),
+            color: tokens.textPrimary.withValues(alpha: 0.04),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+            border: Border.all(color: tokens.textPrimary.withValues(alpha: 0.1)),
           ),
           child: Row(
             children: [
-              const Icon(Icons.access_time, color: Colors.white54, size: 18),
+              Icon(Icons.access_time, color: tokens.textTertiary, size: 18),
               const SizedBox(width: 10),
               Expanded(
-                child: Text(_selectedHorizon.label, style: const TextStyle(color: Colors.white70, fontSize: 13)),
+                child: Text(_selectedHorizon.label, style: TextStyle(color: tokens.textSecondary, fontSize: 13)),
               ),
-              const Icon(Icons.keyboard_arrow_down, color: Colors.white54),
+              Icon(Icons.keyboard_arrow_down, color: tokens.textTertiary),
             ],
           ),
         ),

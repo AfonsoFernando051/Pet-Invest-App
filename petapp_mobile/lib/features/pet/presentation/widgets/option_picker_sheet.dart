@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
+import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
 
 /// A premium, space-themed modal bottom sheet for picking one value out of a
 /// small enum-like list — used by the pet profile screen's "Meta Principal"
@@ -20,10 +21,11 @@ Future<T?> showOptionPickerSheet<T>(
     backgroundColor: Colors.transparent,
     isScrollControlled: true,
     builder: (context) {
+      final tokens = context.colors;
       return Container(
-        decoration: const BoxDecoration(
-          color: AppColors.spaceBlue,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        decoration: BoxDecoration(
+          color: tokens.surfaceElevated,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
         ),
         padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
         child: Column(
@@ -35,12 +37,12 @@ Future<T?> showOptionPickerSheet<T>(
                 width: 40,
                 height: 4,
                 margin: const EdgeInsets.only(bottom: 16),
-                decoration: BoxDecoration(color: Colors.white24, borderRadius: BorderRadius.circular(4)),
+                decoration: BoxDecoration(color: tokens.divider, borderRadius: BorderRadius.circular(4)),
               ),
             ),
             Text(
               title,
-              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 17),
+              style: TextStyle(color: tokens.textPrimary, fontWeight: FontWeight.bold, fontSize: 17),
             ),
             const SizedBox(height: 12),
             for (final option in options)
@@ -81,6 +83,7 @@ class _OptionTile<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tokens = context.colors;
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -90,10 +93,10 @@ class _OptionTile<T> extends StatelessWidget {
           margin: const EdgeInsets.only(top: 10),
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           decoration: BoxDecoration(
-            color: isSelected ? AppColors.neonCyan.withValues(alpha: 0.12) : Colors.white.withValues(alpha: 0.04),
+            color: isSelected ? AppColors.neonCyan.withValues(alpha: 0.12) : tokens.textPrimary.withValues(alpha: 0.04),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: isSelected ? AppColors.neonCyan.withValues(alpha: 0.6) : Colors.white.withValues(alpha: 0.1),
+              color: isSelected ? AppColors.neonCyan.withValues(alpha: 0.6) : tokens.textPrimary.withValues(alpha: 0.1),
               width: isSelected ? 1.5 : 1,
             ),
           ),
@@ -103,10 +106,10 @@ class _OptionTile<T> extends StatelessWidget {
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: (isSelected ? AppColors.neonCyan : Colors.white).withValues(alpha: 0.1),
+                  color: (isSelected ? AppColors.neonCyan : tokens.textPrimary).withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(icon, color: isSelected ? AppColors.neonCyan : Colors.white70, size: 20),
+                child: Icon(icon, color: isSelected ? AppColors.neonCyan : tokens.textSecondary, size: 20),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -116,13 +119,13 @@ class _OptionTile<T> extends StatelessWidget {
                     Text(
                       label,
                       style: TextStyle(
-                        color: Colors.white,
+                        color: tokens.textPrimary,
                         fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
                         fontSize: 14,
                       ),
                     ),
                     const SizedBox(height: 2),
-                    Text(description, style: TextStyle(color: AppColors.subtleText, fontSize: 12)),
+                    Text(description, style: TextStyle(color: tokens.textSecondary, fontSize: 12)),
                   ],
                 ),
               ),

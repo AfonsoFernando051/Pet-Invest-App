@@ -1,9 +1,19 @@
 import 'package:flutter/material.dart';
 
+/// Raw brand palette. Surfaces/text/backgrounds should NOT be read from here
+/// directly anymore — use `context.colors` (`AppColorTokens`, see
+/// `core/theme/app_color_tokens.dart`), which resolves to the right value
+/// for the active Light/Dark/System theme.
+///
+/// The neon/gold accents below are the exception: pet auras, achievement
+/// glow and other gamification highlights are meant to read as the exact
+/// same brand color in both themes (only what surrounds them adapts), so
+/// they stay theme-invariant constants here rather than tokens.
 class AppColors {
   AppColors._();
 
-  // Space theme backgrounds
+  // Space theme backgrounds — dark theme only; use context.colors for
+  // anything that must also work in Light.
   static const Color spaceDark   = Color(0xFF0A0A1A);
   static const Color spaceBlue   = Color(0xFF101835);
   static const Color spacePurple = Color(0xFF1A0B2E);

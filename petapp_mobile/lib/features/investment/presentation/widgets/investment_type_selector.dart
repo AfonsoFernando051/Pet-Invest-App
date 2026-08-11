@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:petapp_mobile/core/constants/app_colors.dart';
+import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
 import 'package:petapp_mobile/features/investment/data/models/investment_type_enum.dart';
 import 'package:petapp_mobile/features/portfolio/domain/entities/investment_type_display.dart';
 
@@ -30,7 +30,7 @@ class InvestmentTypeSelector extends StatelessWidget {
       children: [
         Text(
           'Tipo de Investimento',
-          style: TextStyle(color: AppColors.subtleText, fontSize: 12, fontWeight: FontWeight.w600),
+          style: TextStyle(color: context.colors.textSecondary, fontSize: 12, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 8),
         SizedBox(
@@ -52,10 +52,12 @@ class InvestmentTypeSelector extends StatelessWidget {
                   width: 88,
                   padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 6),
                   decoration: BoxDecoration(
-                    color: isSelected ? type.color.withValues(alpha: 0.18) : Colors.white.withValues(alpha: 0.05),
+                    color: isSelected
+                        ? type.color.withValues(alpha: 0.18)
+                        : context.colors.textPrimary.withValues(alpha: 0.05),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: isSelected ? type.color : Colors.white.withValues(alpha: 0.15),
+                      color: isSelected ? type.color : context.colors.textPrimary.withValues(alpha: 0.15),
                       width: isSelected ? 1.5 : 1,
                     ),
                     boxShadow: isSelected
@@ -65,7 +67,7 @@ class InvestmentTypeSelector extends StatelessWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(type.icon, color: isSelected ? type.color : Colors.white70, size: 24),
+                      Icon(type.icon, color: isSelected ? type.color : context.colors.textSecondary, size: 24),
                       const SizedBox(height: 6),
                       Text(
                         type.shortLabel,
@@ -73,7 +75,7 @@ class InvestmentTypeSelector extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          color: isSelected ? Colors.white : Colors.white70,
+                          color: isSelected ? context.colors.textPrimary : context.colors.textSecondary,
                           fontSize: 11,
                           fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                         ),
@@ -99,7 +101,7 @@ class InvestmentTypeSelector extends StatelessWidget {
               ),
               child: Text(
                 _tips[selected]!,
-                style: TextStyle(color: AppColors.subtleText, fontSize: 12),
+                style: TextStyle(color: context.colors.textSecondary, fontSize: 12),
               ),
             ),
           ),

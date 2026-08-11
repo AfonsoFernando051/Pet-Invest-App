@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/theme/app_color_tokens.dart';
 import '../../../../core/utils/pet_assets.dart';
 import '../../../../core/widgets/glass_card.dart';
 import '../../../../core/di/dependency_injection.dart';
@@ -182,7 +183,7 @@ class _PetShowcaseState extends State<PetShowcase> with TickerProviderStateMixin
   }
 
   Color get _currentAuraColor {
-    if (widget.performancePercent < -10) return Colors.redAccent;
+    if (widget.performancePercent < -10) return context.colors.error;
     if (widget.performancePercent < 0)   return AppColors.neonPurple;
     return AppColors.neonCyan;
   }
@@ -215,7 +216,8 @@ class _PetShowcaseState extends State<PetShowcase> with TickerProviderStateMixin
             return Transform.translate(offset: Offset(0, _cardFloatAnimation.value), child: child);
           },
           child: GlassCard(
-            backgroundColor: AppColors.spaceDark.withValues(alpha: 0.5),
+            backgroundColor:
+                context.colors.surface.withValues(alpha: context.isDarkMode ? 0.5 : 0.94),
             borderColor: _currentAuraColor.withValues(alpha: 0.3),
             borderWidth: 1,
             borderRadius: 24,
@@ -244,6 +246,24 @@ class _PetShowcaseState extends State<PetShowcase> with TickerProviderStateMixin
                   Stack(
                     alignment: Alignment.center,
                     children: [
+                      // Fixed dark "stage" behind the pet, regardless of app
+                      // theme — a light card background would otherwise wash
+                      // out the cyan/violet/gold aura glow (brief: magical
+                      // effects must stay visible in Light mode).
+                      Container(
+                        width: 250,
+                        height: 250,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: RadialGradient(
+                            colors: [
+                              AppColors.spaceDark.withValues(alpha: 0.85),
+                              AppColors.spaceDark.withValues(alpha: 0),
+                            ],
+                            stops: const [0.35, 1.0],
+                          ),
+                        ),
+                      ),
                       AnimatedBuilder(
                         animation: _glowController,
                         builder: (context, child) {
@@ -275,12 +295,12 @@ class _PetShowcaseState extends State<PetShowcase> with TickerProviderStateMixin
                             begin: Alignment.topCenter,
                             end: Alignment.bottomCenter,
                             colors: [
-                              Colors.white.withValues(alpha: 0.05),
+                              Colors.white.withValues(alpha: 0.08),
                               Colors.transparent,
-                              _currentAuraColor.withValues(alpha: 0.1),
+                              _currentAuraColor.withValues(alpha: 0.14),
                             ],
                           ),
-                          border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
+                          border: Border.all(color: Colors.white.withValues(alpha: 0.18)),
                         ),
                       ),
                     ],
@@ -390,6 +410,7 @@ class _PetShowcaseState extends State<PetShowcase> with TickerProviderStateMixin
   }) {
     const double barWidth = 130;
     const double barHeight = 10;
+    final tokens = context.colors;
 
     return Row(
       children: [
@@ -401,7 +422,7 @@ class _PetShowcaseState extends State<PetShowcase> with TickerProviderStateMixin
             Text(
               label,
               style: TextStyle(
-                color: AppColors.subtleText.withValues(alpha: 0.7),
+                color: tokens.textSecondary,
                 fontSize: 10,
                 fontWeight: FontWeight.w600,
                 letterSpacing: 1,
@@ -415,7 +436,7 @@ class _PetShowcaseState extends State<PetShowcase> with TickerProviderStateMixin
                   width: barWidth,
                   height: barHeight,
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.12),
+                    color: tokens.textTertiary.withValues(alpha: 0.18),
                     borderRadius: BorderRadius.circular(barHeight / 2),
                     border: Border.all(
                       color: AppColors.neonCyan.withValues(alpha: 0.25),
@@ -449,7 +470,7 @@ class _PetShowcaseState extends State<PetShowcase> with TickerProviderStateMixin
         Text(
           '${(value * 100).toInt()}%',
           style: TextStyle(
-            color: AppColors.subtleText,
+            color: tokens.textPrimary,
             fontSize: 11,
             fontWeight: FontWeight.bold,
           ),

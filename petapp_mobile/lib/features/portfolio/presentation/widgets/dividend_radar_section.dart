@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
+import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
 import 'package:petapp_mobile/core/widgets/app_loading_indicator.dart';
 import 'package:petapp_mobile/core/widgets/glass_card.dart';
 import 'package:petapp_mobile/features/portfolio/domain/entities/dividend_event.dart';
@@ -28,9 +29,10 @@ class DividendRadarSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tokens = context.colors;
     return GlassCard(
-      backgroundColor: AppColors.spaceDark.withValues(alpha: 0.6),
-      borderColor: AppColors.positiveGreen.withValues(alpha: 0.3),
+      backgroundColor: tokens.surface.withValues(alpha: context.isDarkMode ? 0.6 : 0.94),
+      borderColor: tokens.success.withValues(alpha: 0.3),
       borderRadius: 20,
       borderWidth: 1,
       child: Padding(
@@ -42,17 +44,18 @@ class DividendRadarSection extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               'Pagamentos reais de dividendos, JCP e rendimentos confirmados pela B3 para os ativos que você possui.',
-              style: TextStyle(color: AppColors.subtleText.withValues(alpha: 0.8), fontSize: 10),
+              style: TextStyle(color: tokens.textSecondary, fontSize: 10),
             ),
             const SizedBox(height: 12),
-            _buildBody(),
+            _buildBody(context),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildBody() {
+  Widget _buildBody(BuildContext context) {
+    final tokens = context.colors;
     if (isLoading && radar.isEmpty) {
       return const Padding(
         padding: EdgeInsets.symmetric(vertical: 24),
@@ -69,7 +72,7 @@ class DividendRadarSection extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 12),
         child: Text(
           'Nenhum provento confirmado encontrado ainda para seus ativos. Assim que a B3 confirmar um pagamento para algo que você possui, ele aparece aqui.',
-          style: TextStyle(color: AppColors.subtleText, fontSize: 12),
+          style: TextStyle(color: tokens.textSecondary, fontSize: 12),
         ),
       );
     }
@@ -79,13 +82,13 @@ class DividendRadarSection extends StatelessWidget {
       children: [
         if (radar.upcoming.isNotEmpty) ...[
           _subLabel('PRÓXIMOS', AppColors.goldenBorder),
-          _Divider(),
+          const _Divider(),
           for (final event in radar.upcoming) DividendEventTile(event: event),
         ],
         if (radar.history.isNotEmpty) ...[
           if (radar.upcoming.isNotEmpty) const SizedBox(height: 12),
-          _subLabel('HISTÓRICO RECENTE', AppColors.positiveGreen),
-          _Divider(),
+          _subLabel('HISTÓRICO RECENTE', tokens.success),
+          const _Divider(),
           for (final event in radar.history) DividendEventTile(event: event),
         ],
       ],
@@ -108,7 +111,7 @@ class _Divider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(height: 1, color: Colors.white.withValues(alpha: 0.06));
+    return Container(height: 1, color: context.colors.divider);
   }
 }
 
@@ -119,20 +122,21 @@ class _RadarErrorState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tokens = context.colors;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12),
       child: Row(
         children: [
-          const Icon(Icons.satellite_alt, color: AppColors.negativeRed, size: 18),
+          Icon(Icons.satellite_alt, color: tokens.error, size: 18),
           const SizedBox(width: 10),
-          const Expanded(
+          Expanded(
             child: Text(
               'Não foi possível carregar o radar de dividendos.',
-              style: TextStyle(color: Colors.white, fontSize: 12),
+              style: TextStyle(color: tokens.textPrimary, fontSize: 12),
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.refresh, color: AppColors.negativeRed, size: 18),
+            icon: Icon(Icons.refresh, color: tokens.error, size: 18),
             onPressed: onRetry,
           ),
         ],

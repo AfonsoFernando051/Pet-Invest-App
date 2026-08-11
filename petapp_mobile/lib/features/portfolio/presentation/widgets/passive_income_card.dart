@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
+import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
 import 'package:petapp_mobile/core/widgets/glass_card.dart';
 import 'package:petapp_mobile/features/portfolio/domain/entities/investment_type_display.dart';
 import 'package:petapp_mobile/features/portfolio/domain/entities/passive_income_estimate.dart';
@@ -23,7 +24,7 @@ class PassiveIncomeCard extends StatelessWidget {
     });
 
     return GlassCard(
-      backgroundColor: AppColors.spaceDark.withValues(alpha: 0.6),
+      backgroundColor: context.colors.surface.withValues(alpha: context.isDarkMode ? 0.6 : 0.94),
       borderColor: AppColors.goldenBorder.withValues(alpha: 0.35),
       borderRadius: 20,
       borderWidth: 1,
@@ -37,20 +38,21 @@ class PassiveIncomeCard extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: _figure('Mensal', estimate.monthlyEstimate, AppColors.goldenBorder),
+                  child: _figure(context, 'Mensal', estimate.monthlyEstimate, AppColors.goldenBorder),
                 ),
                 Expanded(
-                  child: _figure('Anual', estimate.annualEstimate, AppColors.neonCyan),
+                  child: _figure(context, 'Anual', estimate.annualEstimate, AppColors.neonCyan),
                 ),
               ],
             ),
             if (estimate.monthlyByType.isNotEmpty) ...[
               const SizedBox(height: 16),
-              for (final entry in estimate.monthlyByType.entries) _breakdownRow(entry.key.shortLabel, entry.value, entry.key.color),
+              for (final entry in estimate.monthlyByType.entries)
+                _breakdownRow(context, entry.key.shortLabel, entry.value, entry.key.color),
               const SizedBox(height: 16),
               Text(
                 'Projeção para os próximos 6 meses',
-                style: TextStyle(color: AppColors.subtleText, fontSize: 11, fontWeight: FontWeight.w600),
+                style: TextStyle(color: context.colors.textSecondary, fontSize: 11, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 8),
               SizedBox(
@@ -59,20 +61,20 @@ class PassiveIncomeCard extends StatelessWidget {
                   scrollDirection: Axis.horizontal,
                   itemCount: months.length,
                   separatorBuilder: (_, __) => const SizedBox(width: 8),
-                  itemBuilder: (context, i) => _monthChip(months[i], estimate.monthlyEstimate),
+                  itemBuilder: (context, i) => _monthChip(context, months[i], estimate.monthlyEstimate),
                 ),
               ),
               const SizedBox(height: 8),
               Text(
                 'Estimativa baseada no rendimento médio histórico de cada categoria de ativo — não representa pagamentos confirmados.',
-                style: TextStyle(color: AppColors.subtleText.withValues(alpha: 0.7), fontSize: 10),
+                style: TextStyle(color: context.colors.textSecondary, fontSize: 10),
               ),
             ] else
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 child: Text(
                   'Invista em ativos geradores de renda (renda fixa, FIIs, ações) para projetar sua renda passiva.',
-                  style: TextStyle(color: AppColors.subtleText, fontSize: 12),
+                  style: TextStyle(color: context.colors.textSecondary, fontSize: 12),
                 ),
               ),
           ],
@@ -81,11 +83,11 @@ class PassiveIncomeCard extends StatelessWidget {
     );
   }
 
-  Widget _figure(String label, double value, Color color) {
+  Widget _figure(BuildContext context, String label, double value, Color color) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: TextStyle(color: AppColors.subtleText, fontSize: 11)),
+        Text(label, style: TextStyle(color: context.colors.textSecondary, fontSize: 11)),
         const SizedBox(height: 2),
         Text(
           PortfolioFormatters.currency(value, showCents: false),
@@ -95,24 +97,26 @@ class PassiveIncomeCard extends StatelessWidget {
     );
   }
 
-  Widget _breakdownRow(String label, double monthlyValue, Color color) {
+  Widget _breakdownRow(BuildContext context, String label, double monthlyValue, Color color) {
+    final tokens = context.colors;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 3),
       child: Row(
         children: [
           Container(width: 8, height: 8, decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
           const SizedBox(width: 8),
-          Expanded(child: Text(label, style: const TextStyle(color: Colors.white, fontSize: 12))),
+          Expanded(child: Text(label, style: TextStyle(color: tokens.textPrimary, fontSize: 12))),
           Text(
             '${PortfolioFormatters.currency(monthlyValue, showCents: false)}/mês',
-            style: TextStyle(color: AppColors.subtleText, fontSize: 11),
+            style: TextStyle(color: tokens.textSecondary, fontSize: 11),
           ),
         ],
       ),
     );
   }
 
-  Widget _monthChip(DateTime month, double value) {
+  Widget _monthChip(BuildContext context, DateTime month, double value) {
+    final tokens = context.colors;
     const monthNames = [
       'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez',
     ];
@@ -127,11 +131,11 @@ class PassiveIncomeCard extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(monthNames[month.month - 1], style: TextStyle(color: AppColors.subtleText, fontSize: 10)),
+          Text(monthNames[month.month - 1], style: TextStyle(color: tokens.textSecondary, fontSize: 10)),
           const SizedBox(height: 4),
           Text(
             PortfolioFormatters.compactCurrency(value),
-            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 11),
+            style: TextStyle(color: tokens.textPrimary, fontWeight: FontWeight.bold, fontSize: 11),
           ),
         ],
       ),

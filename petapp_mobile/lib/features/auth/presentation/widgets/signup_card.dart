@@ -1,6 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import '../../../../core/constants/app_colors.dart';
+import '../../../../core/theme/app_color_tokens.dart';
 import 'signup_form.dart';
 
 class SignupCard extends StatelessWidget {
@@ -8,6 +8,7 @@ class SignupCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tokens = context.colors;
     return Center(
       child: Material(
         type: MaterialType.transparency,
@@ -19,9 +20,9 @@ class SignupCard extends StatelessWidget {
               width: 320,
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: AppColors.white10,
+                color: tokens.surface.withValues(alpha: context.isDarkMode ? 0.1 : 0.92),
                 borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: AppColors.white20),
+                border: Border.all(color: tokens.border),
               ),
               child: SingleChildScrollView(
                 child: const SignupForm(),

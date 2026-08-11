@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
+import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
 import 'package:petapp_mobile/core/widgets/glass_card.dart';
 import 'package:petapp_mobile/features/asset_details/domain/entities/asset_details.dart';
 import 'package:petapp_mobile/features/portfolio/presentation/widgets/shared/formatters.dart';
@@ -15,14 +16,15 @@ class UserPositionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tokens = context.colors;
     final pos = asset.userPosition;
     if (pos == null) return const SizedBox.shrink();
 
     final isPositive = pos.unrealizedGain >= 0;
-    final plColor = isPositive ? AppColors.positiveGreen : AppColors.negativeRed;
+    final plColor = isPositive ? tokens.success : tokens.error;
 
     return GlassCard(
-      backgroundColor: AppColors.spaceDark.withValues(alpha: 0.55),
+      backgroundColor: tokens.surface.withValues(alpha: context.isDarkMode ? 0.55 : 0.94),
       borderColor: plColor.withValues(alpha: 0.3),
       borderRadius: 18,
       borderWidth: 1,
@@ -43,8 +45,8 @@ class UserPositionCard extends StatelessWidget {
                     children: [
                       Text(
                         PortfolioFormatters.currency(pos.currentValue, showCents: false),
-                        style: const TextStyle(
-                          color: Colors.white,
+                        style: TextStyle(
+                          color: tokens.textPrimary,
                           fontWeight: FontWeight.bold,
                           fontSize: 22,
                         ),
@@ -92,7 +94,7 @@ class UserPositionCard extends StatelessWidget {
                       Text(
                         'da carteira',
                         style: TextStyle(
-                          color: AppColors.subtleText,
+                          color: tokens.textSecondary,
                           fontSize: 9,
                         ),
                       ),
@@ -103,7 +105,7 @@ class UserPositionCard extends StatelessWidget {
             ),
 
             const SizedBox(height: 16),
-            const Divider(color: Colors.white10, height: 1),
+            Divider(color: tokens.divider, height: 1),
             const SizedBox(height: 12),
 
             // ── Stats grid ──────────────────────────────────────
@@ -134,11 +136,11 @@ class _Stat extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: TextStyle(color: AppColors.subtleText, fontSize: 10)),
+          Text(label, style: TextStyle(color: context.colors.textSecondary, fontSize: 10)),
           const SizedBox(height: 2),
           Text(
             value,
-            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+            style: TextStyle(color: context.colors.textPrimary, fontWeight: FontWeight.bold, fontSize: 12),
           ),
         ],
       ),

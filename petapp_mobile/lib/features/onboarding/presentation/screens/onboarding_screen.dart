@@ -1,6 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:petapp_mobile/core/constants/app_colors.dart';
+import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
 import 'package:petapp_mobile/core/widgets/cosmic_background.dart';
 import 'package:petapp_mobile/features/onboarding/presentation/widgets/onboarding_form.dart';
 
@@ -8,14 +8,15 @@ class OnboardingScreen extends StatelessWidget {
   const OnboardingScreen({super.key});
   @override
   Widget build(BuildContext context) {
+    final tokens = context.colors;
     return Scaffold(
-      backgroundColor: AppColors.spaceDark, // Update to spaceDark
+      backgroundColor: tokens.backgroundPrimary,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Seu Perfil de Investidor Pet',
           style: TextStyle(
-            color: AppColors.white,
+            color: tokens.textPrimary,
             fontSize: 20,
             fontWeight: FontWeight.w600,
           ),
@@ -23,7 +24,7 @@ class OnboardingScreen extends StatelessWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.white),
+          icon: Icon(Icons.arrow_back, color: tokens.textPrimary),
           onPressed: () {
             if (Navigator.canPop(context)) {
               Navigator.pop(context);
@@ -44,12 +45,12 @@ class OnboardingScreen extends StatelessWidget {
                   width: double.infinity,
                   constraints: const BoxConstraints(maxWidth: 400),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.06),
+                    color: tokens.surface.withValues(alpha: context.isDarkMode ? 0.06 : 0.92),
                     borderRadius: BorderRadius.circular(24),
-                    border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+                    border: Border.all(color: tokens.border),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.2),
+                        color: tokens.shadow,
                         blurRadius: 30,
                         spreadRadius: 5,
                       ),
@@ -79,8 +80,8 @@ class OnboardingScreen extends StatelessWidget {
                         bottom: 24,
                         right: 24,
                         child: Icon(
-                          Icons.auto_awesome, 
-                          color: Colors.white.withValues(alpha: 0.6),
+                          Icons.auto_awesome,
+                          color: tokens.textPrimary.withValues(alpha: 0.6),
                           size: 24,
                         ),
                       ),

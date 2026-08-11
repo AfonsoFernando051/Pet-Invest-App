@@ -1,13 +1,14 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:petapp_mobile/core/constants/app_colors.dart';
+import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
 
-/// The app's shared space background: the nebula image with a slow Ken-Burns
-/// drift, a subtle desaturation/darken pass so foreground content reads with
-/// more contrast, and a twinkling starfield layered on top for ambient life.
-///
-/// Centralizing this (previously a single static `Image.asset` inlined in
-/// `DashboardScreen._buildBackground`) means every screen that adopts it
-/// gets the same living-background treatment for free.
+/// The app's shared "living background". In Dark theme this is the original
+/// nebula image with a slow Ken-Burns drift, a darken pass, and a twinkling
+/// starfield. Light theme swaps the space imagery for a soft, bright aurora
+/// gradient with slow-drifting color blobs — same "alive, not static
+/// wallpaper" feeling, without forcing a dark space scene onto a bright,
+/// friendly theme. One widget, two looks — no duplicated screens.
 class CosmicBackground extends StatefulWidget {
   const CosmicBackground({
     super.key,
@@ -22,6 +23,7 @@ class CosmicBackground extends StatefulWidget {
   final String assetPath;
 
   /// 0-1 black overlay strength on top of the (already desaturated) nebula.
+  /// Dark theme only.
   final double darken;
   final int starCount;
   final ImageErrorWidgetBuilder? errorBuilder;
@@ -81,6 +83,10 @@ class _CosmicBackgroundState extends State<CosmicBackground> with TickerProvider
 
   @override
   Widget build(BuildContext context) {
+    if (!context.isDarkMode) {
+      return _LightAuroraBackground(driftController: _driftController, child: widget.child);
+    }
+
     return Stack(
       fit: StackFit.expand,
       children: [
@@ -113,6 +119,82 @@ class _CosmicBackgroundState extends State<CosmicBackground> with TickerProvider
       ],
     );
   }
+}
+
+/// Light theme's answer to the nebula: a soft pearl/lavender gradient with
+/// two or three large, heavily-blurred accent-tinted blobs drifting slowly
+/// behind the content — "bright and alive", not "dark space scene lightened
+/// up". Built from plain gradients (no BackdropFilter/blur passes) so it
+/// stays cheap to repaint every frame.
+class _LightAuroraBackground extends StatelessWidget {
+  const _LightAuroraBackground({required this.driftController, required this.child});
+
+  final AnimationController driftController;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final tokens = context.colors;
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [tokens.backgroundPrimary, tokens.backgroundSecondary],
+            ),
+          ),
+        ),
+        AnimatedBuilder(
+          animation: driftController,
+          builder: (context, _) {
+            final t = driftController.value * 2 * pi;
+            return CustomPaint(
+              painter: _AuroraPainter(
+                t: t,
+                colors: [
+                  AppColors.neonCyan.withValues(alpha: 0.10),
+                  AppColors.neonPurple.withValues(alpha: 0.09),
+                  AppColors.goldenBorder.withValues(alpha: 0.06),
+                ],
+              ),
+            );
+          },
+        ),
+        child,
+      ],
+    );
+  }
+}
+
+class _AuroraPainter extends CustomPainter {
+  _AuroraPainter({required this.t, required this.colors});
+
+  final double t;
+  final List<Color> colors;
+
+  static const List<Offset> _anchors = [Offset(0.15, 0.12), Offset(0.85, 0.28), Offset(0.35, 0.85)];
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    for (var i = 0; i < _anchors.length; i++) {
+      final anchor = _anchors[i];
+      final phase = t + i * (2 * pi / _anchors.length);
+      final dx = anchor.dx * size.width + sin(phase) * size.width * 0.06;
+      final dy = anchor.dy * size.height + cos(phase * 0.8) * size.height * 0.05;
+      final radius = size.shortestSide * 0.42;
+      final paint = Paint()
+        ..shader = RadialGradient(
+          colors: [colors[i % colors.length], colors[i % colors.length].withValues(alpha: 0)],
+        ).createShader(Rect.fromCircle(center: Offset(dx, dy), radius: radius));
+      canvas.drawCircle(Offset(dx, dy), radius, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _AuroraPainter oldDelegate) => oldDelegate.t != t;
 }
 
 class _Star {

@@ -5,12 +5,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
 import 'package:petapp_mobile/core/constants/app_strings.dart';
 import 'package:petapp_mobile/core/di/dependency_injection.dart';
+import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
 import 'package:petapp_mobile/core/utils/game_snack.dart';
 import 'package:petapp_mobile/core/utils/translator.dart';
+import 'package:petapp_mobile/core/widgets/cosmic_background.dart';
 import 'package:petapp_mobile/core/widgets/glass_card.dart';
 import 'package:petapp_mobile/core/widgets/app_loading_indicator.dart';
 import 'package:petapp_mobile/core/widgets/confirm_logout_dialog.dart';
 import 'package:petapp_mobile/features/auth/presentation/screens/login_screen.dart';
+import 'package:petapp_mobile/features/settings/presentation/widgets/appearance_section.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -53,34 +56,35 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _handleRenamePet() async {
+    final tokens = context.colors;
     final controller = TextEditingController(text: _petName);
     final newName = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: AppColors.spaceBlue,
+        backgroundColor: tokens.surfaceElevated,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
           Translator.translate(AppStrings.renamePetDialogTitle),
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: TextStyle(color: tokens.textPrimary, fontWeight: FontWeight.bold),
         ),
         content: TextField(
           controller: controller,
           autofocus: true,
           textCapitalization: TextCapitalization.words,
-          style: const TextStyle(color: Colors.white),
+          style: TextStyle(color: tokens.textPrimary),
           decoration: InputDecoration(
             hintText: Translator.translate(AppStrings.namePetHint),
-            hintStyle: const TextStyle(color: Colors.white38),
+            hintStyle: TextStyle(color: tokens.textTertiary),
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(Translator.translate(AppStrings.cancelButton), style: const TextStyle(color: AppColors.neonCyan)),
+            child: Text(Translator.translate(AppStrings.cancelButton), style: TextStyle(color: tokens.primary)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, controller.text.trim()),
-            child: Text(Translator.translate(AppStrings.renamePetButton), style: const TextStyle(color: AppColors.neonCyan)),
+            child: Text(Translator.translate(AppStrings.renamePetButton), style: TextStyle(color: tokens.primary)),
           ),
         ],
       ),
@@ -132,56 +136,51 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Widget _buildScaffold(BuildContext context) {
+    final tokens = context.colors;
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: Text(Translator.translate(AppStrings.settingsTitle), style: const TextStyle(color: Colors.white)),
+        title: Text(Translator.translate(AppStrings.settingsTitle), style: TextStyle(color: tokens.textPrimary)),
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: Icon(Icons.arrow_back, color: tokens.textPrimary),
           onPressed: () {
             if (Navigator.canPop(context)) Navigator.pop(context);
           },
         ),
       ),
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          Image.asset(
-            'assets/images/bg_nebula.png',
-            fit: BoxFit.cover,
-            color: Colors.black.withValues(alpha: 0.48),
-            colorBlendMode: BlendMode.darken,
-          ),
-          SafeArea(
-            child: _loadingPrefs
-                ? const AppLoadingIndicator()
-                : SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Text(
-                          Translator.translate(AppStrings.settingsSubtitle),
-                          style: const TextStyle(color: AppColors.subtleText, fontSize: 14),
-                        ),
-                        const SizedBox(height: 20),
-                        _buildCompanionSection(),
-                        const SizedBox(height: 20),
-                        _buildLanguageSection(),
-                        const SizedBox(height: 20),
-                        _buildNotificationsSection(),
-                        const SizedBox(height: 20),
-                        _buildPrivacySection(),
-                        const SizedBox(height: 20),
-                        _buildAccountSection(),
-                        const SizedBox(height: 32),
-                      ],
-                    ),
+      body: CosmicBackground(
+        darken: 0.48,
+        child: SafeArea(
+          child: _loadingPrefs
+              ? const AppLoadingIndicator()
+              : SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        Translator.translate(AppStrings.settingsSubtitle),
+                        style: TextStyle(color: tokens.textSecondary, fontSize: 14),
+                      ),
+                      const SizedBox(height: 20),
+                      _buildCompanionSection(),
+                      const SizedBox(height: 20),
+                      _buildLanguageSection(),
+                      const SizedBox(height: 20),
+                      AppearanceSection(sectionLabel: _sectionLabel),
+                      const SizedBox(height: 20),
+                      _buildNotificationsSection(),
+                      const SizedBox(height: 20),
+                      _buildPrivacySection(),
+                      const SizedBox(height: 20),
+                      _buildAccountSection(),
+                      const SizedBox(height: 32),
+                    ],
                   ),
-          ),
-        ],
+                ),
+        ),
       ),
     );
   }
@@ -192,7 +191,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       child: Text(
         label,
         style: TextStyle(
-          color: AppColors.neonCyan.withValues(alpha: 0.7),
+          color: context.colors.primary.withValues(alpha: 0.8),
           fontSize: 11,
           fontWeight: FontWeight.w700,
           letterSpacing: 1.5,
@@ -202,12 +201,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Widget _buildCompanionSection() {
+    final tokens = context.colors;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _sectionLabel(Translator.translate(AppStrings.companionSectionTitle).toUpperCase()),
         GlassCard(
-          backgroundColor: AppColors.spaceDark.withValues(alpha: 0.6),
+          backgroundColor: tokens.surface.withValues(alpha: context.isDarkMode ? 0.6 : 0.94),
           borderColor: AppColors.neonPink.withValues(alpha: 0.3),
           borderRadius: 20,
           borderWidth: 1,
@@ -222,11 +222,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   children: [
                     Text(
                       Translator.translate(AppStrings.renamePetLabel),
-                      style: const TextStyle(color: Colors.white70, fontSize: 12),
+                      style: TextStyle(color: tokens.textSecondary, fontSize: 12),
                     ),
                     Text(
                       (_petName?.isNotEmpty ?? false) ? _petName! : '—',
-                      style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold),
+                      style: TextStyle(color: tokens.textPrimary, fontSize: 15, fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
@@ -246,6 +246,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Widget _buildLanguageSection() {
+    final tokens = context.colors;
     final languages = [
       (code: 'pt', label: Translator.translate(AppStrings.languagePt), flag: '🇧🇷'),
       (code: 'en', label: Translator.translate(AppStrings.languageEn), flag: '🇺🇸'),
@@ -257,7 +258,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       children: [
         _sectionLabel(Translator.translate(AppStrings.languageSectionTitle).toUpperCase()),
         GlassCard(
-          backgroundColor: AppColors.spaceDark.withValues(alpha: 0.6),
+          backgroundColor: tokens.surface.withValues(alpha: context.isDarkMode ? 0.6 : 0.94),
           borderColor: AppColors.neonCyan.withValues(alpha: 0.3),
           borderRadius: 20,
           borderWidth: 1,
@@ -277,13 +278,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         child: Text(
                           lang.label,
                           style: TextStyle(
-                            color: isSelected ? Colors.white : Colors.white70,
+                            color: isSelected ? tokens.textPrimary : tokens.textSecondary,
                             fontSize: 15,
                             fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                           ),
                         ),
                       ),
-                      if (isSelected) const Icon(Icons.check_circle, color: AppColors.neonCyan, size: 20),
+                      if (isSelected) Icon(Icons.check_circle, color: tokens.primary, size: 20),
                     ],
                   ),
                 ),
@@ -296,8 +297,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Widget _buildToggleCard({required List<Widget> children}) {
+    final tokens = context.colors;
     return GlassCard(
-      backgroundColor: AppColors.spaceDark.withValues(alpha: 0.6),
+      backgroundColor: tokens.surface.withValues(alpha: context.isDarkMode ? 0.6 : 0.94),
       borderColor: AppColors.neonCyan.withValues(alpha: 0.3),
       borderRadius: 20,
       borderWidth: 1,
@@ -312,13 +314,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
     required bool value,
     required ValueChanged<bool> onChanged,
   }) {
+    final tokens = context.colors;
     return SwitchListTile(
       value: value,
       onChanged: onChanged,
-      activeTrackColor: AppColors.neonCyan.withValues(alpha: 0.5),
-      activeThumbColor: AppColors.neonCyan,
-      secondary: Icon(icon, color: Colors.white70),
-      title: Text(label, style: const TextStyle(color: Colors.white, fontSize: 14)),
+      activeTrackColor: tokens.primary.withValues(alpha: 0.5),
+      activeThumbColor: tokens.primary,
+      secondary: Icon(icon, color: tokens.textSecondary),
+      title: Text(label, style: TextStyle(color: tokens.textPrimary, fontSize: 14)),
     );
   }
 
@@ -372,12 +375,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Widget _buildAccountSection() {
+    final tokens = context.colors;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _sectionLabel(Translator.translate(AppStrings.accountSectionTitle).toUpperCase()),
         GlassCard(
-          backgroundColor: AppColors.spaceDark.withValues(alpha: 0.6),
+          backgroundColor: tokens.surface.withValues(alpha: context.isDarkMode ? 0.6 : 0.94),
           borderColor: AppColors.neonPink.withValues(alpha: 0.3),
           borderRadius: 20,
           borderWidth: 1,
@@ -388,28 +392,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
               if (_email != null) ...[
                 Row(
                   children: [
-                    const Icon(Icons.person_outline, color: Colors.white70, size: 20),
+                    Icon(Icons.person_outline, color: tokens.textSecondary, size: 20),
                     const SizedBox(width: 12),
                     Expanded(
-                      child: Text(_email!, style: const TextStyle(color: Colors.white, fontSize: 14)),
+                      child: Text(_email!, style: TextStyle(color: tokens.textPrimary, fontSize: 14)),
                     ),
                   ],
                 ),
                 const SizedBox(height: 16),
-                const Divider(color: Colors.white24),
+                Divider(color: tokens.divider),
                 const SizedBox(height: 8),
               ],
               SizedBox(
                 width: double.infinity,
                 child: OutlinedButton.icon(
                   onPressed: _confirmLogout,
-                  icon: const Icon(Icons.logout, color: AppColors.negativeRed),
+                  icon: Icon(Icons.logout, color: tokens.error),
                   label: Text(
                     Translator.translate(AppStrings.logoutButton),
-                    style: const TextStyle(color: AppColors.negativeRed, fontWeight: FontWeight.bold),
+                    style: TextStyle(color: tokens.error, fontWeight: FontWeight.bold),
                   ),
                   style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: AppColors.negativeRed),
+                    side: BorderSide(color: tokens.error),
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                   ),

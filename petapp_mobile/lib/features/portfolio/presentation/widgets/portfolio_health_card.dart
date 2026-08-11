@@ -1,6 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
+import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
 import 'package:petapp_mobile/core/widgets/glass_card.dart';
 import 'package:petapp_mobile/features/portfolio/domain/entities/portfolio_health.dart';
 import 'package:petapp_mobile/features/portfolio/presentation/widgets/shared/section_label.dart';
@@ -12,16 +13,18 @@ class PortfolioHealthCard extends StatelessWidget {
 
   final PortfolioHealth health;
 
-  Color get _scoreColor {
-    if (health.overallScore >= 75) return AppColors.positiveGreen;
+  Color _scoreColor(BuildContext context) {
+    final tokens = context.colors;
+    if (health.overallScore >= 75) return tokens.success;
     if (health.overallScore >= 50) return AppColors.goldenBorder;
-    return AppColors.negativeRed;
+    return tokens.error;
   }
 
   @override
   Widget build(BuildContext context) {
+    final tokens = context.colors;
     return GlassCard(
-      backgroundColor: AppColors.spaceDark.withValues(alpha: 0.68),
+      backgroundColor: tokens.surface.withValues(alpha: context.isDarkMode ? 0.68 : 0.94),
       borderColor: AppColors.neonViolet.withValues(alpha: 0.35),
       borderRadius: 20,
       borderWidth: 1,
@@ -34,7 +37,7 @@ class PortfolioHealthCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const SectionLabel('SAÚDE DO PORTFÓLIO'),
-                _ScoreBadge(score: health.overallScore, grade: health.grade, color: _scoreColor),
+                _ScoreBadge(score: health.overallScore, grade: health.grade, color: _scoreColor(context)),
               ],
             ),
             const SizedBox(height: 12),
@@ -45,7 +48,7 @@ class PortfolioHealthCard extends StatelessWidget {
                   child: Text(
                     'Invista em ao menos um ativo para revelar sua saúde de portfólio.',
                     textAlign: TextAlign.center,
-                    style: TextStyle(color: AppColors.subtleText, fontSize: 12),
+                    style: TextStyle(color: tokens.textSecondary, fontSize: 12),
                   ),
                 ),
               )
@@ -57,10 +60,10 @@ class PortfolioHealthCard extends StatelessWidget {
                     tickCount: 4,
                     ticksTextStyle: const TextStyle(fontSize: 0, color: Colors.transparent),
                     titlePositionPercentageOffset: 0.18,
-                    radarBorderData: const BorderSide(color: Colors.white24),
-                    gridBorderData: const BorderSide(color: Colors.white24, width: 1),
+                    radarBorderData: BorderSide(color: tokens.divider),
+                    gridBorderData: BorderSide(color: tokens.divider, width: 1),
                     radarShape: RadarShape.polygon,
-                    titleTextStyle: const TextStyle(color: Colors.white, fontSize: 10),
+                    titleTextStyle: TextStyle(color: tokens.textPrimary, fontSize: 10),
                     getTitle: (index, angle) => RadarChartTitle(
                       text: index < health.metrics.length ? _shortName(health.metrics[index].name) : '',
                     ),
@@ -113,7 +116,7 @@ class _ScoreBadge extends StatelessWidget {
           const SizedBox(width: 4),
           Text(
             score.toStringAsFixed(0),
-            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+            style: TextStyle(color: context.colors.textPrimary, fontWeight: FontWeight.bold, fontSize: 12),
           ),
         ],
       ),
@@ -126,14 +129,17 @@ class _MetricBar extends StatelessWidget {
 
   final HealthMetric metric;
 
-  Color get _color {
-    if (metric.score >= 75) return AppColors.positiveGreen;
+  Color _color(BuildContext context) {
+    final tokens = context.colors;
+    if (metric.score >= 75) return tokens.success;
     if (metric.score >= 45) return AppColors.goldenBorder;
-    return AppColors.negativeRed;
+    return tokens.error;
   }
 
   @override
   Widget build(BuildContext context) {
+    final tokens = context.colors;
+    final color = _color(context);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
@@ -142,21 +148,21 @@ class _MetricBar extends StatelessWidget {
           const SizedBox(width: 8),
           SizedBox(
             width: 110,
-            child: Text(metric.name, style: const TextStyle(color: AppColors.subtleText, fontSize: 11)),
+            child: Text(metric.name, style: TextStyle(color: tokens.textSecondary, fontSize: 11)),
           ),
           Expanded(
             child: ClipRRect(
               borderRadius: BorderRadius.circular(6),
               child: Stack(
                 children: [
-                  Container(height: 6, color: Colors.white.withValues(alpha: 0.08)),
+                  Container(height: 6, color: tokens.textTertiary.withValues(alpha: 0.18)),
                   TweenAnimationBuilder<double>(
                     tween: Tween(begin: 0, end: metric.score / 100),
                     duration: const Duration(milliseconds: 700),
                     curve: Curves.easeOutCubic,
                     builder: (context, value, _) => FractionallySizedBox(
                       widthFactor: value.clamp(0.0, 1.0),
-                      child: Container(height: 6, color: _color),
+                      child: Container(height: 6, color: color),
                     ),
                   ),
                 ],
@@ -169,7 +175,7 @@ class _MetricBar extends StatelessWidget {
             child: Text(
               metric.score.toStringAsFixed(0),
               textAlign: TextAlign.end,
-              style: TextStyle(color: _color, fontSize: 11, fontWeight: FontWeight.bold),
+              style: TextStyle(color: color, fontSize: 11, fontWeight: FontWeight.bold),
             ),
           ),
         ],

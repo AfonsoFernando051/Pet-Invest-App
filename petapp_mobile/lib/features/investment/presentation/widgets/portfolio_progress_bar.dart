@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
+import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
 
 /// Reframes "fill out a form" as visible onboarding progress toward a
 /// starter-portfolio milestone ([target] assets) — there's no fixed step
@@ -28,7 +29,7 @@ class PortfolioProgressBar extends StatelessWidget {
                 isComplete ? 'Portfólio Inicial Completo ✓' : 'Progresso do Portfólio Inicial',
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  color: isComplete ? AppColors.positiveGreen : AppColors.subtleText,
+                  color: isComplete ? context.colors.success : context.colors.textSecondary,
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
                 ),
@@ -37,7 +38,7 @@ class PortfolioProgressBar extends StatelessWidget {
             Text(
               '${(progress * 100).toInt()}%',
               style: TextStyle(
-                color: isComplete ? AppColors.positiveGreen : Colors.white,
+                color: isComplete ? context.colors.success : context.colors.textPrimary,
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
               ),
@@ -49,7 +50,7 @@ class PortfolioProgressBar extends StatelessWidget {
           borderRadius: BorderRadius.circular(6),
           child: Stack(
             children: [
-              Container(height: 8, color: Colors.white.withValues(alpha: 0.08)),
+              Container(height: 8, color: context.colors.textPrimary.withValues(alpha: 0.08)),
               TweenAnimationBuilder<double>(
                 tween: Tween(begin: 0, end: progress),
                 duration: const Duration(milliseconds: 500),

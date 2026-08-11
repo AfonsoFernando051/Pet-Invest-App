@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
 import 'package:petapp_mobile/core/di/dependency_injection.dart';
+import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
 import 'package:petapp_mobile/core/utils/pet_assets.dart';
 import 'package:petapp_mobile/core/widgets/app_loading_indicator.dart';
 import 'package:petapp_mobile/core/widgets/glass_card.dart';
@@ -81,18 +82,19 @@ class _MentorScreenState extends State<MentorScreen> {
   }
 
   Future<void> _confirmClear() async {
+    final tokens = context.colors;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        backgroundColor: AppColors.spaceBlue,
+        backgroundColor: tokens.surfaceElevated,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text(
+        title: Text(
           'Limpar conversa?',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: TextStyle(color: tokens.textPrimary, fontWeight: FontWeight.bold),
         ),
-        content: const Text(
+        content: Text(
           'O histórico com seu mentor será apagado deste dispositivo.',
-          style: TextStyle(color: AppColors.subtleText),
+          style: TextStyle(color: tokens.textSecondary),
         ),
         actions: [
           TextButton(
@@ -101,7 +103,7 @@ class _MentorScreenState extends State<MentorScreen> {
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Limpar', style: TextStyle(color: AppColors.negativeRed)),
+            child: Text('Limpar', style: TextStyle(color: tokens.error)),
           ),
         ],
       ),
@@ -153,6 +155,7 @@ class _MentorScreenState extends State<MentorScreen> {
   }
 
   Widget _buildHeader() {
+    final tokens = context.colors;
     return GlassCard(
       borderRadius: 20,
       borderColor: AppColors.neonCyan.withValues(alpha: 0.3),
@@ -161,35 +164,35 @@ class _MentorScreenState extends State<MentorScreen> {
         children: [
           CircleAvatar(
             radius: 20,
-            backgroundColor: AppColors.spaceDark,
+            backgroundColor: tokens.surface,
             child: ClipOval(
               child: Image.asset(
                 _petAsset,
                 width: 40,
                 height: 40,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => const Icon(Icons.pets, color: Colors.white70, size: 20),
+                errorBuilder: (_, __, ___) => Icon(Icons.pets, color: tokens.textSecondary, size: 20),
               ),
             ),
           ),
           const SizedBox(width: 12),
-          const Expanded(
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   'Seu Mentor',
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+                  style: TextStyle(color: tokens.textPrimary, fontWeight: FontWeight.bold, fontSize: 14),
                 ),
                 Text(
                   'Educação financeira, no seu ritmo',
-                  style: TextStyle(color: AppColors.subtleText, fontSize: 11),
+                  style: TextStyle(color: tokens.textSecondary, fontSize: 11),
                 ),
               ],
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.refresh, color: AppColors.subtleText, size: 20),
+            icon: Icon(Icons.refresh, color: tokens.textSecondary, size: 20),
             tooltip: 'Limpar conversa',
             onPressed: _controller.messages.isEmpty ? null : _confirmClear,
           ),
@@ -224,6 +227,7 @@ class _MentorScreenState extends State<MentorScreen> {
   }
 
   Widget _buildEmptyState() {
+    final tokens = context.colors;
     return SingleChildScrollView(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -231,28 +235,28 @@ class _MentorScreenState extends State<MentorScreen> {
           const SizedBox(height: 24),
           CircleAvatar(
             radius: 40,
-            backgroundColor: AppColors.spaceDark,
+            backgroundColor: tokens.surface,
             child: ClipOval(
               child: Image.asset(
                 _petAsset,
                 width: 80,
                 height: 80,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => const Icon(Icons.pets, color: Colors.white70, size: 40),
+                errorBuilder: (_, __, ___) => Icon(Icons.pets, color: tokens.textSecondary, size: 40),
               ),
             ),
           ),
           const SizedBox(height: 16),
-          const Text(
+          Text(
             'Oi! Eu sou seu mentor de investimentos.',
             textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+            style: TextStyle(color: tokens.textPrimary, fontSize: 16, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 6),
-          const Text(
+          Text(
             'Pergunte o que quiser sobre investir — vamos aprender juntos, no seu ritmo.',
             textAlign: TextAlign.center,
-            style: TextStyle(color: AppColors.subtleText, fontSize: 13),
+            style: TextStyle(color: tokens.textSecondary, fontSize: 13),
           ),
           const SizedBox(height: 20),
           Wrap(

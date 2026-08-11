@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
 import 'package:petapp_mobile/core/constants/app_strings.dart';
+import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
 import 'package:petapp_mobile/core/utils/translator.dart';
 import 'package:petapp_mobile/core/widgets/game_button.dart';
 import 'package:petapp_mobile/core/widgets/glass_card.dart';
@@ -15,7 +16,7 @@ class PortfolioNotConnectedCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GlassCard(
-      backgroundColor: AppColors.spaceDark.withValues(alpha: 0.5),
+      backgroundColor: context.colors.surface.withValues(alpha: context.isDarkMode ? 0.5 : 0.94),
       borderColor: AppColors.neonCyan.withValues(alpha: 0.3),
       borderRadius: 24,
       borderWidth: 1,
@@ -41,12 +42,12 @@ class PortfolioNotConnectedCard extends StatelessWidget {
                     children: [
                       Text(
                         Translator.translate(AppStrings.portfolioNotConnectedTitle),
-                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15),
+                        style: TextStyle(color: context.colors.textPrimary, fontWeight: FontWeight.bold, fontSize: 15),
                       ),
                       const SizedBox(height: 2),
                       Text(
                         Translator.translate(AppStrings.portfolioNotConnectedBody),
-                        style: const TextStyle(color: AppColors.subtleText, fontSize: 12),
+                        style: TextStyle(color: context.colors.textSecondary, fontSize: 12),
                       ),
                     ],
                   ),

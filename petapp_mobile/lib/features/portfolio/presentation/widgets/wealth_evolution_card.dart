@@ -2,6 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
+import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
 import 'package:petapp_mobile/core/widgets/glass_card.dart';
 import 'package:petapp_mobile/features/investment/data/models/investment_type_enum.dart';
 import 'package:petapp_mobile/features/portfolio/domain/entities/history_point.dart';
@@ -29,9 +30,10 @@ class _WealthEvolutionCardState extends State<WealthEvolutionCard> {
   Widget build(BuildContext context) {
     final controller = widget.controller;
     final points = controller.chartPoints;
+    final tokens = context.colors;
 
     return GlassCard(
-      backgroundColor: AppColors.spaceDark.withValues(alpha: 0.62),
+      backgroundColor: tokens.surface.withValues(alpha: context.isDarkMode ? 0.62 : 0.94),
       borderColor: AppColors.neonCyan.withValues(alpha: 0.3),
       borderRadius: 20,
       borderWidth: 1,
@@ -43,11 +45,11 @@ class _WealthEvolutionCardState extends State<WealthEvolutionCard> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
+                Text(
                   'Evolução Patrimonial',
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15),
+                  style: TextStyle(color: tokens.textPrimary, fontWeight: FontWeight.bold, fontSize: 15),
                 ),
-                _Legend(),
+                const _Legend(),
               ],
             ),
             const SizedBox(height: 12),
@@ -61,7 +63,7 @@ class _WealthEvolutionCardState extends State<WealthEvolutionCard> {
                   ? Center(
                       child: Text(
                         'Sem dados suficientes para este período.',
-                        style: TextStyle(color: AppColors.subtleText, fontSize: 12),
+                        style: TextStyle(color: tokens.textSecondary, fontSize: 12),
                       ),
                     )
                   : InteractiveViewer(
@@ -70,7 +72,7 @@ class _WealthEvolutionCardState extends State<WealthEvolutionCard> {
                       panEnabled: true,
                       scaleEnabled: true,
                       child: LineChart(
-                        _buildChartData(points),
+                        _buildChartData(points, tokens),
                         duration: const Duration(milliseconds: 500),
                         curve: Curves.easeOutCubic,
                       ),
@@ -86,7 +88,7 @@ class _WealthEvolutionCardState extends State<WealthEvolutionCard> {
     );
   }
 
-  LineChartData _buildChartData(List<HistoryPoint> points) {
+  LineChartData _buildChartData(List<HistoryPoint> points, AppColorTokens tokens) {
     final investedSpots = <FlSpot>[];
     final valueSpots = <FlSpot>[];
     for (var i = 0; i < points.length; i++) {
@@ -104,7 +106,7 @@ class _WealthEvolutionCardState extends State<WealthEvolutionCard> {
         show: true,
         drawVerticalLine: false,
         horizontalInterval: (maxY - minY + pad * 2) / 4,
-        getDrawingHorizontalLine: (_) => FlLine(color: Colors.white.withValues(alpha: 0.06), strokeWidth: 1),
+        getDrawingHorizontalLine: (_) => FlLine(color: tokens.divider, strokeWidth: 1),
       ),
       titlesData: const FlTitlesData(show: false),
       borderData: FlBorderData(show: false),
@@ -130,7 +132,7 @@ class _WealthEvolutionCardState extends State<WealthEvolutionCard> {
         LineChartBarData(
           spots: investedSpots,
           isCurved: true,
-          color: AppColors.subtleText.withValues(alpha: 0.6),
+          color: tokens.chartNeutral,
           barWidth: 2,
           isStrokeCapRound: true,
           dashArray: [6, 4],
@@ -149,7 +151,7 @@ class _WealthEvolutionCardState extends State<WealthEvolutionCard> {
               radius: 4,
               color: AppColors.neonCyan,
               strokeWidth: 2,
-              strokeColor: Colors.white,
+              strokeColor: tokens.surfaceElevated,
             ),
           ),
           belowBarData: BarAreaData(
@@ -173,11 +175,12 @@ class _TooltipSummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tokens = context.colors;
     final profit = point.profit;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: AppColors.spaceBlue.withValues(alpha: 0.7),
+        color: tokens.surfaceElevated.withValues(alpha: 0.9),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: AppColors.neonCyan.withValues(alpha: 0.3)),
       ),
@@ -186,16 +189,16 @@ class _TooltipSummary extends StatelessWidget {
         children: [
           Text(
             PortfolioFormatters.date(point.date),
-            style: TextStyle(color: AppColors.subtleText, fontSize: 11),
+            style: TextStyle(color: tokens.textSecondary, fontSize: 11),
           ),
           Text(
             PortfolioFormatters.currency(point.portfolioValue, showCents: false),
-            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+            style: TextStyle(color: tokens.textPrimary, fontWeight: FontWeight.bold, fontSize: 12),
           ),
           Text(
             '${profit >= 0 ? '+' : ''}${PortfolioFormatters.currency(profit, showCents: false)}',
             style: TextStyle(
-              color: profit >= 0 ? AppColors.positiveGreen : AppColors.negativeRed,
+              color: profit >= 0 ? tokens.chartPositive : tokens.chartNegative,
               fontWeight: FontWeight.bold,
               fontSize: 12,
             ),
@@ -207,18 +210,21 @@ class _TooltipSummary extends StatelessWidget {
 }
 
 class _Legend extends StatelessWidget {
+  const _Legend();
+
   @override
   Widget build(BuildContext context) {
+    final tokens = context.colors;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         _dot(AppColors.neonCyan),
         const SizedBox(width: 4),
-        Text('Patrimônio', style: TextStyle(color: AppColors.subtleText, fontSize: 10)),
+        Text('Patrimônio', style: TextStyle(color: tokens.textSecondary, fontSize: 10)),
         const SizedBox(width: 10),
-        _dot(AppColors.subtleText.withValues(alpha: 0.6)),
+        _dot(tokens.chartNeutral),
         const SizedBox(width: 4),
-        Text('Investido', style: TextStyle(color: AppColors.subtleText, fontSize: 10)),
+        Text('Investido', style: TextStyle(color: tokens.textSecondary, fontSize: 10)),
       ],
     );
   }
@@ -311,6 +317,7 @@ class _Chip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tokens = context.colors;
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -320,14 +327,14 @@ class _Chip extends StatelessWidget {
           duration: const Duration(milliseconds: 200),
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
-            color: selected ? accent.withValues(alpha: 0.18) : Colors.white.withValues(alpha: 0.04),
+            color: selected ? accent.withValues(alpha: 0.18) : tokens.textTertiary.withValues(alpha: 0.08),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: selected ? accent.withValues(alpha: 0.7) : Colors.white.withValues(alpha: 0.1)),
+            border: Border.all(color: selected ? accent.withValues(alpha: 0.7) : tokens.border),
           ),
           child: Text(
             label,
             style: TextStyle(
-              color: selected ? Colors.white : AppColors.subtleText,
+              color: selected ? tokens.textPrimary : tokens.textSecondary,
               fontSize: 11,
               fontWeight: selected ? FontWeight.bold : FontWeight.normal,
             ),

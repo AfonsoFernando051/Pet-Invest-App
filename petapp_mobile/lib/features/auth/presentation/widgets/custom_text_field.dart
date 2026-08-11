@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/theme/app_color_tokens.dart';
 
 class CustomTextField extends StatelessWidget {
   final String hint;
@@ -17,9 +18,10 @@ class CustomTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tokens = context.colors;
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.white.withValues(alpha: 0.05),
+        color: tokens.surface.withValues(alpha: context.isDarkMode ? 0.05 : 0.9),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(color: AppColors.neonCyan.withValues(alpha: 0.4), width: 1.0),
         boxShadow: [
@@ -33,11 +35,11 @@ class CustomTextField extends StatelessWidget {
       child: TextField(
         controller: controller,
         obscureText: obscure,
-        style: const TextStyle(color: AppColors.white),
+        style: TextStyle(color: tokens.textPrimary),
         decoration: InputDecoration(
           prefixIcon: Icon(icon, color: AppColors.neonCyan),
           hintText: hint,
-          hintStyle: const TextStyle(color: AppColors.white54),
+          hintStyle: TextStyle(color: tokens.textTertiary),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         ),

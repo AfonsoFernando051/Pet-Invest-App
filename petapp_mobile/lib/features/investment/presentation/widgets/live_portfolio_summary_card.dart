@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
+import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
 import 'package:petapp_mobile/core/widgets/glass_card.dart';
 import 'package:petapp_mobile/features/portfolio/domain/entities/portfolio_stats.dart';
 import 'package:petapp_mobile/features/portfolio/domain/services/achievement_catalog.dart';
@@ -28,7 +29,7 @@ class LivePortfolioSummaryCard extends StatelessWidget {
     final firstMission = missions.firstWhere((m) => m.isComplete, orElse: () => missions.first);
 
     return GlassCard(
-      backgroundColor: AppColors.spaceDark.withValues(alpha: 0.55),
+      backgroundColor: context.colors.surface.withValues(alpha: context.isDarkMode ? 0.55 : 0.94),
       borderColor: AppColors.goldenBorder.withValues(alpha: 0.3),
       borderRadius: 20,
       borderWidth: 1,
@@ -37,12 +38,12 @@ class LivePortfolioSummaryCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Portfólio', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)),
+            Text('Portfólio', style: TextStyle(color: context.colors.textPrimary, fontWeight: FontWeight.bold, fontSize: 15)),
             const SizedBox(height: 14),
             Row(
               children: [
-                Expanded(child: _stat('Ativos', '${stats.summary.totalAssets}', AppColors.neonCyan)),
-                Expanded(child: _stat('Valor', PortfolioFormatters.compactCurrency(stats.summary.currentValue), AppColors.neonCyan)),
+                Expanded(child: _stat(context, 'Ativos', '${stats.summary.totalAssets}', AppColors.neonCyan)),
+                Expanded(child: _stat(context, 'Valor', PortfolioFormatters.compactCurrency(stats.summary.currentValue), AppColors.neonCyan)),
               ],
             ),
             const SizedBox(height: 14),
@@ -50,12 +51,13 @@ class LivePortfolioSummaryCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: _stat(
+                    context,
                     'Renda Passiva Est.',
                     hasAssets ? '${PortfolioFormatters.currency(income.monthlyEstimate, showCents: false)}/mês' : '—',
                     AppColors.goldenBorder,
                   ),
                 ),
-                Expanded(child: _stat('XP Ganho', '+$xp XP', AppColors.neonPink)),
+                Expanded(child: _stat(context, 'XP Ganho', '+$xp XP', AppColors.neonPink)),
               ],
             ),
             if (hasAssets) ...[
@@ -64,15 +66,15 @@ class LivePortfolioSummaryCard extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
                   color: firstMission.isComplete
-                      ? AppColors.positiveGreen.withValues(alpha: 0.1)
-                      : Colors.white.withValues(alpha: 0.05),
+                      ? context.colors.success.withValues(alpha: 0.1)
+                      : context.colors.textPrimary.withValues(alpha: 0.05),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Row(
                   children: [
                     Icon(
                       firstMission.isComplete ? Icons.check_circle : firstMission.icon,
-                      color: firstMission.isComplete ? AppColors.positiveGreen : AppColors.subtleText,
+                      color: firstMission.isComplete ? context.colors.success : context.colors.textSecondary,
                       size: 16,
                     ),
                     const SizedBox(width: 8),
@@ -81,7 +83,7 @@ class LivePortfolioSummaryCard extends StatelessWidget {
                         firstMission.title,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          color: firstMission.isComplete ? AppColors.positiveGreen : AppColors.subtleText,
+                          color: firstMission.isComplete ? context.colors.success : context.colors.textSecondary,
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
                         ),
@@ -97,11 +99,11 @@ class LivePortfolioSummaryCard extends StatelessWidget {
     );
   }
 
-  Widget _stat(String label, String value, Color color) {
+  Widget _stat(BuildContext context, String label, String value, Color color) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: TextStyle(color: AppColors.subtleText, fontSize: 11)),
+        Text(label, style: TextStyle(color: context.colors.textSecondary, fontSize: 11)),
         const SizedBox(height: 2),
         Text(value, style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 16)),
       ],

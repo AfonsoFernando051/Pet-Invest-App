@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:petapp_mobile/core/constants/app_colors.dart';
+import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
 
 /// Utility for themed, branded snack bars.
 /// Replaces all raw ScaffoldMessenger.showSnackBar calls.
@@ -13,11 +13,12 @@ class GameSnack {
     bool isError = false,
     bool isSuccess = false,
   }) {
+    final tokens = context.colors;
     final color = isError
-        ? AppColors.negativeRed.withValues(alpha: 0.92)
+        ? tokens.error.withValues(alpha: 0.92)
         : isSuccess
-            ? AppColors.positiveGreen.withValues(alpha: 0.92)
-            : AppColors.spaceBlue.withValues(alpha: 0.95);
+            ? tokens.success.withValues(alpha: 0.92)
+            : tokens.surfaceElevated.withValues(alpha: 0.98);
 
     final icon = isError
         ? Icons.error_outline
@@ -25,17 +26,23 @@ class GameSnack {
             ? Icons.check_circle_outline
             : Icons.info_outline;
 
+    // Neutral (non-success/error) snacks sit on a plain surface — that
+    // surface is near-white in Light theme, so its content needs dark text,
+    // unlike the always-white text used over the saturated success/error fills.
+    final isNeutralLight = !isError && !isSuccess && !context.isDarkMode;
+    final contentColor = isNeutralLight ? tokens.textPrimary : Colors.white;
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Row(
           children: [
-            Icon(icon, color: Colors.white, size: 18),
+            Icon(icon, color: contentColor, size: 18),
             const SizedBox(width: 10),
             Expanded(
               child: Text(
                 message,
-                style: const TextStyle(
-                  color: Colors.white,
+                style: TextStyle(
+                  color: contentColor,
                   fontWeight: FontWeight.w600,
                   fontSize: 13,
                 ),
@@ -49,10 +56,10 @@ class GameSnack {
           borderRadius: BorderRadius.circular(16),
           side: BorderSide(
             color: isError
-                ? AppColors.negativeRed
+                ? tokens.error
                 : isSuccess
-                    ? AppColors.positiveGreen
-                    : AppColors.neonCyan.withValues(alpha: 0.4),
+                    ? tokens.success
+                    : tokens.primary.withValues(alpha: 0.4),
             width: 1,
           ),
         ),

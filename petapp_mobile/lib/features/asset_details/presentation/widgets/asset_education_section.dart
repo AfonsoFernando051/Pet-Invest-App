@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
+import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
 import 'package:petapp_mobile/core/widgets/glass_card.dart';
 import 'package:petapp_mobile/features/asset_details/domain/entities/asset_details.dart';
 import 'package:petapp_mobile/features/portfolio/presentation/widgets/shared/section_label.dart';
@@ -22,7 +23,7 @@ class _AssetEducationSectionState extends State<AssetEducationSection> {
   @override
   Widget build(BuildContext context) {
     return GlassCard(
-      backgroundColor: AppColors.spaceDark.withValues(alpha: 0.55),
+      backgroundColor: context.colors.surface.withValues(alpha: context.isDarkMode ? 0.55 : 0.94),
       borderColor: AppColors.neonCyan.withValues(alpha: 0.15),
       borderRadius: 18,
       borderWidth: 1,
@@ -78,7 +79,7 @@ class _AssetEducationSectionState extends State<AssetEducationSection> {
                 icon: Icons.visibility_outlined,
                 title: 'O que observar?',
                 content: _whatToWatch(),
-                accentColor: AppColors.warningAmber,
+                accentColor: context.colors.warning,
               ),
             ],
 
@@ -86,7 +87,7 @@ class _AssetEducationSectionState extends State<AssetEducationSection> {
               const SizedBox(height: 8),
               GestureDetector(
                 onTap: () => setState(() => _expanded = true),
-                child: Text(
+                child: const Text(
                   'Saiba mais →',
                   style: TextStyle(
                     color: AppColors.neonCyan,
@@ -204,7 +205,7 @@ class _EducationBlock extends StatelessWidget {
         const SizedBox(height: 6),
         Text(
           content,
-          style: TextStyle(color: AppColors.subtleText, fontSize: 12, height: 1.5),
+          style: TextStyle(color: context.colors.textSecondary, fontSize: 12, height: 1.5),
         ),
       ],
     );

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
+import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
 import 'package:petapp_mobile/core/widgets/glass_card.dart';
 import 'package:petapp_mobile/features/portfolio/domain/entities/achievement.dart';
 import 'package:petapp_mobile/features/portfolio/domain/entities/mission.dart';
@@ -18,7 +19,7 @@ class MissionsAchievementsSection extends StatelessWidget {
     final unlockedCount = achievements.where((a) => a.unlocked).length;
 
     return GlassCard(
-      backgroundColor: AppColors.spaceDark.withValues(alpha: 0.58),
+      backgroundColor: context.colors.surface.withValues(alpha: context.isDarkMode ? 0.58 : 0.94),
       borderColor: AppColors.goldenBorder.withValues(alpha: 0.3),
       borderRadius: 20,
       borderWidth: 1,

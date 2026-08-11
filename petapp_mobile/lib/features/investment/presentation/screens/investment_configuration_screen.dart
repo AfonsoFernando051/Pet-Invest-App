@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
 import 'package:petapp_mobile/core/constants/app_strings.dart';
 import 'package:petapp_mobile/core/di/dependency_injection.dart';
+import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
 import 'package:petapp_mobile/core/utils/financial_input_validators.dart';
 import 'package:petapp_mobile/core/utils/friendly_error_message.dart';
 import 'package:petapp_mobile/core/utils/game_snack.dart';
@@ -276,12 +277,12 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
             controller: controller,
             focusNode: focusNode,
             onEditingComplete: onEditingComplete,
-            style: const TextStyle(color: Colors.white),
+            style: TextStyle(color: context.colors.textPrimary),
             decoration: InputDecoration(
               labelText: 'Nome/Ticker (ex: PETR4)',
-              labelStyle: const TextStyle(color: Colors.white70),
+              labelStyle: TextStyle(color: context.colors.textSecondary),
               filled: true,
-              fillColor: AppColors.spaceDark.withValues(alpha: 0.5),
+              fillColor: context.colors.surface.withValues(alpha: context.isDarkMode ? 0.5 : 0.94),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide(color: AppColors.neonCyan.withValues(alpha: 0.5)),
@@ -308,7 +309,7 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
                 margin: const EdgeInsets.only(top: 8),
                 constraints: const BoxConstraints(maxHeight: 280, maxWidth: 320),
                 decoration: BoxDecoration(
-                  color: AppColors.spaceDark.withValues(alpha: 0.97),
+                  color: context.colors.surfaceElevated.withValues(alpha: context.isDarkMode ? 0.97 : 0.96),
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(color: AppColors.neonCyan.withValues(alpha: 0.5)),
                 ),
@@ -350,13 +351,13 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
       child: TextFormField(
         controller: controller,
         keyboardType: type,
-        style: const TextStyle(color: Colors.white),
+        style: TextStyle(color: context.colors.textPrimary),
         decoration: InputDecoration(
           labelText: label,
-          labelStyle: const TextStyle(color: Colors.white70),
+          labelStyle: TextStyle(color: context.colors.textSecondary),
           suffixIcon: suffixIcon,
           filled: true,
-          fillColor: AppColors.spaceDark.withValues(alpha: 0.5),
+          fillColor: context.colors.surface.withValues(alpha: context.isDarkMode ? 0.5 : 0.94),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide(color: AppColors.neonCyan.withValues(alpha: 0.5)),
@@ -383,7 +384,7 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
           decoration: BoxDecoration(
-            color: AppColors.spaceDark.withValues(alpha: 0.5),
+            color: context.colors.surface.withValues(alpha: context.isDarkMode ? 0.5 : 0.94),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: AppColors.neonCyan.withValues(alpha: 0.4)),
           ),
@@ -395,7 +396,10 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
                   _selectedDate == null
                       ? 'Data de Compra'
                       : "${_selectedDate!.day.toString().padLeft(2, '0')}/${_selectedDate!.month.toString().padLeft(2, '0')}/${_selectedDate!.year}",
-                  style: TextStyle(color: _selectedDate == null ? Colors.white70 : Colors.white, fontSize: 16),
+                  style: TextStyle(
+                    color: _selectedDate == null ? context.colors.textSecondary : context.colors.textPrimary,
+                    fontSize: 16,
+                  ),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -412,11 +416,11 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: const Text('Portfólio Inicial', style: TextStyle(color: Colors.white)),
+        title: Text('Portfólio Inicial', style: TextStyle(color: context.colors.textPrimary)),
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: Icon(Icons.arrow_back, color: context.colors.textPrimary),
           onPressed: () {
             if (Navigator.canPop(context)) Navigator.pop(context);
           },
@@ -466,7 +470,7 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
 
     return GlassCard(
       isAnimated: true,
-      backgroundColor: AppColors.spaceDark.withValues(alpha: 0.4),
+      backgroundColor: context.colors.surface.withValues(alpha: context.isDarkMode ? 0.4 : 0.94),
       borderRadius: 24,
       borderColor: AppColors.neonCyan.withValues(alpha: 0.5),
       borderWidth: 2,
@@ -475,18 +479,18 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
+            Text(
               'Monte seu Portfólio',
-              style: TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.bold),
+              style: TextStyle(color: context.colors.textPrimary, fontSize: 26, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
                 'Cada grande investidor começou com um único investimento. Sua jornada financeira começa agora.',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.white70, fontSize: 14, height: 1.4),
+                style: TextStyle(color: context.colors.textSecondary, fontSize: 14, height: 1.4),
               ),
             ),
             const SizedBox(height: 20),
@@ -511,7 +515,7 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
     final stats = _pendingStats;
 
     return GlassCard(
-      backgroundColor: AppColors.spaceDark.withValues(alpha: 0.6),
+      backgroundColor: context.colors.surface.withValues(alpha: context.isDarkMode ? 0.6 : 0.94),
       borderRadius: 24,
       borderColor: AppColors.goldenBorder.withValues(alpha: 0.2),
       borderWidth: 1,
@@ -520,9 +524,9 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text(
+            Text(
               'Adicionar Ativo',
-              style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+              style: TextStyle(color: context.colors.textPrimary, fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             Expanded(
@@ -571,11 +575,11 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
                       LivePortfolioSummaryCard(stats: stats, alreadyUnlockedIds: _alreadyUnlockedIds),
                       const SizedBox(height: 16),
                       if (_assets.isNotEmpty) ...[
-                        const Align(
+                        Align(
                           alignment: Alignment.centerLeft,
                           child: Text(
                             'Ativos Adicionados',
-                            style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold),
+                            style: TextStyle(color: context.colors.textPrimary, fontSize: 15, fontWeight: FontWeight.bold),
                           ),
                         ),
                         const SizedBox(height: 10),
@@ -599,17 +603,17 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
                         Container(
                           padding: const EdgeInsets.all(14),
                           decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.04),
+                            color: context.colors.textPrimary.withValues(alpha: 0.04),
                             borderRadius: BorderRadius.circular(14),
                           ),
-                          child: const Row(
+                          child: Row(
                             children: [
-                              Icon(Icons.lightbulb_outline, color: AppColors.goldenBorder, size: 18),
-                              SizedBox(width: 10),
+                              const Icon(Icons.lightbulb_outline, color: AppColors.goldenBorder, size: 18),
+                              const SizedBox(width: 10),
                               Expanded(
                                 child: Text(
                                   'Dica: você pode registrar compras antigas — a data de compra ajuda a calcular seu retorno real.',
-                                  style: TextStyle(color: AppColors.subtleText, fontSize: 12),
+                                  style: TextStyle(color: context.colors.textSecondary, fontSize: 12),
                                 ),
                               ),
                             ],
@@ -635,7 +639,7 @@ class _InvestmentConfigurationScreenState extends State<InvestmentConfigurationS
                 onPressed: _isLoading ? null : _handleSkip,
                 child: Text(
                   Translator.translate(AppStrings.skipForNowButton),
-                  style: const TextStyle(color: Colors.white70, fontWeight: FontWeight.w600),
+                  style: TextStyle(color: context.colors.textSecondary, fontWeight: FontWeight.w600),
                 ),
               ),
             ),

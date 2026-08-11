@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
+import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
 import 'package:petapp_mobile/features/investment/data/models/asset_registration_model.dart';
 import 'package:petapp_mobile/features/portfolio/domain/entities/investment_type_display.dart';
 import 'package:petapp_mobile/features/portfolio/presentation/widgets/shared/formatters.dart';
@@ -31,7 +32,7 @@ class AddedAssetTile extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.04),
+        color: context.colors.textPrimary.withValues(alpha: 0.04),
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: type.color.withValues(alpha: 0.25)),
       ),
@@ -39,9 +40,9 @@ class AddedAssetTile extends StatelessWidget {
         children: [
           ReorderableDragStartListener(
             index: index,
-            child: const Padding(
-              padding: EdgeInsets.only(right: 6),
-              child: Icon(Icons.drag_indicator, color: Colors.white24, size: 18),
+            child: Padding(
+              padding: const EdgeInsets.only(right: 6),
+              child: Icon(Icons.drag_indicator, color: context.colors.textTertiary, size: 18),
             ),
           ),
           Container(
@@ -62,12 +63,12 @@ class AddedAssetTile extends StatelessWidget {
               children: [
                 Text(
                   asset.name.toUpperCase(),
-                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                  style: TextStyle(color: context.colors.textPrimary, fontWeight: FontWeight.bold, fontSize: 13),
                   overflow: TextOverflow.ellipsis,
                 ),
                 Text(
                   '${isWholeUnits ? asset.quantity.toInt() : asset.quantity} un · ${PortfolioFormatters.currency(asset.purchasePrice)}',
-                  style: TextStyle(color: AppColors.subtleText, fontSize: 11),
+                  style: TextStyle(color: context.colors.textSecondary, fontSize: 11),
                   overflow: TextOverflow.ellipsis,
                 ),
               ],
@@ -79,7 +80,7 @@ class AddedAssetTile extends StatelessWidget {
             onPressed: onEdit,
           ),
           IconButton(
-            icon: const Icon(Icons.delete_outline, color: AppColors.negativeRed, size: 18),
+            icon: Icon(Icons.delete_outline, color: context.colors.error, size: 18),
             tooltip: 'Remover',
             onPressed: onRemove,
           ),

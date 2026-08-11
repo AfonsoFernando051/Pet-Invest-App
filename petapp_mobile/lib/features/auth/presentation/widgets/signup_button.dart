@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/theme/app_color_tokens.dart';
 import 'signup_card.dart';
 
 class SignupButton extends StatelessWidget {
@@ -32,7 +33,7 @@ class SignupButton extends StatelessWidget {
       child: RichText(
         text: TextSpan(
           text: 'Não tem conta? ',
-          style: const TextStyle(color: AppColors.white70),
+          style: TextStyle(color: context.colors.textSecondary),
           children: [
             TextSpan(
               text: 'Cadastre-se',

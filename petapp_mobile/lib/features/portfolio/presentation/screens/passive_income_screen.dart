@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
+import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
 import 'package:petapp_mobile/core/widgets/app_loading_indicator.dart';
 import 'package:petapp_mobile/features/portfolio/presentation/controllers/portfolio_controller.dart';
 import 'package:petapp_mobile/features/portfolio/presentation/widgets/dividend_radar_section.dart';
@@ -45,7 +46,7 @@ class _PassiveIncomeScreenState extends State<PassiveIncomeScreen> {
 
     return RefreshIndicator(
       color: AppColors.neonCyan,
-      backgroundColor: AppColors.spaceBlue,
+      backgroundColor: context.colors.surfaceElevated,
       onRefresh: _refreshAll,
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),

@@ -2,6 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
+import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
 import 'package:petapp_mobile/core/widgets/glass_card.dart';
 import 'package:petapp_mobile/features/portfolio/domain/entities/allocation_slice.dart';
 import 'package:petapp_mobile/features/portfolio/domain/entities/investment_type_display.dart';
@@ -25,10 +26,11 @@ class _AssetAllocationCardState extends State<AssetAllocationCard> {
 
   @override
   Widget build(BuildContext context) {
+    final tokens = context.colors;
     final slices = [...widget.allocation]..sort((a, b) => b.currentValue.compareTo(a.currentValue));
 
     return GlassCard(
-      backgroundColor: AppColors.spaceDark.withValues(alpha: 0.62),
+      backgroundColor: tokens.surface.withValues(alpha: context.isDarkMode ? 0.62 : 0.94),
       borderColor: AppColors.neonPurple.withValues(alpha: 0.3),
       borderRadius: 20,
       borderWidth: 1,
@@ -43,7 +45,7 @@ class _AssetAllocationCardState extends State<AssetAllocationCard> {
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 24),
                 child: Center(
-                  child: Text('Nenhum ativo registrado ainda.', style: TextStyle(color: AppColors.subtleText)),
+                  child: Text('Nenhum ativo registrado ainda.', style: TextStyle(color: tokens.textSecondary)),
                 ),
               )
             else
@@ -89,9 +91,9 @@ class _AssetAllocationCardState extends State<AssetAllocationCard> {
                           children: [
                             Text(
                               PortfolioFormatters.compactCurrency(widget.totalValue),
-                              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+                              style: TextStyle(color: tokens.textPrimary, fontWeight: FontWeight.bold, fontSize: 14),
                             ),
-                            Text('total', style: TextStyle(color: AppColors.subtleText, fontSize: 10)),
+                            Text('total', style: TextStyle(color: tokens.textSecondary, fontSize: 10)),
                           ],
                         ),
                       ],
@@ -123,10 +125,11 @@ class _LegendRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tokens = context.colors;
     final diff = slice.portfolioPercent - slice.type.idealTargetPercent;
     final diffColor = diff.abs() <= 5
-        ? AppColors.positiveGreen
-        : (diff > 0 ? AppColors.warningAmber : AppColors.neonCyan);
+        ? tokens.success
+        : (diff > 0 ? tokens.warning : tokens.primary);
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
@@ -143,18 +146,18 @@ class _LegendRow extends StatelessWidget {
           Expanded(
             child: Text(
               slice.type.shortLabel,
-              style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w600),
+              style: TextStyle(color: tokens.textPrimary, fontSize: 11, fontWeight: FontWeight.w600),
               overflow: TextOverflow.ellipsis,
             ),
           ),
           Text(
             '${slice.portfolioPercent.toStringAsFixed(0)}%',
-            style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
+            style: TextStyle(color: tokens.textPrimary, fontSize: 11, fontWeight: FontWeight.bold),
           ),
           const SizedBox(width: 4),
           Text(
             '/ ${slice.type.idealTargetPercent.toStringAsFixed(0)}%',
-            style: TextStyle(color: AppColors.subtleText, fontSize: 10),
+            style: TextStyle(color: tokens.textSecondary, fontSize: 10),
           ),
           const SizedBox(width: 4),
           Text(

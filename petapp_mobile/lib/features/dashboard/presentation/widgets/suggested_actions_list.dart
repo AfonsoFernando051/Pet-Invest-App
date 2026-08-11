@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
 import 'package:petapp_mobile/core/constants/app_strings.dart';
+import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
 import 'package:petapp_mobile/core/utils/translator.dart';
 import 'package:petapp_mobile/core/widgets/glass_card.dart';
 import 'package:petapp_mobile/features/onboarding/presentation/screens/onboarding_screen.dart';
@@ -53,17 +54,18 @@ class SuggestedActionsList extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         for (final (icon, labelKey, onTap) in actions) ...[
-          _buildTile(icon, labelKey, onTap),
+          _buildTile(context, icon, labelKey, onTap),
           const SizedBox(height: 8),
         ],
       ],
     );
   }
 
-  Widget _buildTile(IconData icon, String labelKey, VoidCallback onTap) {
+  Widget _buildTile(BuildContext context, IconData icon, String labelKey, VoidCallback onTap) {
+    final tokens = context.colors;
     return GlassCard(
-      backgroundColor: AppColors.spaceDark.withValues(alpha: 0.4),
-      borderColor: Colors.white.withValues(alpha: 0.1),
+      backgroundColor: tokens.surface.withValues(alpha: context.isDarkMode ? 0.4 : 0.94),
+      borderColor: tokens.border,
       borderRadius: 16,
       borderWidth: 1,
       padding: EdgeInsets.zero,
@@ -81,10 +83,10 @@ class SuggestedActionsList extends StatelessWidget {
                 Expanded(
                   child: Text(
                     Translator.translate(labelKey),
-                    style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600),
+                    style: TextStyle(color: tokens.textPrimary, fontSize: 13, fontWeight: FontWeight.w600),
                   ),
                 ),
-                const Icon(Icons.chevron_right, color: Colors.white38, size: 20),
+                Icon(Icons.chevron_right, color: tokens.textTertiary, size: 20),
               ],
             ),
           ),

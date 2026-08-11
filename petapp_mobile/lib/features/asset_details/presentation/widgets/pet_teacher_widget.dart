@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
+import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
 import 'package:petapp_mobile/core/widgets/glass_card.dart';
 import 'package:petapp_mobile/features/asset_details/domain/entities/asset_details.dart';
 import 'package:petapp_mobile/features/asset_details/domain/services/indicator_education_catalog.dart';
@@ -44,10 +45,10 @@ class PetTeacherWidget extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Seu Companheiro',
                         style: TextStyle(
-                          color: Colors.white,
+                          color: context.colors.textPrimary,
                           fontWeight: FontWeight.bold,
                           fontSize: 13,
                         ),
@@ -55,7 +56,7 @@ class PetTeacherWidget extends StatelessWidget {
                       Text(
                         _petGreeting(),
                         style: TextStyle(
-                          color: AppColors.subtleText,
+                          color: context.colors.textSecondary,
                           fontSize: 11,
                           fontStyle: FontStyle.italic,
                         ),
@@ -72,7 +73,7 @@ class PetTeacherWidget extends StatelessWidget {
             Text(
               'Pergunte ao mentor:',
               style: TextStyle(
-                color: AppColors.subtleText,
+                color: context.colors.textSecondary,
                 fontSize: 10,
                 fontWeight: FontWeight.w600,
               ),

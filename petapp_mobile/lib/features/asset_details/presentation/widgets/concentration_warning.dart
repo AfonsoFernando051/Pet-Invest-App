@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:petapp_mobile/core/constants/app_colors.dart';
+import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
 import 'package:petapp_mobile/core/widgets/glass_card.dart';
 import 'package:petapp_mobile/features/asset_details/domain/entities/asset_details.dart';
 
@@ -16,9 +16,10 @@ class ConcentrationWarning extends StatelessWidget {
     final pos = asset.userPosition;
     if (pos == null) return const SizedBox.shrink();
 
+    final tokens = context.colors;
     return GlassCard(
-      backgroundColor: AppColors.warningAmber.withValues(alpha: 0.06),
-      borderColor: AppColors.warningAmber.withValues(alpha: 0.2),
+      backgroundColor: tokens.warning.withValues(alpha: 0.06),
+      borderColor: tokens.warning.withValues(alpha: 0.2),
       borderRadius: 18,
       borderWidth: 1,
       child: Padding(
@@ -28,12 +29,12 @@ class ConcentrationWarning extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(Icons.info_outline, color: AppColors.warningAmber, size: 18),
+                Icon(Icons.info_outline, color: tokens.warning, size: 18),
                 const SizedBox(width: 8),
                 Text(
                   'Concentração',
                   style: TextStyle(
-                    color: AppColors.warningAmber,
+                    color: tokens.warning,
                     fontWeight: FontWeight.bold,
                     fontSize: 13,
                   ),
@@ -44,14 +45,14 @@ class ConcentrationWarning extends StatelessWidget {
             Text(
               '${asset.displayName} representa ${pos.portfolioWeight.toStringAsFixed(1)}% '
               'da sua carteira, o que é uma porção relativamente grande.',
-              style: TextStyle(color: AppColors.subtleText, fontSize: 12, height: 1.4),
+              style: TextStyle(color: tokens.textSecondary, fontSize: 12, height: 1.4),
             ),
             const SizedBox(height: 8),
             Text(
               'Concentração não é automaticamente ruim, mas é útil entender '
               'quanto do seu portfólio depende de um único ativo ou setor.',
               style: TextStyle(
-                color: AppColors.subtleText.withValues(alpha: 0.7),
+                color: tokens.textTertiary,
                 fontSize: 11,
                 height: 1.4,
               ),

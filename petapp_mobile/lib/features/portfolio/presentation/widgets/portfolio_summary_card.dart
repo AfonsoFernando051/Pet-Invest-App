@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
+import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
 import 'package:petapp_mobile/core/widgets/glass_card.dart';
 import 'package:petapp_mobile/features/portfolio/presentation/widgets/shared/animated_value.dart';
 import 'package:petapp_mobile/features/portfolio/presentation/widgets/shared/formatters.dart';
@@ -32,10 +33,11 @@ class PortfolioSummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tokens = context.colors;
     return SizedBox(
       width: width,
       child: GlassCard(
-        backgroundColor: AppColors.spaceDark.withValues(alpha: 0.6),
+        backgroundColor: tokens.surface.withValues(alpha: context.isDarkMode ? 0.6 : 0.94),
         borderColor: accentColor.withValues(alpha: 0.3),
         borderRadius: 18,
         borderWidth: 1,
@@ -54,7 +56,7 @@ class PortfolioSummaryCard extends StatelessWidget {
                       title,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(color: AppColors.subtleText, fontSize: 11, fontWeight: FontWeight.w600),
+                      style: TextStyle(color: tokens.textSecondary, fontSize: 11, fontWeight: FontWeight.w600),
                     ),
                   ),
                 ],
@@ -66,14 +68,14 @@ class PortfolioSummaryCard extends StatelessWidget {
                   PortfolioFormatters.compactCurrency(animated),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                  style: TextStyle(color: tokens.textPrimary, fontSize: 18, fontWeight: FontWeight.bold),
                 ),
               ),
               const SizedBox(height: 6),
               if (percent != null)
                 PerformanceBadge(percent: percent!, compact: true)
               else if (subtitle != null)
-                Text(subtitle!, style: TextStyle(color: AppColors.subtleText, fontSize: 11)),
+                Text(subtitle!, style: TextStyle(color: tokens.textSecondary, fontSize: 11)),
               if (sparkline != null && sparkline!.length >= 2) ...[
                 const SizedBox(height: 8),
                 MiniSparkline(values: sparkline!, color: accentColor, height: 28),

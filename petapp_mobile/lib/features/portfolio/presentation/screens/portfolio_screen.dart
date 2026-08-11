@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
+import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
 import 'package:petapp_mobile/core/utils/game_snack.dart';
 import 'package:petapp_mobile/core/widgets/glass_card.dart';
 import 'package:petapp_mobile/features/investment/presentation/screens/investment_configuration_screen.dart';
@@ -55,7 +56,7 @@ class PortfolioScreen extends StatelessWidget {
       children: [
         RefreshIndicator(
           color: AppColors.neonCyan,
-          backgroundColor: AppColors.spaceBlue,
+          backgroundColor: context.colors.surfaceElevated,
           onRefresh: controller.refresh,
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
@@ -98,11 +99,12 @@ class _PortfolioHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tokens = context.colors;
     final s = controller.summary;
     final isPositive = s.totalGain >= 0;
 
     return GlassCard(
-      backgroundColor: AppColors.spaceDark.withValues(alpha: 0.55),
+      backgroundColor: tokens.surface.withValues(alpha: context.isDarkMode ? 0.55 : 0.94),
       borderColor: AppColors.neonCyan.withValues(alpha: 0.25),
       borderRadius: 18,
       borderWidth: 1,
@@ -110,14 +112,15 @@ class _PortfolioHeader extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         child: Row(
           children: [
-            _stat('${s.totalAssets}', 'Ativos'),
-            _divider(),
-            _stat(_compact(s.currentValue), 'Valor Atual'),
-            _divider(),
+            _stat(context, '${s.totalAssets}', 'Ativos'),
+            _divider(context),
+            _stat(context, _compact(s.currentValue), 'Valor Atual'),
+            _divider(context),
             _stat(
+              context,
               '${isPositive ? '+' : ''}${s.totalGainPercent.toStringAsFixed(1)}%',
               'Retorno Total',
-              color: isPositive ? AppColors.positiveGreen : AppColors.negativeRed,
+              color: isPositive ? tokens.success : tokens.error,
             ),
           ],
         ),
@@ -125,15 +128,16 @@ class _PortfolioHeader extends StatelessWidget {
     );
   }
 
-  Widget _divider() => Container(width: 1, height: 32, color: Colors.white.withValues(alpha: 0.08));
+  Widget _divider(BuildContext context) => Container(width: 1, height: 32, color: context.colors.divider);
 
-  Widget _stat(String value, String label, {Color color = Colors.white}) {
+  Widget _stat(BuildContext context, String value, String label, {Color? color}) {
+    final tokens = context.colors;
     return Expanded(
       child: Column(
         children: [
-          Text(value, style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 15)),
+          Text(value, style: TextStyle(color: color ?? tokens.textPrimary, fontWeight: FontWeight.bold, fontSize: 15)),
           const SizedBox(height: 2),
-          Text(label, style: TextStyle(color: AppColors.subtleText, fontSize: 10)),
+          Text(label, style: TextStyle(color: tokens.textSecondary, fontSize: 10)),
         ],
       ),
     );
@@ -153,27 +157,28 @@ class _ErrorState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tokens = context.colors;
     return Center(
       child: GlassCard(
-        backgroundColor: AppColors.spaceDark.withValues(alpha: 0.6),
-        borderColor: AppColors.negativeRed.withValues(alpha: 0.4),
+        backgroundColor: tokens.surface.withValues(alpha: context.isDarkMode ? 0.6 : 0.94),
+        borderColor: tokens.error.withValues(alpha: 0.4),
         borderRadius: 24,
         child: Padding(
           padding: const EdgeInsets.all(28),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.satellite_alt, size: 56, color: AppColors.negativeRed),
+              Icon(Icons.satellite_alt, size: 56, color: tokens.error),
               const SizedBox(height: 16),
-              const Text(
+              Text(
                 'Falha de Comunicação',
-                style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                style: TextStyle(color: tokens.textPrimary, fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
               Text(
                 'Não foi possível carregar seu portfólio.\n$error',
                 textAlign: TextAlign.center,
-                style: const TextStyle(color: AppColors.subtleText, fontSize: 13),
+                style: TextStyle(color: tokens.textSecondary, fontSize: 13),
               ),
               const SizedBox(height: 20),
               ElevatedButton.icon(
@@ -198,20 +203,20 @@ class _HoldingsSkeleton extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        _bar(height: 64),
+        _bar(context, height: 64),
         const SizedBox(height: 16),
-        _bar(height: 300),
+        _bar(context, height: 300),
       ],
     );
   }
 
-  Widget _bar({required double height}) {
+  Widget _bar(BuildContext context, {required double height}) {
     return Container(
       height: height,
       decoration: BoxDecoration(
-        color: AppColors.spaceDark.withValues(alpha: 0.5),
+        color: context.colors.surface.withValues(alpha: context.isDarkMode ? 0.5 : 0.94),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
+        border: Border.all(color: context.colors.border),
       ),
     );
   }

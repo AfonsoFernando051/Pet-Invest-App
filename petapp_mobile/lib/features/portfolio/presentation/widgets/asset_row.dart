@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:petapp_mobile/core/constants/app_colors.dart';
+import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
 import 'package:petapp_mobile/features/portfolio/domain/entities/holding.dart';
 import 'package:petapp_mobile/features/portfolio/domain/entities/investment_type_display.dart';
 import 'package:petapp_mobile/features/portfolio/presentation/widgets/asset_details_sheet.dart';
@@ -18,6 +18,7 @@ class AssetRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tokens = context.colors;
     final isPositive = holding.gainValue >= 0;
 
     return Material(
@@ -46,11 +47,11 @@ class AssetRow extends StatelessWidget {
                   children: [
                     Text(
                       holding.ticker,
-                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                      style: TextStyle(color: tokens.textPrimary, fontWeight: FontWeight.bold, fontSize: 13),
                     ),
                     Text(
                       '${holding.quantity.toStringAsFixed(holding.quantity.truncateToDouble() == holding.quantity ? 0 : 2)} un · PM ${PortfolioFormatters.currency(holding.averagePrice)}',
-                      style: TextStyle(color: AppColors.subtleText, fontSize: 10),
+                      style: TextStyle(color: tokens.textSecondary, fontSize: 10),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ],
@@ -63,11 +64,11 @@ class AssetRow extends StatelessWidget {
                   children: [
                     Text(
                       PortfolioFormatters.currency(holding.currentValue, showCents: false),
-                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+                      style: TextStyle(color: tokens.textPrimary, fontWeight: FontWeight.bold, fontSize: 12),
                     ),
                     Text(
                       '${holding.portfolioPercent.toStringAsFixed(1)}% carteira',
-                      style: TextStyle(color: AppColors.subtleText, fontSize: 10),
+                      style: TextStyle(color: tokens.textSecondary, fontSize: 10),
                     ),
                   ],
                 ),
@@ -77,7 +78,7 @@ class AssetRow extends StatelessWidget {
               const SizedBox(width: 2),
               Icon(
                 isPositive ? Icons.chevron_right : Icons.chevron_right,
-                color: AppColors.subtleText.withValues(alpha: 0.5),
+                color: tokens.textTertiary,
                 size: 16,
               ),
             ],

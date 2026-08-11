@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../core/constants/app_colors.dart';
+import '../../../../core/theme/app_color_tokens.dart';
 import '../../../../core/widgets/cosmic_background.dart';
 
 class LoginBackground extends StatelessWidget {
@@ -11,10 +11,11 @@ class LoginBackground extends StatelessWidget {
       assetPath: 'assets/images/questionary_space_paw.png',
       darken: 0.2,
       errorBuilder: (context, error, stackTrace) {
+        final tokens = context.colors;
         return Container(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [AppColors.spaceDark, AppColors.spacePurple, AppColors.spaceBlue],
+              colors: [tokens.backgroundPrimary, tokens.surface, tokens.backgroundSecondary],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),

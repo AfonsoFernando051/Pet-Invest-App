@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:petapp_mobile/core/constants/app_colors.dart';
+import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
 import 'package:petapp_mobile/features/portfolio/presentation/widgets/shared/formatters.dart';
 
 /// Small pill showing a signed percentage with a trend arrow, colored
@@ -14,7 +14,7 @@ class PerformanceBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isPositive = percent >= 0;
-    final color = isPositive ? AppColors.positiveGreen : AppColors.negativeRed;
+    final color = isPositive ? context.colors.success : context.colors.error;
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 400),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
 import 'package:petapp_mobile/core/di/dependency_injection.dart';
+import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
 import 'package:petapp_mobile/core/utils/pet_assets.dart';
 
 /// The animated pet + speech bubble that reacts to portfolio-setup
@@ -138,7 +139,7 @@ class _SpeechBubble extends StatelessWidget {
         constraints: const BoxConstraints(maxWidth: 280),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.08),
+          color: context.colors.surface.withValues(alpha: context.isDarkMode ? 0.5 : 0.94),
           borderRadius: BorderRadius.circular(18),
           border: Border.all(color: AppColors.neonCyan.withValues(alpha: 0.3)),
         ),
@@ -151,7 +152,12 @@ class _SpeechBubble extends StatelessWidget {
               child: Text(
                 message,
                 textAlign: TextAlign.left,
-                style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600, height: 1.3),
+                style: TextStyle(
+                  color: context.colors.textPrimary,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  height: 1.3,
+                ),
               ),
             ),
           ],

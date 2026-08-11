@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
+import '../../../../core/theme/app_color_tokens.dart';
 import '../../../../core/utils/translator.dart';
 import '../../../../core/utils/game_snack.dart';
 import '../../../../core/utils/friendly_error_message.dart';
@@ -67,13 +67,14 @@ class _LoginFormState extends State<LoginForm> {
 
   @override
   Widget build(BuildContext context) {
+    final tokens = context.colors;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
           Translator.translate(AppStrings.welcomeBack),
-          style: const TextStyle(
-            color: AppColors.white,
+          style: TextStyle(
+            color: tokens.textPrimary,
             fontSize: 24,
             fontWeight: FontWeight.bold,
             letterSpacing: 1.0,
@@ -82,7 +83,7 @@ class _LoginFormState extends State<LoginForm> {
         const SizedBox(height: 8),
         Text(
           Translator.translate(AppStrings.loginToContinue),
-          style: const TextStyle(color: AppColors.white70, fontSize: 14),
+          style: TextStyle(color: tokens.textSecondary, fontSize: 14),
         ),
         const SizedBox(height: 32),
         CustomTextField(

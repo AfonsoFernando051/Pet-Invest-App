@@ -109,6 +109,14 @@ class AppStrings {
   static const String languageEn = "languageEn";
   static const String languageEs = "languageEs";
   static const String languageUpdated = "languageUpdated";
+  static const String appearanceSectionTitle = "appearanceSectionTitle";
+  static const String appearanceLightLabel = "appearanceLightLabel";
+  static const String appearanceLightDescription = "appearanceLightDescription";
+  static const String appearanceDarkLabel = "appearanceDarkLabel";
+  static const String appearanceDarkDescription = "appearanceDarkDescription";
+  static const String appearanceSystemLabel = "appearanceSystemLabel";
+  static const String appearanceSystemDescription = "appearanceSystemDescription";
+  static const String appearanceUpdated = "appearanceUpdated";
   static const String notificationsSectionTitle = "notificationsSectionTitle";
   static const String dailyMissionReminders = "dailyMissionReminders";
   static const String achievementAlerts = "achievementAlerts";

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:petapp_mobile/core/constants/app_colors.dart';
+import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
 import 'package:petapp_mobile/core/widgets/glass_card.dart';
 
 /// Small non-blocking banner shown above a tab's content when a refresh
@@ -13,25 +13,26 @@ class ErrorBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tokens = context.colors;
     return GlassCard(
-      backgroundColor: AppColors.negativeRed.withValues(alpha: 0.1),
-      borderColor: AppColors.negativeRed.withValues(alpha: 0.4),
+      backgroundColor: tokens.error.withValues(alpha: 0.1),
+      borderColor: tokens.error.withValues(alpha: 0.4),
       borderRadius: 14,
       borderWidth: 1,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         child: Row(
           children: [
-            const Icon(Icons.satellite_alt, color: AppColors.negativeRed, size: 18),
+            Icon(Icons.satellite_alt, color: tokens.error, size: 18),
             const SizedBox(width: 10),
-            const Expanded(
+            Expanded(
               child: Text(
                 'Não foi possível atualizar seus dados. Puxe para atualizar.',
-                style: TextStyle(color: Colors.white, fontSize: 12),
+                style: TextStyle(color: tokens.textPrimary, fontSize: 12),
               ),
             ),
             IconButton(
-              icon: const Icon(Icons.refresh, color: AppColors.negativeRed, size: 18),
+              icon: Icon(Icons.refresh, color: tokens.error, size: 18),
               onPressed: onRetry,
             ),
           ],

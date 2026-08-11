@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
 import 'package:petapp_mobile/core/constants/app_strings.dart';
+import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
 import 'package:petapp_mobile/core/utils/translator.dart';
 import 'package:petapp_mobile/core/widgets/glass_card.dart';
 import 'package:petapp_mobile/features/investment/presentation/screens/portfolio_choice_screen.dart';
@@ -17,7 +18,7 @@ class PortfolioReminderBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GlassCard(
-      backgroundColor: AppColors.spaceDark.withValues(alpha: 0.55),
+      backgroundColor: context.colors.surface.withValues(alpha: context.isDarkMode ? 0.55 : 0.94),
       borderColor: AppColors.neonPink.withValues(alpha: 0.35),
       borderRadius: 20,
       borderWidth: 1,
@@ -34,7 +35,7 @@ class PortfolioReminderBanner extends StatelessWidget {
                 Expanded(
                   child: Text(
                     Translator.translate(AppStrings.portfolioReminderMessage),
-                    style: const TextStyle(color: Colors.white, fontSize: 13, height: 1.4),
+                    style: TextStyle(color: context.colors.textPrimary, fontSize: 13, height: 1.4),
                   ),
                 ),
               ],
@@ -47,7 +48,7 @@ class PortfolioReminderBanner extends StatelessWidget {
                   onPressed: onDismiss,
                   child: Text(
                     Translator.translate(AppStrings.portfolioReminderDismiss),
-                    style: const TextStyle(color: Colors.white54),
+                    style: TextStyle(color: context.colors.textTertiary),
                   ),
                 ),
                 const SizedBox(width: 4),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_strings.dart';
+import '../../../../core/theme/app_color_tokens.dart';
 import '../../../../core/di/dependency_injection.dart';
 import '../../../../core/utils/game_snack.dart';
 import '../../../../core/utils/translator.dart';
@@ -88,7 +89,7 @@ class _OnboardingFormState extends State<OnboardingForm> {
             child: Center(
               child: Text(
                 '${Translator.translate(AppStrings.failedToLoadQuestions)}: ${snapshot.error}',
-                style: const TextStyle(color: Colors.white),
+                style: TextStyle(color: context.colors.textPrimary),
               )
             ),
           );
@@ -98,7 +99,7 @@ class _OnboardingFormState extends State<OnboardingForm> {
           return SizedBox(
             height: 300,
             child: Center(
-              child: Text(Translator.translate(AppStrings.noQuestionsAvailable), style: const TextStyle(color: Colors.white))
+              child: Text(Translator.translate(AppStrings.noQuestionsAvailable), style: TextStyle(color: context.colors.textPrimary))
             ),
           );
         }
@@ -134,12 +135,12 @@ class _OnboardingFormState extends State<OnboardingForm> {
             
             TextButton(
               onPressed: () {},
-              child: const Text(
+              child: Text(
                 'Esqueceu as respostas?',
                 style: TextStyle(
-                  color: Colors.white54,
+                  color: context.colors.textTertiary,
                   decoration: TextDecoration.underline,
-                  decorationColor: Colors.white54,
+                  decorationColor: context.colors.textTertiary,
                 ),
               ),
             ),

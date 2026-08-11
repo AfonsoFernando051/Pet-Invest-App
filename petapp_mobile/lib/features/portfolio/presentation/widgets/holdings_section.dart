@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
+import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
 import 'package:petapp_mobile/core/widgets/glass_card.dart';
 import 'package:petapp_mobile/features/investment/data/models/investment_type_enum.dart';
 import 'package:petapp_mobile/features/portfolio/domain/entities/holding.dart';
@@ -25,7 +26,7 @@ class HoldingsSection extends StatelessWidget {
           .compareTo(byType[a]!.fold<double>(0, (s, h) => s + h.currentValue)));
 
     return GlassCard(
-      backgroundColor: AppColors.spaceDark.withValues(alpha: 0.55),
+      backgroundColor: context.colors.surface.withValues(alpha: context.isDarkMode ? 0.55 : 0.94),
       borderColor: AppColors.neonCyan.withValues(alpha: 0.2),
       borderRadius: 20,
       borderWidth: 1,
@@ -40,7 +41,7 @@ class HoldingsSection extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 20),
                 child: Center(
-                  child: Text('Nenhum ativo registrado ainda.', style: TextStyle(color: AppColors.subtleText)),
+                  child: Text('Nenhum ativo registrado ainda.', style: TextStyle(color: context.colors.textSecondary)),
                 ),
               )
             else

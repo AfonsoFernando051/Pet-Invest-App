@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
+import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
 import 'package:petapp_mobile/features/portfolio/presentation/widgets/shared/formatters.dart';
 
 /// One row in the ticker-search autocomplete dropdown — an avatar (ticker
@@ -47,13 +48,13 @@ class TickerSuggestionTile extends StatelessWidget {
                   children: [
                     Text(
                       symbol.toUpperCase(),
-                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                      style: TextStyle(color: context.colors.textPrimary, fontWeight: FontWeight.bold, fontSize: 13),
                     ),
                     if (name.isNotEmpty)
                       Text(
                         name,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(color: AppColors.subtleText, fontSize: 11),
+                        style: TextStyle(color: context.colors.textSecondary, fontSize: 11),
                       ),
                   ],
                 ),
@@ -61,7 +62,7 @@ class TickerSuggestionTile extends StatelessWidget {
               if (price != null)
                 Text(
                   PortfolioFormatters.currency(price!),
-                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+                  style: TextStyle(color: context.colors.textPrimary, fontWeight: FontWeight.bold, fontSize: 12),
                 ),
             ],
           ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
+import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
 import 'package:petapp_mobile/features/portfolio/domain/entities/dividend_event.dart';
 import 'package:petapp_mobile/features/portfolio/domain/entities/dividend_type_display.dart';
 import 'package:petapp_mobile/features/portfolio/presentation/widgets/shared/formatters.dart';
@@ -17,6 +18,7 @@ class DividendEventTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tokens = context.colors;
     final isPaid = event.status == DividendStatus.PAID;
     final date = isPaid ? event.paymentDate : (event.paymentDate ?? event.dataCom);
     final typeColor = event.type.color;
@@ -46,7 +48,7 @@ class DividendEventTile extends StatelessWidget {
                   children: [
                     Text(
                       event.ticker,
-                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                      style: TextStyle(color: tokens.textPrimary, fontWeight: FontWeight.bold, fontSize: 13),
                     ),
                     const SizedBox(width: 6),
                     Container(
@@ -67,7 +69,7 @@ class DividendEventTile extends StatelessWidget {
                   date != null
                       ? '${isPaid ? 'Pago em' : 'Pagamento em'} ${PortfolioFormatters.date(date)}'
                       : 'Data de pagamento a confirmar',
-                  style: const TextStyle(color: AppColors.subtleText, fontSize: 11),
+                  style: TextStyle(color: tokens.textSecondary, fontSize: 11),
                 ),
               ],
             ),
@@ -78,7 +80,7 @@ class DividendEventTile extends StatelessWidget {
               Text(
                 PortfolioFormatters.currency(event.estimatedGrossAmount),
                 style: TextStyle(
-                  color: isPaid ? AppColors.positiveGreen : AppColors.goldenBorder,
+                  color: isPaid ? tokens.success : AppColors.goldenBorder,
                   fontWeight: FontWeight.bold,
                   fontSize: 13,
                 ),
@@ -86,7 +88,7 @@ class DividendEventTile extends StatelessWidget {
               const SizedBox(height: 2),
               Text(
                 '${event.userQuantity.toStringAsFixed(0)} cotas · ${PortfolioFormatters.currency(event.ratePerShare)}/cota',
-                style: const TextStyle(color: AppColors.subtleText, fontSize: 10),
+                style: TextStyle(color: tokens.textSecondary, fontSize: 10),
               ),
             ],
           ),

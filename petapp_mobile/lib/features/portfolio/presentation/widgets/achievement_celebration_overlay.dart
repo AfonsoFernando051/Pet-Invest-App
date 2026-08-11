@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
+import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
 import 'package:petapp_mobile/core/widgets/glass_card.dart';
 import 'package:petapp_mobile/features/portfolio/domain/entities/achievement.dart';
 
@@ -57,6 +58,7 @@ class _AchievementCelebrationOverlayState extends State<AchievementCelebrationOv
 
   @override
   Widget build(BuildContext context) {
+    final tokens = context.colors;
     final totalXp = widget.achievements.fold<int>(0, (sum, a) => sum + a.xpReward);
     final isSingle = widget.achievements.length == 1;
 
@@ -64,7 +66,7 @@ class _AchievementCelebrationOverlayState extends State<AchievementCelebrationOv
       onTap: _dismiss,
       behavior: HitTestBehavior.opaque,
       child: Container(
-        color: Colors.black.withValues(alpha: 0.6),
+        color: tokens.overlay,
         alignment: Alignment.center,
         child: FadeTransition(
           opacity: _fade,
@@ -75,7 +77,7 @@ class _AchievementCelebrationOverlayState extends State<AchievementCelebrationOv
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 320),
                 child: GlassCard(
-                  backgroundColor: AppColors.spaceDark.withValues(alpha: 0.85),
+                  backgroundColor: tokens.surfaceElevated.withValues(alpha: context.isDarkMode ? 0.85 : 0.96),
                   borderColor: AppColors.goldenBorder.withValues(alpha: 0.7),
                   borderRadius: 24,
                   borderWidth: 1.5,
@@ -92,7 +94,7 @@ class _AchievementCelebrationOverlayState extends State<AchievementCelebrationOv
                         Text(
                           isSingle ? 'Conquista Desbloqueada!' : 'Conquistas Desbloqueadas!',
                           textAlign: TextAlign.center,
-                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+                          style: TextStyle(color: tokens.textPrimary, fontWeight: FontWeight.bold, fontSize: 18),
                         ),
                         const SizedBox(height: 16),
                         for (final achievement in widget.achievements) _AchievementRow(achievement: achievement),
@@ -109,7 +111,7 @@ class _AchievementCelebrationOverlayState extends State<AchievementCelebrationOv
                           ),
                         ),
                         const SizedBox(height: 6),
-                        Text('Toque para continuar', style: TextStyle(color: AppColors.subtleText, fontSize: 11)),
+                        Text('Toque para continuar', style: TextStyle(color: tokens.textSecondary, fontSize: 11)),
                       ],
                     ),
                   ),
@@ -130,6 +132,7 @@ class _AchievementRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tokens = context.colors;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
@@ -151,9 +154,9 @@ class _AchievementRow extends StatelessWidget {
               children: [
                 Text(
                   achievement.title,
-                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                  style: TextStyle(color: tokens.textPrimary, fontWeight: FontWeight.bold, fontSize: 13),
                 ),
-                Text(achievement.description, style: TextStyle(color: AppColors.subtleText, fontSize: 11)),
+                Text(achievement.description, style: TextStyle(color: tokens.textSecondary, fontSize: 11)),
               ],
             ),
           ),

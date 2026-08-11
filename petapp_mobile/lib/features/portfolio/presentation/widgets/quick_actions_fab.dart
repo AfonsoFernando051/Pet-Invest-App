@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
+import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
 
 class _QuickAction {
   final IconData icon;
@@ -61,7 +62,7 @@ class _QuickActionsFabState extends State<QuickActionsFab> with SingleTickerProv
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         for (var i = _actions.length - 1; i >= 0; i--)
-          _buildActionEntry(_actions[i], i),
+          _buildActionEntry(context, _actions[i], i),
         const SizedBox(height: 8),
         FloatingActionButton(
           heroTag: 'portfolio_quick_actions',
@@ -77,7 +78,8 @@ class _QuickActionsFabState extends State<QuickActionsFab> with SingleTickerProv
     );
   }
 
-  Widget _buildActionEntry(_QuickAction action, int index) {
+  Widget _buildActionEntry(BuildContext context, _QuickAction action, int index) {
+    final tokens = context.colors;
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, child) {
@@ -102,11 +104,11 @@ class _QuickActionsFabState extends State<QuickActionsFab> with SingleTickerProv
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
               decoration: BoxDecoration(
-                color: AppColors.spaceDark.withValues(alpha: 0.85),
+                color: tokens.surfaceElevated.withValues(alpha: context.isDarkMode ? 0.85 : 0.96),
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: action.color.withValues(alpha: 0.4)),
               ),
-              child: Text(action.label, style: const TextStyle(color: Colors.white, fontSize: 12)),
+              child: Text(action.label, style: TextStyle(color: tokens.textPrimary, fontSize: 12)),
             ),
             const SizedBox(width: 10),
             FloatingActionButton.small(

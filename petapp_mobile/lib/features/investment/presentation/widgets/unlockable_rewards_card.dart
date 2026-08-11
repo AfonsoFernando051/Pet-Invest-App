@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:petapp_mobile/core/constants/app_colors.dart';
+import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
 import 'package:petapp_mobile/features/portfolio/domain/entities/portfolio_stats.dart';
 import 'package:petapp_mobile/features/portfolio/domain/services/achievement_catalog.dart';
 
@@ -32,7 +32,7 @@ class UnlockableRewardsCard extends StatelessWidget {
       children: [
         Text(
           unlocked ? 'Você desbloqueou:' : 'Adicione seu primeiro ativo para desbloquear:',
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+          style: TextStyle(color: context.colors.textPrimary, fontWeight: FontWeight.bold, fontSize: 13),
         ),
         const SizedBox(height: 10),
         for (final item in items) _RewardRow(label: item, unlocked: unlocked),
@@ -49,7 +49,8 @@ class _RewardRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = unlocked ? AppColors.positiveGreen : Colors.white38;
+    final tokens = context.colors;
+    final color = unlocked ? tokens.success : tokens.textTertiary;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
@@ -60,10 +61,10 @@ class _RewardRow extends StatelessWidget {
             height: 18,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: unlocked ? AppColors.positiveGreen.withValues(alpha: 0.2) : Colors.transparent,
+              color: unlocked ? tokens.success.withValues(alpha: 0.2) : Colors.transparent,
               border: Border.all(color: color, width: 1.5),
             ),
-            child: unlocked ? const Icon(Icons.check, size: 12, color: AppColors.positiveGreen) : null,
+            child: unlocked ? Icon(Icons.check, size: 12, color: tokens.success) : null,
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -71,7 +72,7 @@ class _RewardRow extends StatelessWidget {
               label,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
-                color: unlocked ? Colors.white : Colors.white54,
+                color: unlocked ? tokens.textPrimary : tokens.textTertiary,
                 fontSize: 13,
                 fontWeight: unlocked ? FontWeight.w600 : FontWeight.normal,
               ),

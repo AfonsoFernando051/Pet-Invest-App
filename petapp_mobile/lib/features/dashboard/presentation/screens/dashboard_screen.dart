@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
+import '../../../../core/theme/app_color_tokens.dart';
 import '../../../../core/utils/translator.dart';
 import '../../../../core/utils/game_snack.dart';
 import '../../../../core/widgets/app_loading_indicator.dart';
@@ -180,6 +181,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final tokens = context.colors;
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -188,12 +190,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
         elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.search, color: Colors.white70),
+            icon: Icon(Icons.search, color: tokens.textSecondary),
             onPressed: () {},
           ),
           _buildNotificationsButton(),
           IconButton(
-            icon: const Icon(Icons.settings_outlined, color: Colors.white70),
+            icon: Icon(Icons.settings_outlined, color: tokens.textSecondary),
             tooltip: 'Perfil',
             onPressed: () async {
               await Navigator.of(context).push(_fadeRoute(const ProfileScreen()));
@@ -250,7 +252,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             border: Border.all(color: AppColors.neonCyan.withValues(alpha: 0.7), width: 1.5),
-            color: AppColors.spaceDark.withValues(alpha: 0.6),
+            color: context.colors.surface.withValues(alpha: context.isDarkMode ? 0.6 : 0.9),
           ),
           child: const Icon(Icons.person_outline, size: 18, color: AppColors.neonCyan),
         ),
@@ -259,15 +261,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
+            Text(
               'Invest Game',
-              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+              style: TextStyle(color: context.colors.textPrimary, fontWeight: FontWeight.bold, fontSize: 14),
             ),
             Text(
               _mascotController.profile.name?.isNotEmpty == true
                   ? '${_mascotController.profile.name} · Nível $level'
                   : 'Nível $level · Explorador',
-              style: TextStyle(color: AppColors.neonCyan.withValues(alpha: 0.9), fontSize: 11),
+              style: TextStyle(color: context.colors.primary.withValues(alpha: 0.9), fontSize: 11),
             ),
           ],
         ),
@@ -286,7 +288,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       clipBehavior: Clip.none,
       children: [
         IconButton(
-          icon: const Icon(Icons.notifications_outlined, color: Colors.white70),
+          icon: Icon(Icons.notifications_outlined, color: context.colors.textSecondary),
           tooltip: 'Notificações',
           onPressed: _openNotifications,
         ),
@@ -299,9 +301,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
                 constraints: const BoxConstraints(minWidth: 15, minHeight: 15),
                 decoration: BoxDecoration(
-                  color: AppColors.negativeRed,
+                  color: context.colors.error,
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: AppColors.backgroundDark, width: 1.5),
+                  border: Border.all(color: context.colors.backgroundSecondary, width: 1.5),
                 ),
                 child: Text(
                   upcomingCount > 9 ? '9+' : '$upcomingCount',
@@ -350,8 +352,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final hasPortfolio = _portfolioController.holdings.isNotEmpty;
 
     return RefreshIndicator(
-      color: AppColors.neonCyan,
-      backgroundColor: AppColors.spaceBlue,
+      color: context.colors.primary,
+      backgroundColor: context.colors.surfaceElevated,
       onRefresh: _portfolioController.refresh,
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
@@ -417,7 +419,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return Text(
       label,
       style: TextStyle(
-        color: AppColors.neonCyan.withValues(alpha: 0.5),
+        color: context.colors.primary.withValues(alpha: 0.6),
         fontSize: 11,
         fontWeight: FontWeight.w700,
         letterSpacing: 2.0,
@@ -443,9 +445,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
   // ── Analytics (hidden from navigation for now — kept for a future tab) ───
   // ignore: unused_element
   Widget _buildAnalyticsContent() {
+    final tokens = context.colors;
     return Center(
       child: GlassCard(
-        backgroundColor: AppColors.spaceDark.withValues(alpha: 0.6),
+        backgroundColor: tokens.surface.withValues(alpha: context.isDarkMode ? 0.6 : 0.94),
         borderColor: AppColors.neonCyan.withValues(alpha: 0.3),
         borderRadius: 24,
         borderWidth: 1,
@@ -456,15 +459,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
             children: [
               Icon(Icons.auto_graph, size: 64, color: AppColors.neonCyan.withValues(alpha: 0.6)),
               const SizedBox(height: 16),
-              const Text(
+              Text(
                 'Análise Estratégica',
-                style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                style: TextStyle(color: tokens.textPrimary, fontSize: 20, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
               Text(
                 'Centro de análise de ativos\nem construção, Comandante.',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: AppColors.subtleText, fontSize: 14),
+                style: TextStyle(color: tokens.textSecondary, fontSize: 14),
               ),
             ],
           ),
@@ -475,13 +478,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   // ── Bottom Nav ────────────────────────────────────────────────────────────
   Widget _buildBottomNav() {
+    final tokens = context.colors;
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.backgroundDark,
-        border: Border(top: BorderSide(color: AppColors.neonCyan.withValues(alpha: 0.3), width: 1)),
+        color: tokens.backgroundSecondary,
+        border: Border(top: BorderSide(color: tokens.primary.withValues(alpha: 0.3), width: 1)),
         boxShadow: [
           BoxShadow(
-            color: AppColors.neonCyan.withValues(alpha: 0.12),
+            color: tokens.primary.withValues(alpha: context.isDarkMode ? 0.12 : 0.08),
             blurRadius: 20,
             offset: const Offset(0, -4),
           ),
@@ -490,8 +494,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
       child: BottomNavigationBar(
         backgroundColor: Colors.transparent,
         type: BottomNavigationBarType.fixed,
-        selectedItemColor: AppColors.neonCyan,
-        unselectedItemColor: Colors.white38,
+        selectedItemColor: tokens.primary,
+        unselectedItemColor: tokens.textTertiary,
         selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 11),
         unselectedLabelStyle: const TextStyle(fontSize: 11),
         currentIndex: _selectedIndex,

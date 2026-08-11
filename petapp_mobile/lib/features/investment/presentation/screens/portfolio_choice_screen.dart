@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
 import 'package:petapp_mobile/core/constants/app_strings.dart';
 import 'package:petapp_mobile/core/di/dependency_injection.dart';
+import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
 import 'package:petapp_mobile/core/utils/translator.dart';
 import 'package:petapp_mobile/core/widgets/game_button.dart';
 import 'package:petapp_mobile/core/widgets/glass_card.dart';
@@ -44,15 +45,15 @@ class _PortfolioChoiceScreenState extends State<PortfolioChoiceScreen> {
     await showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: AppColors.spaceBlue,
+        backgroundColor: context.colors.surfaceElevated,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
           Translator.translate(AppStrings.importComingSoonTitle),
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: TextStyle(color: context.colors.textPrimary, fontWeight: FontWeight.bold),
         ),
         content: Text(
           Translator.translate(AppStrings.importComingSoonBody),
-          style: const TextStyle(color: AppColors.subtleText),
+          style: TextStyle(color: context.colors.textSecondary),
         ),
         actions: [
           TextButton(
@@ -104,13 +105,13 @@ class _PortfolioChoiceScreenState extends State<PortfolioChoiceScreen> {
                       Text(
                         Translator.translate(AppStrings.portfolioChoiceTitle),
                         textAlign: TextAlign.center,
-                        style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                        style: TextStyle(color: context.colors.textPrimary, fontSize: 20, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 12),
                       Text(
                         Translator.translate(AppStrings.portfolioChoiceBody),
                         textAlign: TextAlign.center,
-                        style: const TextStyle(color: AppColors.subtleText, fontSize: 14, height: 1.4),
+                        style: TextStyle(color: context.colors.textSecondary, fontSize: 14, height: 1.4),
                       ),
                       const SizedBox(height: 24),
                       GameButton(
@@ -131,7 +132,7 @@ class _PortfolioChoiceScreenState extends State<PortfolioChoiceScreen> {
                         onPressed: _handleSkip,
                         child: Text(
                           Translator.translate(AppStrings.skipForNowButton),
-                          style: const TextStyle(color: Colors.white70, fontWeight: FontWeight.w600),
+                          style: TextStyle(color: context.colors.textSecondary, fontWeight: FontWeight.w600),
                         ),
                       ),
                       if (_petName != null && _petName!.isNotEmpty) ...[
@@ -139,7 +140,7 @@ class _PortfolioChoiceScreenState extends State<PortfolioChoiceScreen> {
                         Text(
                           Translator.translate(AppStrings.portfolioChoiceFootnote, params: {'petName': _petName!}),
                           textAlign: TextAlign.center,
-                          style: const TextStyle(color: AppColors.subtleText, fontSize: 12, fontStyle: FontStyle.italic),
+                          style: TextStyle(color: context.colors.textSecondary, fontSize: 12, fontStyle: FontStyle.italic),
                         ),
                       ],
                     ],

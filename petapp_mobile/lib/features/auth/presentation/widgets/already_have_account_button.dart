@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
+import '../../../../core/theme/app_color_tokens.dart';
 import '../../../../core/utils/translator.dart';
 
 class AlreadyHaveAccountButton extends StatelessWidget {
@@ -10,10 +10,10 @@ class AlreadyHaveAccountButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextButton(
       onPressed: () {
-        Navigator.of(context).pop(); 
+        Navigator.of(context).pop();
       },
       style: TextButton.styleFrom(
-        foregroundColor: AppColors.white,
+        foregroundColor: context.colors.textPrimary,
         padding: EdgeInsets.zero,
         minimumSize: Size.zero,
         tapTargetSize: MaterialTapTargetSize.shrinkWrap,

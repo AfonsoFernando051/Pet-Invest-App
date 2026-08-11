@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lottie/lottie.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
+import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
 import 'package:petapp_mobile/core/utils/pet_assets.dart';
 import 'package:petapp_mobile/features/pet/domain/enums/accessory_type.dart';
 import 'package:petapp_mobile/features/pet/domain/enums/pet_accessory_id.dart';
@@ -226,7 +227,7 @@ class _EvolutionFallback extends StatelessWidget {
         errorBuilder: (context, error, stackTrace) => Icon(
           Icons.pets,
           size: size * 0.6,
-          color: Colors.white70,
+          color: context.colors.textSecondary,
         ),
       ),
     );

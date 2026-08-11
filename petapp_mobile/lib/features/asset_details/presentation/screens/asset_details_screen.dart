@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
 import 'package:petapp_mobile/core/di/dependency_injection.dart';
+import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
 import 'package:petapp_mobile/features/asset_details/domain/entities/asset_data_status.dart';
 import 'package:petapp_mobile/features/asset_details/presentation/controllers/asset_details_controller.dart';
 import 'package:petapp_mobile/features/asset_details/presentation/widgets/asset_education_section.dart';
@@ -60,16 +61,19 @@ class _AssetDetailsScreenState extends State<AssetDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final tokens = context.colors;
     return Scaffold(
-      backgroundColor: AppColors.spaceDark,
+      backgroundColor: tokens.backgroundPrimary,
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [AppColors.spaceDark, AppColors.spacePurple, AppColors.spaceBlue],
-          ),
-        ),
+        decoration: context.isDarkMode
+            ? const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [AppColors.spaceDark, AppColors.spacePurple, AppColors.spaceBlue],
+                ),
+              )
+            : BoxDecoration(color: tokens.backgroundPrimary),
         child: SafeArea(
           child: Column(
             children: [
@@ -93,13 +97,13 @@ class _AssetDetailsScreenState extends State<AssetDetailsScreen> {
               HapticFeedback.lightImpact();
               Navigator.of(context).pop();
             },
-            icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 20),
+            icon: Icon(Icons.arrow_back_ios_new, color: context.colors.textPrimary, size: 20),
           ),
           Expanded(
             child: Text(
               asset?.ticker ?? widget.ticker,
-              style: const TextStyle(
-                color: Colors.white,
+              style: TextStyle(
+                color: context.colors.textPrimary,
                 fontWeight: FontWeight.bold,
                 fontSize: 18,
               ),
@@ -129,17 +133,17 @@ class _AssetDetailsScreenState extends State<AssetDetailsScreen> {
     }
 
     if (asset == null) {
-      return const Center(
+      return Center(
         child: Text(
           'Ativo não encontrado.',
-          style: TextStyle(color: AppColors.subtleText),
+          style: TextStyle(color: context.colors.textSecondary),
         ),
       );
     }
 
     return RefreshIndicator(
       color: AppColors.neonCyan,
-      backgroundColor: AppColors.spaceBlue,
+      backgroundColor: context.colors.surfaceElevated,
       onRefresh: _controller.refresh,
       child: ListView(
         physics: const AlwaysScrollableScrollPhysics(),
@@ -221,13 +225,14 @@ class _DataStatusBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tokens = context.colors;
     final (color, label) = switch (status) {
-      AssetDataStatus.fresh => (AppColors.positiveGreen, 'Ao vivo'),
-      AssetDataStatus.cached => (AppColors.warningAmber, 'Cache'),
-      AssetDataStatus.delayed => (AppColors.warningAmber, 'Atrasado'),
-      AssetDataStatus.partial => (AppColors.warningAmber, 'Parcial'),
-      AssetDataStatus.unavailable => (AppColors.negativeRed, 'Indisponível'),
-      AssetDataStatus.error => (AppColors.negativeRed, 'Erro'),
+      AssetDataStatus.fresh => (tokens.success, 'Ao vivo'),
+      AssetDataStatus.cached => (tokens.warning, 'Cache'),
+      AssetDataStatus.delayed => (tokens.warning, 'Atrasado'),
+      AssetDataStatus.partial => (tokens.warning, 'Parcial'),
+      AssetDataStatus.unavailable => (tokens.error, 'Indisponível'),
+      AssetDataStatus.error => (tokens.error, 'Erro'),
     };
 
     return Container(
@@ -255,24 +260,25 @@ class _AssetDetailsSkeleton extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        _bar(height: 120),
+        _bar(context, height: 120),
         const SizedBox(height: 16),
-        _bar(height: 100),
+        _bar(context, height: 100),
         const SizedBox(height: 16),
-        _bar(height: 80),
+        _bar(context, height: 80),
         const SizedBox(height: 16),
-        _bar(height: 140),
+        _bar(context, height: 140),
       ],
     );
   }
 
-  Widget _bar({required double height}) {
+  Widget _bar(BuildContext context, {required double height}) {
+    final tokens = context.colors;
     return Container(
       height: height,
       decoration: BoxDecoration(
-        color: AppColors.spaceDark.withValues(alpha: 0.5),
+        color: tokens.surface.withValues(alpha: context.isDarkMode ? 0.5 : 0.94),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
+        border: Border.all(color: tokens.border),
       ),
     );
   }
@@ -288,23 +294,24 @@ class _ErrorState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tokens = context.colors;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.satellite_alt, size: 56, color: AppColors.negativeRed),
+            Icon(Icons.satellite_alt, size: 56, color: tokens.error),
             const SizedBox(height: 16),
-            const Text(
+            Text(
               'Não foi possível carregar este ativo',
-              style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+              style: TextStyle(color: tokens.textPrimary, fontSize: 16, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
             Text(
               error,
-              style: const TextStyle(color: AppColors.subtleText, fontSize: 12),
+              style: TextStyle(color: tokens.textSecondary, fontSize: 12),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 20),

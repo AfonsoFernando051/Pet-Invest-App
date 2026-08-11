@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/theme/app_color_tokens.dart';
 import '../../data/models/question_model.dart';
 
 class QuestionCard extends StatelessWidget {
@@ -18,15 +19,16 @@ class QuestionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tokens = context.colors;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: const Color(0xFF1E2E36).withValues(alpha: 0.7), // Glassmorphism dark background
+        color: tokens.surface.withValues(alpha: context.isDarkMode ? 0.7 : 0.94), // Glassmorphism background
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+        border: Border.all(color: tokens.border),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.2),
+            color: tokens.shadow,
             blurRadius: 10,
             offset: const Offset(0, 5),
           ),
@@ -60,8 +62,8 @@ class QuestionCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   question.text,
-                  style: const TextStyle(
-                    color: AppColors.white,
+                  style: TextStyle(
+                    color: tokens.textPrimary,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
@@ -86,7 +88,7 @@ class QuestionCard extends StatelessWidget {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: isSelected ? AppColors.neonCyan : Colors.white38,
+                          color: isSelected ? AppColors.neonCyan : tokens.border,
                           width: 1.5,
                         ),
                         boxShadow: isSelected
@@ -114,7 +116,7 @@ class QuestionCard extends StatelessWidget {
                       child: Text(
                         o.text,
                         style: TextStyle(
-                          color: isSelected ? Colors.white : Colors.white70,
+                          color: isSelected ? tokens.textPrimary : tokens.textSecondary,
                           fontSize: 15,
                         ),
                       ),

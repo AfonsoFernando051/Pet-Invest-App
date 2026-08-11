@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:petapp_mobile/core/constants/app_colors.dart';
 import 'package:petapp_mobile/core/constants/app_strings.dart';
+import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
 import 'package:petapp_mobile/core/utils/translator.dart';
 
 /// The app's single logout-confirmation dialog, shown from both Dashboard
@@ -12,27 +12,28 @@ class ConfirmLogoutDialog {
 
   /// Shows the dialog and resolves to `true` if the user confirmed logout.
   static Future<bool> show(BuildContext context) async {
+    final tokens = context.colors;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        backgroundColor: AppColors.spaceBlue,
+        backgroundColor: tokens.surfaceElevated,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
           Translator.translate(AppStrings.logoutConfirmTitle),
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: TextStyle(color: tokens.textPrimary, fontWeight: FontWeight.bold),
         ),
         content: Text(
           Translator.translate(AppStrings.logoutConfirmMessage),
-          style: const TextStyle(color: AppColors.subtleText),
+          style: TextStyle(color: tokens.textSecondary),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, false),
-            child: Text(Translator.translate(AppStrings.cancelButton), style: const TextStyle(color: AppColors.neonCyan)),
+            child: Text(Translator.translate(AppStrings.cancelButton), style: TextStyle(color: tokens.primary)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, true),
-            child: Text(Translator.translate(AppStrings.logoutButton), style: const TextStyle(color: AppColors.negativeRed)),
+            child: Text(Translator.translate(AppStrings.logoutButton), style: TextStyle(color: tokens.error)),
           ),
         ],
       ),

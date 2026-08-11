@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:petapp_mobile/core/constants/app_colors.dart';
+import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
 import 'package:petapp_mobile/core/widgets/glass_card.dart';
 import 'package:petapp_mobile/features/portfolio/domain/entities/insight.dart';
 import 'package:petapp_mobile/features/portfolio/domain/enums/insight_priority.dart';
@@ -11,8 +11,9 @@ class InsightCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tokens = context.colors;
     return GlassCard(
-      backgroundColor: AppColors.spaceDark.withValues(alpha: 0.55),
+      backgroundColor: tokens.surface.withValues(alpha: context.isDarkMode ? 0.55 : 0.94),
       borderColor: insight.color.withValues(alpha: 0.35),
       borderRadius: 16,
       borderWidth: 1,
@@ -41,14 +42,14 @@ class InsightCardWidget extends StatelessWidget {
                       Expanded(
                         child: Text(
                           insight.title,
-                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                          style: TextStyle(color: tokens.textPrimary, fontWeight: FontWeight.bold, fontSize: 13),
                         ),
                       ),
-                      if (insight.priority == InsightPriority.high) _priorityDot(),
+                      if (insight.priority == InsightPriority.high) _priorityDot(context),
                     ],
                   ),
                   const SizedBox(height: 4),
-                  Text(insight.description, style: TextStyle(color: AppColors.subtleText, fontSize: 12, height: 1.35)),
+                  Text(insight.description, style: TextStyle(color: tokens.textSecondary, fontSize: 12, height: 1.35)),
                   if (insight.actionLabel != null && insight.onAction != null) ...[
                     const SizedBox(height: 8),
                     GestureDetector(
@@ -68,12 +69,12 @@ class InsightCardWidget extends StatelessWidget {
     );
   }
 
-  Widget _priorityDot() {
+  Widget _priorityDot(BuildContext context) {
     return Container(
       width: 8,
       height: 8,
       margin: const EdgeInsets.only(left: 6, top: 4),
-      decoration: const BoxDecoration(color: AppColors.negativeRed, shape: BoxShape.circle),
+      decoration: BoxDecoration(color: context.colors.error, shape: BoxShape.circle),
     );
   }
 }

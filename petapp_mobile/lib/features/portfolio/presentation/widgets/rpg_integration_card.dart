@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
+import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
 import 'package:petapp_mobile/core/widgets/glass_card.dart';
 import 'package:petapp_mobile/features/pet/domain/entities/pet_evolution_rule.dart';
 import 'package:petapp_mobile/features/pet/domain/enums/pet_evolution_stage.dart';
@@ -37,6 +38,7 @@ class RpgIntegrationCard extends StatelessWidget {
     return AnimatedBuilder(
       animation: controller,
       builder: (context, _) {
+        final tokens = context.colors;
         final profile = controller.profile;
         final nextRule = PetEvolutionRule.defaultRules.firstWhere(
           (r) => r.stage.tier > profile.stage.tier,
@@ -53,7 +55,7 @@ class RpgIntegrationCard extends StatelessWidget {
         final streakDays = firstPurchase == null ? 0 : DateTime.now().difference(firstPurchase).inDays;
 
         return GlassCard(
-          backgroundColor: AppColors.spaceDark.withValues(alpha: 0.65),
+          backgroundColor: tokens.surface.withValues(alpha: context.isDarkMode ? 0.65 : 0.94),
           borderColor: AppColors.neonViolet.withValues(alpha: 0.4),
           borderRadius: 20,
           borderWidth: 1,
@@ -77,7 +79,7 @@ class RpgIntegrationCard extends StatelessWidget {
                         children: [
                           Text(
                             _stageLabel(profile.stage),
-                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15),
+                            style: TextStyle(color: tokens.textPrimary, fontWeight: FontWeight.bold, fontSize: 15),
                           ),
                           Text(
                             'Tier ${profile.stage.tier}/9',
@@ -85,6 +87,7 @@ class RpgIntegrationCard extends StatelessWidget {
                           ),
                           const SizedBox(height: 10),
                           _progressLine(
+                            context: context,
                             label: 'Poder (Patrimônio)',
                             value: netWorthProgress,
                             trailing: PortfolioFormatters.compactCurrency(profile.netWorth),
@@ -92,6 +95,7 @@ class RpgIntegrationCard extends StatelessWidget {
                           ),
                           const SizedBox(height: 6),
                           _progressLine(
+                            context: context,
                             label: 'XP',
                             value: xpProgress,
                             trailing: '${profile.xp} XP',
@@ -105,9 +109,9 @@ class RpgIntegrationCard extends StatelessWidget {
                 const SizedBox(height: 14),
                 Row(
                   children: [
-                    Expanded(child: _statTile(Icons.local_fire_department, 'Sequência', '$streakDays dias')),
-                    Expanded(child: _statTile(Icons.sentiment_satisfied_alt, 'Humor', _moodLabel())),
-                    Expanded(child: _statTile(Icons.hub, 'Diversificação', '${stats.distinctTypeCount} categorias')),
+                    Expanded(child: _statTile(context, Icons.local_fire_department, 'Sequência', '$streakDays dias')),
+                    Expanded(child: _statTile(context, Icons.sentiment_satisfied_alt, 'Humor', _moodLabel())),
+                    Expanded(child: _statTile(context, Icons.hub, 'Diversificação', '${stats.distinctTypeCount} categorias')),
                   ],
                 ),
               ],
@@ -139,19 +143,26 @@ class RpgIntegrationCard extends StatelessWidget {
     };
   }
 
-  Widget _progressLine({required String label, required double value, required String trailing, required Color color}) {
+  Widget _progressLine({
+    required BuildContext context,
+    required String label,
+    required double value,
+    required String trailing,
+    required Color color,
+  }) {
+    final tokens = context.colors;
     return Row(
       children: [
         SizedBox(
           width: 96,
-          child: Text(label, style: TextStyle(color: AppColors.subtleText, fontSize: 10)),
+          child: Text(label, style: TextStyle(color: tokens.textSecondary, fontSize: 10)),
         ),
         Expanded(
           child: ClipRRect(
             borderRadius: BorderRadius.circular(6),
             child: Stack(
               children: [
-                Container(height: 6, color: Colors.white.withValues(alpha: 0.08)),
+                Container(height: 6, color: tokens.textTertiary.withValues(alpha: 0.18)),
                 TweenAnimationBuilder<double>(
                   tween: Tween(begin: 0, end: value),
                   duration: const Duration(milliseconds: 700),
@@ -171,13 +182,14 @@ class RpgIntegrationCard extends StatelessWidget {
     );
   }
 
-  Widget _statTile(IconData icon, String label, String value) {
+  Widget _statTile(BuildContext context, IconData icon, String label, String value) {
+    final tokens = context.colors;
     return Column(
       children: [
         Icon(icon, color: AppColors.neonCyan, size: 18),
         const SizedBox(height: 4),
-        Text(value, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 11)),
-        Text(label, style: TextStyle(color: AppColors.subtleText, fontSize: 9)),
+        Text(value, style: TextStyle(color: tokens.textPrimary, fontWeight: FontWeight.bold, fontSize: 11)),
+        Text(label, style: TextStyle(color: tokens.textSecondary, fontSize: 9)),
       ],
     );
   }

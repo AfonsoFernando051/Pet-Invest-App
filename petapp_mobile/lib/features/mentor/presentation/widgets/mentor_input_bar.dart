@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
+import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
 import 'package:petapp_mobile/core/widgets/game_button.dart';
 import 'package:petapp_mobile/core/widgets/glass_card.dart';
 
@@ -35,13 +36,13 @@ class MentorInputBar extends StatelessWidget {
               textInputAction: TextInputAction.send,
               enabled: !isSending,
               onSubmitted: (_) => onSend(),
-              style: const TextStyle(color: Colors.white, fontSize: 14),
-              decoration: const InputDecoration(
+              style: TextStyle(color: context.colors.textPrimary, fontSize: 14),
+              decoration: InputDecoration(
                 hintText: 'Pergunte algo ao seu mentor...',
-                hintStyle: TextStyle(color: AppColors.subtleText, fontSize: 14),
+                hintStyle: TextStyle(color: context.colors.textTertiary, fontSize: 14),
                 border: InputBorder.none,
                 isDense: true,
-                contentPadding: EdgeInsets.symmetric(vertical: 12),
+                contentPadding: const EdgeInsets.symmetric(vertical: 12),
               ),
             ),
           ),

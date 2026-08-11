@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
+import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
 import 'package:petapp_mobile/core/widgets/app_loading_indicator.dart';
 import 'package:petapp_mobile/features/portfolio/domain/entities/dividend_event.dart';
 import 'package:petapp_mobile/features/portfolio/presentation/widgets/dividend_event_tile.dart';
@@ -26,10 +27,11 @@ class DividendNotificationsSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tokens = context.colors;
     return Container(
-      decoration: const BoxDecoration(
-        color: AppColors.spaceBlue,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      decoration: BoxDecoration(
+        color: tokens.surfaceElevated,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
       ),
       constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.7),
       child: SafeArea(
@@ -42,7 +44,7 @@ class DividendNotificationsSheet extends StatelessWidget {
               child: Container(
                 width: 40,
                 height: 4,
-                decoration: BoxDecoration(color: Colors.white24, borderRadius: BorderRadius.circular(4)),
+                decoration: BoxDecoration(color: tokens.divider, borderRadius: BorderRadius.circular(4)),
               ),
             ),
             const SizedBox(height: 16),
@@ -50,10 +52,10 @@ class DividendNotificationsSheet extends StatelessWidget {
               children: [
                 const Icon(Icons.notifications_outlined, color: AppColors.neonCyan, size: 20),
                 const SizedBox(width: 8),
-                const Expanded(
+                Expanded(
                   child: Text(
                     'Notificações · Próximos Proventos',
-                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15),
+                    style: TextStyle(color: tokens.textPrimary, fontWeight: FontWeight.bold, fontSize: 15),
                   ),
                 ),
               ],
@@ -61,17 +63,18 @@ class DividendNotificationsSheet extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               'Pagamentos de dividendos, JCP e rendimentos já confirmados pela B3 para os ativos que você possui.',
-              style: TextStyle(color: AppColors.subtleText.withValues(alpha: 0.8), fontSize: 11),
+              style: TextStyle(color: tokens.textSecondary, fontSize: 11),
             ),
             const SizedBox(height: 16),
-            _buildBody(),
+            _buildBody(context),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildBody() {
+  Widget _buildBody(BuildContext context) {
+    final tokens = context.colors;
     if (isLoading && upcoming.isEmpty) {
       return const Padding(
         padding: EdgeInsets.symmetric(vertical: 32),
@@ -84,12 +87,12 @@ class DividendNotificationsSheet extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 20),
         child: Column(
           children: [
-            const Icon(Icons.satellite_alt, color: AppColors.negativeRed, size: 32),
+            Icon(Icons.satellite_alt, color: tokens.error, size: 32),
             const SizedBox(height: 10),
-            const Text(
+            Text(
               'Não foi possível carregar suas notificações.',
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.white, fontSize: 13),
+              style: TextStyle(color: tokens.textPrimary, fontSize: 13),
             ),
             const SizedBox(height: 12),
             TextButton.icon(
@@ -107,12 +110,12 @@ class DividendNotificationsSheet extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 20),
         child: Column(
           children: [
-            Icon(Icons.notifications_off_outlined, color: AppColors.subtleText.withValues(alpha: 0.6), size: 32),
+            Icon(Icons.notifications_off_outlined, color: tokens.textTertiary, size: 32),
             const SizedBox(height: 10),
             Text(
               'Nenhum provento confirmado a caminho para os seus ativos no momento.',
               textAlign: TextAlign.center,
-              style: TextStyle(color: AppColors.subtleText, fontSize: 12),
+              style: TextStyle(color: tokens.textSecondary, fontSize: 12),
             ),
           ],
         ),

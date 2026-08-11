@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
+import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
 import 'package:petapp_mobile/core/widgets/glass_card.dart';
 import 'package:petapp_mobile/features/asset_details/domain/entities/asset_details.dart';
 import 'package:petapp_mobile/features/portfolio/domain/entities/dividend_event.dart';
@@ -22,6 +23,7 @@ class _DividendHistorySectionState extends State<DividendHistorySection> {
 
   @override
   Widget build(BuildContext context) {
+    final tokens = context.colors;
     final upcoming = widget.asset.upcomingDividends;
     final history = widget.asset.paidDividends;
 
@@ -29,7 +31,7 @@ class _DividendHistorySectionState extends State<DividendHistorySection> {
     final visibleHistory = _expanded ? history : history.take(3).toList();
 
     return GlassCard(
-      backgroundColor: AppColors.spaceDark.withValues(alpha: 0.55),
+      backgroundColor: tokens.surface.withValues(alpha: context.isDarkMode ? 0.55 : 0.94),
       borderColor: AppColors.goldenBorder.withValues(alpha: 0.2),
       borderRadius: 18,
       borderWidth: 1,
@@ -52,9 +54,9 @@ class _DividendHistorySectionState extends State<DividendHistorySection> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: AppColors.positiveGreen.withValues(alpha: 0.06),
+                  color: tokens.success.withValues(alpha: 0.06),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppColors.positiveGreen.withValues(alpha: 0.2)),
+                  border: Border.all(color: tokens.success.withValues(alpha: 0.2)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -62,7 +64,7 @@ class _DividendHistorySectionState extends State<DividendHistorySection> {
                     Text(
                       'Próximos pagamentos',
                       style: TextStyle(
-                        color: AppColors.positiveGreen,
+                        color: tokens.success,
                         fontWeight: FontWeight.bold,
                         fontSize: 11,
                       ),
@@ -79,7 +81,7 @@ class _DividendHistorySectionState extends State<DividendHistorySection> {
               const SizedBox(height: 12),
               Text(
                 'Histórico',
-                style: TextStyle(color: AppColors.subtleText, fontSize: 11, fontWeight: FontWeight.w600),
+                style: TextStyle(color: tokens.textSecondary, fontSize: 11, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 8),
               for (final div in visibleHistory) _DividendTile(event: div),
@@ -104,7 +106,7 @@ class _DividendHistorySectionState extends State<DividendHistorySection> {
               const SizedBox(height: 12),
               Text(
                 'Nenhum provento registrado para este ativo.',
-                style: TextStyle(color: AppColors.subtleText, fontSize: 12),
+                style: TextStyle(color: tokens.textSecondary, fontSize: 12),
               ),
             ],
           ],
@@ -122,6 +124,7 @@ class _DividendTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tokens = context.colors;
     final dateStr = event.paymentDate != null
         ? PortfolioFormatters.shortDate(event.paymentDate!)
         : '—';
@@ -133,18 +136,18 @@ class _DividendTile extends StatelessWidget {
           Icon(
             isUpcoming ? Icons.schedule : Icons.check_circle_outline,
             size: 14,
-            color: isUpcoming ? AppColors.positiveGreen : AppColors.subtleText,
+            color: isUpcoming ? tokens.success : tokens.textSecondary,
           ),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
               dateStr,
-              style: TextStyle(color: AppColors.subtleText, fontSize: 11),
+              style: TextStyle(color: tokens.textSecondary, fontSize: 11),
             ),
           ),
           Text(
             'R\$ ${event.ratePerShare.toStringAsFixed(2)}/cota',
-            style: const TextStyle(color: Colors.white, fontSize: 11),
+            style: TextStyle(color: tokens.textPrimary, fontSize: 11),
           ),
           if (event.estimatedGrossAmount > 0) ...[
             const SizedBox(width: 8),
@@ -152,7 +155,7 @@ class _DividendTile extends StatelessWidget {
               isUpcoming ? 'est. ${PortfolioFormatters.currency(event.estimatedGrossAmount)}'
                   : PortfolioFormatters.currency(event.estimatedGrossAmount),
               style: TextStyle(
-                color: isUpcoming ? AppColors.positiveGreen : AppColors.goldenBorder,
+                color: isUpcoming ? tokens.success : AppColors.goldenBorder,
                 fontSize: 10,
                 fontWeight: FontWeight.w600,
               ),

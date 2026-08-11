@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:petapp_mobile/core/theme/app_theme.dart';
 import 'package:petapp_mobile/core/utils/translator.dart';
 import 'package:petapp_mobile/core/di/dependency_injection.dart';
 import 'package:petapp_mobile/features/auth/data/repositories/auth_repository.dart';
@@ -41,8 +42,9 @@ void main() {
   });
 
   Widget buildTestableWidget() {
-    return const MaterialApp(
-      home: LoginScreen(),
+    return MaterialApp(
+      theme: AppTheme.dark,
+      home: const LoginScreen(),
     );
   }
 

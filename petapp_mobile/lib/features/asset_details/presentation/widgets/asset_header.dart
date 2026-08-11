@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
+import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
 import 'package:petapp_mobile/core/widgets/glass_card.dart';
 import 'package:petapp_mobile/features/asset_details/domain/entities/asset_details.dart';
 import 'package:petapp_mobile/features/portfolio/presentation/widgets/shared/formatters.dart';
@@ -13,11 +14,12 @@ class AssetHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tokens = context.colors;
     final isPositive = (asset.dailyChangePercent ?? 0) >= 0;
-    final changeColor = isPositive ? AppColors.positiveGreen : AppColors.negativeRed;
+    final changeColor = isPositive ? tokens.success : tokens.error;
 
     return GlassCard(
-      backgroundColor: AppColors.spaceDark.withValues(alpha: 0.6),
+      backgroundColor: tokens.surface.withValues(alpha: context.isDarkMode ? 0.6 : 0.94),
       borderColor: AppColors.neonCyan.withValues(alpha: 0.25),
       borderRadius: 20,
       borderWidth: 1,
@@ -34,7 +36,7 @@ class AssetHeader extends StatelessWidget {
                   const SizedBox(width: 8),
                   Text(
                     '· ${asset.sector}',
-                    style: TextStyle(color: AppColors.subtleText, fontSize: 11),
+                    style: TextStyle(color: tokens.textSecondary, fontSize: 11),
                   ),
                 ],
               ],
@@ -45,8 +47,8 @@ class AssetHeader extends StatelessWidget {
             // ── Name ────────────────────────────────────────────
             Text(
               asset.displayName,
-              style: const TextStyle(
-                color: Colors.white,
+              style: TextStyle(
+                color: tokens.textPrimary,
                 fontWeight: FontWeight.w600,
                 fontSize: 15,
               ),
@@ -63,8 +65,8 @@ class AssetHeader extends StatelessWidget {
                 if (asset.currentPrice != null)
                   Text(
                     PortfolioFormatters.currency(asset.currentPrice!),
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: tokens.textPrimary,
                       fontWeight: FontWeight.bold,
                       fontSize: 28,
                     ),
@@ -72,7 +74,7 @@ class AssetHeader extends StatelessWidget {
                 else
                   Text(
                     'Preço indisponível',
-                    style: TextStyle(color: AppColors.subtleText, fontSize: 16),
+                    style: TextStyle(color: tokens.textSecondary, fontSize: 16),
                   ),
                 const Spacer(),
                 if (asset.dailyChangePercent != null)
@@ -120,7 +122,7 @@ class AssetHeader extends StatelessWidget {
               const SizedBox(height: 10),
               Text(
                 _formatLastUpdated(asset.lastUpdated!),
-                style: TextStyle(color: AppColors.subtleText.withValues(alpha: 0.6), fontSize: 10),
+                style: TextStyle(color: tokens.textTertiary, fontSize: 10),
               ),
             ],
           ],
@@ -157,7 +159,7 @@ class _AssetTypeBadge extends StatelessWidget {
       'fii' => ('FII', AppColors.goldenBorder),
       'etf' => ('ETF', AppColors.neonPurple),
       'bdr' => ('BDR', AppColors.neonBlue),
-      _ => ('Ativo', AppColors.subtleText),
+      _ => ('Ativo', context.colors.textSecondary),
     };
 
     return Container(
@@ -190,6 +192,7 @@ class _FiftyTwoWeekRange extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tokens = context.colors;
     final range = high - low;
     final position = (current != null && range > 0) ? ((current! - low) / range).clamp(0.0, 1.0) : null;
 
@@ -200,12 +203,12 @@ class _FiftyTwoWeekRange extends StatelessWidget {
           children: [
             Text(
               '52 sem: ${PortfolioFormatters.currency(low, showCents: false)}',
-              style: TextStyle(color: AppColors.subtleText, fontSize: 10),
+              style: TextStyle(color: tokens.textSecondary, fontSize: 10),
             ),
             const Spacer(),
             Text(
               PortfolioFormatters.currency(high, showCents: false),
-              style: TextStyle(color: AppColors.subtleText, fontSize: 10),
+              style: TextStyle(color: tokens.textSecondary, fontSize: 10),
             ),
           ],
         ),
@@ -218,7 +221,7 @@ class _FiftyTwoWeekRange extends StatelessWidget {
               children: [
                 Container(
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.08),
+                    color: tokens.textPrimary.withValues(alpha: 0.08),
                     borderRadius: BorderRadius.circular(3),
                   ),
                 ),
@@ -228,7 +231,7 @@ class _FiftyTwoWeekRange extends StatelessWidget {
                     child: Container(
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
-                          colors: [AppColors.negativeRed, AppColors.warningAmber, AppColors.positiveGreen],
+                          colors: [tokens.error, tokens.warning, tokens.success],
                         ),
                         borderRadius: BorderRadius.circular(3),
                       ),

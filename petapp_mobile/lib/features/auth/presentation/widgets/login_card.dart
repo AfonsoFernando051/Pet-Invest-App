@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/theme/app_color_tokens.dart';
 import 'login_form.dart';
 
 class LoginCard extends StatelessWidget {
@@ -8,6 +9,7 @@ class LoginCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tokens = context.colors;
     return Center(
       child: SingleChildScrollView(
         child: Stack(
@@ -23,12 +25,12 @@ class LoginCard extends StatelessWidget {
                 child: Container(
                   width: 340,
                   decoration: BoxDecoration(
-                    color: AppColors.white.withValues(alpha: 0.06),
+                    color: tokens.surface.withValues(alpha: context.isDarkMode ? 0.06 : 0.92),
                     borderRadius: BorderRadius.circular(24),
                     border: Border.all(color: AppColors.goldenBorder.withValues(alpha: 0.5), width: 1.0),
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.spaceBlue.withValues(alpha: 0.2),
+                        color: tokens.shadow,
                         blurRadius: 30,
                         spreadRadius: 5,
                       ),
@@ -58,7 +60,7 @@ class LoginCard extends StatelessWidget {
                               return Container(
                                 height: 200,
                                 alignment: Alignment.center,
-                                child: const Icon(Icons.broken_image, color: AppColors.white54, size: 50),
+                                child: Icon(Icons.broken_image, color: tokens.textTertiary, size: 50),
                               );
                             },
                           ),
@@ -89,13 +91,13 @@ class LoginCard extends StatelessWidget {
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: AppColors.white10.withValues(alpha: 0.2),
+                color: tokens.surface.withValues(alpha: context.isDarkMode ? 0.2 : 0.85),
                 border: Border.all(color: AppColors.neonCyan.withValues(alpha: 0.5), width: 1.5),
                 boxShadow: [
                   BoxShadow(color: AppColors.neonCyan.withValues(alpha: 0.2), blurRadius: 10, spreadRadius: 1),
                 ],
               ),
-              child: const Icon(Icons.person_outline, size: 36, color: AppColors.white),
+              child: Icon(Icons.person_outline, size: 36, color: tokens.textPrimary),
             ),
           ),
         ],

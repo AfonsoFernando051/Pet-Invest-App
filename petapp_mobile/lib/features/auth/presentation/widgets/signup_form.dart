@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
+import '../../../../core/theme/app_color_tokens.dart';
 import '../../../../core/utils/translator.dart';
 import '../../../../core/utils/game_snack.dart';
 import '../../../../core/utils/friendly_error_message.dart';
@@ -87,15 +87,16 @@ class _SignupFormState extends State<SignupForm> {
 
   @override
   Widget build(BuildContext context) {
+    final tokens = context.colors;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const Icon(Icons.person_add, size: 64, color: AppColors.white),
+        Icon(Icons.person_add, size: 64, color: tokens.textPrimary),
         const SizedBox(height: 16),
         Text(
           Translator.translate(AppStrings.createAccount),
-          style: const TextStyle(
-            color: AppColors.white,
+          style: TextStyle(
+            color: tokens.textPrimary,
             fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
@@ -103,7 +104,7 @@ class _SignupFormState extends State<SignupForm> {
         const SizedBox(height: 8),
         Text(
           Translator.translate(AppStrings.fillDetails),
-          style: const TextStyle(color: AppColors.white70),
+          style: TextStyle(color: tokens.textSecondary),
         ),
         const SizedBox(height: 24),
         CustomTextField(

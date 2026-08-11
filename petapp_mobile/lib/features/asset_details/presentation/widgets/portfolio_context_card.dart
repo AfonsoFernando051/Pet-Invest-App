@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
+import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
 import 'package:petapp_mobile/core/widgets/glass_card.dart';
 import 'package:petapp_mobile/features/asset_details/domain/entities/asset_details.dart';
 import 'package:petapp_mobile/features/portfolio/presentation/widgets/shared/section_label.dart';
@@ -25,7 +26,7 @@ class PortfolioContextCard extends StatelessWidget {
     };
 
     return GlassCard(
-      backgroundColor: AppColors.spaceDark.withValues(alpha: 0.55),
+      backgroundColor: context.colors.surface.withValues(alpha: context.isDarkMode ? 0.55 : 0.94),
       borderColor: AppColors.neonBlue.withValues(alpha: 0.2),
       borderRadius: 18,
       borderWidth: 1,
@@ -79,7 +80,7 @@ class _ContextLine extends StatelessWidget {
         Expanded(
           child: Text(
             text,
-            style: TextStyle(color: AppColors.subtleText, fontSize: 12, height: 1.4),
+            style: TextStyle(color: context.colors.textSecondary, fontSize: 12, height: 1.4),
           ),
         ),
       ],
