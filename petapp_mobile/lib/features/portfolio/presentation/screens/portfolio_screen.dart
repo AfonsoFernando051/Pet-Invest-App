@@ -10,7 +10,7 @@ import 'package:petapp_mobile/features/portfolio/presentation/widgets/asset_allo
 import 'package:petapp_mobile/features/portfolio/presentation/widgets/hero_summary_section.dart';
 import 'package:petapp_mobile/features/portfolio/presentation/widgets/holdings_section.dart';
 import 'package:petapp_mobile/features/portfolio/presentation/widgets/quick_actions_fab.dart';
-import 'package:petapp_mobile/features/portfolio/presentation/widgets/wealth_evolution_card.dart';
+import 'package:petapp_mobile/features/portfolio/presentation/widgets/wealth_evolution_bar_card.dart';
 
 /// The "Carteira" (Portfolio) tab — holdings (Investidor10-inspired: grouped
 /// by category, collapsible, expandable to full asset detail) preceded by
@@ -69,7 +69,7 @@ class PortfolioScreen extends StatelessWidget {
               children: [
                 HeroSummarySection(controller: controller),
                 const SizedBox(height: 16),
-                WealthEvolutionCard(controller: controller),
+                WealthEvolutionBarCard(controller: controller),
                 const SizedBox(height: 16),
                 AssetAllocationCard(
                   allocation: controller.allocation,
