@@ -14,6 +14,7 @@ import com.jf.PetApp.application.investment.dto.InvestmentLotDTO;
 import com.jf.PetApp.application.investment.port.ExternalInvestmentApiPort;
 import com.jf.PetApp.application.investment.port.InvestmentRepositoryPort;
 import com.jf.PetApp.core.domain.Investment;
+import com.jf.PetApp.core.domain.enums.InvestmentType;
 
 @Service
 public class GetPortfolioHoldingsUseCaseImpl implements GetPortfolioHoldingsUseCase {
@@ -35,7 +36,7 @@ public class GetPortfolioHoldingsUseCaseImpl implements GetPortfolioHoldingsUseC
 
         Map<String, Double> priceCache = new HashMap<>();
         for (Investment lot : lots) {
-            priceCache.computeIfAbsent(lot.name(), ticker -> fetchCurrentPrice(ticker, lot.purchasePrice()));
+            priceCache.computeIfAbsent(lot.name(), ticker -> fetchCurrentPrice(ticker, lot.type(), lot.purchasePrice()));
         }
 
         return lots.stream().map(lot -> {
@@ -56,7 +57,13 @@ public class GetPortfolioHoldingsUseCaseImpl implements GetPortfolioHoldingsUseC
         }).collect(Collectors.toList());
     }
 
-    private Double fetchCurrentPrice(String ticker, Double fallbackPrice) {
+    private Double fetchCurrentPrice(String ticker, InvestmentType type, Double fallbackPrice) {
+        // Tesouro Direto / fixed-income bonds aren't equities and have no ticker on
+        // Brapi's quote feed — querying it always 404s. No accrual-based pricing
+        // model exists yet, so fall back to the purchase price directly.
+        if (type == InvestmentType.FIXED_INCOME) {
+            return fallbackPrice;
+        }
         try {
             return externalInvestmentApiPort.getQuote(ticker)
                     .map(AssetQuoteResponse::regularMarketPrice)

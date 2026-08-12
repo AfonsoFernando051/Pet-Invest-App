@@ -24,7 +24,7 @@ class HeroSummarySection extends StatelessWidget {
         : null;
 
     return SizedBox(
-      height: 138,
+      height: 164,
       child: ListView(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 2),
