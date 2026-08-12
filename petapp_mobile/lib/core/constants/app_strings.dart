@@ -130,4 +130,41 @@ class AppStrings {
 
   // Dashboard
   static const String levelUpAchieved = "levelUpAchieved";
+
+  // Academy — UI chrome only; curriculum content (module/lesson text) lives
+  // in AcademyCatalog itself, keyed off Translator.currentLanguage the same
+  // way this map is, since it's domain content, not generic UI copy.
+  static const String academyLevelLabel = "academyLevelLabel";
+  static const String academyXpEarnedLabel = "academyXpEarnedLabel";
+  static const String academyContinueSectionLabel = "academyContinueSectionLabel";
+  static const String academyXpToCompleteLabel = "academyXpToCompleteLabel";
+  static const String academyStartLessonButton = "academyStartLessonButton";
+  static const String academyModulesSectionLabel = "academyModulesSectionLabel";
+  static const String academyLessonsSectionLabel = "academyLessonsSectionLabel";
+  static const String academyLessonsProgressLabel = "academyLessonsProgressLabel";
+  static const String academyLessonCompleteTitle = "academyLessonCompleteTitle";
+  static const String academyXpPill = "academyXpPill";
+  static const String academyContinueButton = "academyContinueButton";
+  static const String academyConcludeButton = "academyConcludeButton";
+  static const String academyBackToAcademyButton = "academyBackToAcademyButton";
+  static const String academyModuleStatusCompleted = "academyModuleStatusCompleted";
+  static const String academyModuleStatusInProgress = "academyModuleStatusInProgress";
+  static const String academyModuleStatusAvailable = "academyModuleStatusAvailable";
+  static const String academyModuleStatusComingSoon = "academyModuleStatusComingSoon";
+  static const String academyMicroExerciseLabel = "academyMicroExerciseLabel";
+  static const String academyApplyLabel = "academyApplyLabel";
+  static const String academyCorrectFeedbackTitle = "academyCorrectFeedbackTitle";
+  static const String academyIncorrectFeedbackTitle = "academyIncorrectFeedbackTitle";
+
+  // Dashboard — AppBar / bottom navigation shell
+  static const String appBarPlayerNamedGreeting = "appBarPlayerNamedGreeting";
+  static const String appBarPlayerGenericGreeting = "appBarPlayerGenericGreeting";
+  static const String profileTooltip = "profileTooltip";
+  static const String notificationsTooltip = "notificationsTooltip";
+  static const String logoutTooltip = "logoutTooltip";
+  static const String navHome = "navHome";
+  static const String navWallet = "navWallet";
+  static const String navPassiveIncome = "navPassiveIncome";
+  static const String navAcademy = "navAcademy";
+  static const String navMentor = "navMentor";
 }

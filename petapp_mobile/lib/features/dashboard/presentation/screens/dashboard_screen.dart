@@ -182,6 +182,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Rebuilds the AppBar/bottom-nav chrome (and everything under it) when
+    // the user switches language in Settings — matches the same explicit
+    // per-screen listening pattern `SettingsScreen` and the Academy screens
+    // already use, rather than relying on the top-level `MyApp` rebuild
+    // alone (which resets `FutureBuilder`'s start-route resolution and would
+    // otherwise flash the splash screen on every language switch).
+    return ValueListenableBuilder<String>(
+      valueListenable: Translator.languageNotifier,
+      builder: (context, _, __) => _buildScaffold(context),
+    );
+  }
+
+  Widget _buildScaffold(BuildContext context) {
     final tokens = context.colors;
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -197,7 +210,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           _buildNotificationsButton(),
           IconButton(
             icon: Icon(Icons.settings_outlined, color: tokens.textSecondary),
-            tooltip: 'Perfil',
+            tooltip: Translator.translate(AppStrings.profileTooltip),
             onPressed: () async {
               await Navigator.of(context).push(_fadeRoute(const ProfileScreen()));
               // Settings (reached via Profile) may have renamed the pet —
@@ -208,7 +221,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
           IconButton(
             icon: const Icon(Icons.logout, color: AppColors.neonPurple),
-            tooltip: 'Sair',
+            tooltip: Translator.translate(AppStrings.logoutTooltip),
             onPressed: _confirmLogout,
           ),
           const SizedBox(width: 8),
@@ -269,8 +282,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
             Text(
               _mascotController.profile.name?.isNotEmpty == true
-                  ? '${_mascotController.profile.name} · Nível $level'
-                  : 'Nível $level · Explorador',
+                  ? Translator.translate(
+                      AppStrings.appBarPlayerNamedGreeting,
+                      params: {'petName': _mascotController.profile.name!, 'level': '$level'},
+                    )
+                  : Translator.translate(AppStrings.appBarPlayerGenericGreeting, params: {'level': '$level'}),
               style: TextStyle(color: context.colors.primary.withValues(alpha: 0.9), fontSize: 11),
             ),
           ],
@@ -291,7 +307,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       children: [
         IconButton(
           icon: Icon(Icons.notifications_outlined, color: context.colors.textSecondary),
-          tooltip: 'Notificações',
+          tooltip: Translator.translate(AppStrings.notificationsTooltip),
           onPressed: _openNotifications,
         ),
         if (upcomingCount > 0)
@@ -511,37 +527,37 @@ class _DashboardScreenState extends State<DashboardScreen> {
           HapticFeedback.selectionClick();
           setState(() => _selectedIndex = i);
         },
-        items: const [
+        items: [
           BottomNavigationBarItem(
-            icon: Padding(
+            icon: const Padding(
               padding: EdgeInsets.all(4.0),
               child: Icon(Icons.rocket_launch_outlined),
             ),
-            activeIcon: Padding(
+            activeIcon: const Padding(
               padding: EdgeInsets.all(4.0),
               child: Icon(Icons.rocket_launch),
             ),
-            label: 'Início',
+            label: Translator.translate(AppStrings.navHome),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.diamond_outlined),
-            activeIcon: Icon(Icons.diamond),
-            label: 'Carteira',
+            icon: const Icon(Icons.diamond_outlined),
+            activeIcon: const Icon(Icons.diamond),
+            label: Translator.translate(AppStrings.navWallet),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.payments_outlined),
-            activeIcon: Icon(Icons.payments),
-            label: 'Proventos',
+            icon: const Icon(Icons.payments_outlined),
+            activeIcon: const Icon(Icons.payments),
+            label: Translator.translate(AppStrings.navPassiveIncome),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.school_outlined),
-            activeIcon: Icon(Icons.school),
-            label: 'Academia',
+            icon: const Icon(Icons.school_outlined),
+            activeIcon: const Icon(Icons.school),
+            label: Translator.translate(AppStrings.navAcademy),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.auto_awesome_outlined),
-            activeIcon: Icon(Icons.auto_awesome),
-            label: 'Mentor',
+            icon: const Icon(Icons.auto_awesome_outlined),
+            activeIcon: const Icon(Icons.auto_awesome),
+            label: Translator.translate(AppStrings.navMentor),
           ),
         ],
       ),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
+import 'package:petapp_mobile/core/constants/app_strings.dart';
 import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
+import 'package:petapp_mobile/core/utils/translator.dart';
 import 'package:petapp_mobile/core/widgets/game_button.dart';
 import 'package:petapp_mobile/core/widgets/glass_card.dart';
 
@@ -40,7 +42,10 @@ class LessonCompleteCard extends StatelessWidget {
           children: [
             const Icon(Icons.emoji_events, color: AppColors.goldenBorder, size: 48),
             const SizedBox(height: 12),
-            Text('Lição Concluída!', style: TextStyle(color: tokens.textPrimary, fontWeight: FontWeight.bold, fontSize: 20)),
+            Text(
+              Translator.translate(AppStrings.academyLessonCompleteTitle),
+              style: TextStyle(color: tokens.textPrimary, fontWeight: FontWeight.bold, fontSize: 20),
+            ),
             const SizedBox(height: 6),
             Text(
               lessonTitle,
@@ -55,16 +60,19 @@ class LessonCompleteCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
-                '+$xpEarned XP',
+                Translator.translate(AppStrings.academyXpPill, params: {'xp': '$xpEarned'}),
                 style: const TextStyle(color: AppColors.goldenBorder, fontWeight: FontWeight.bold, fontSize: 15),
               ),
             ),
             const SizedBox(height: 24),
-            GameButton(label: 'Continuar', onPressed: onContinue),
+            GameButton(label: Translator.translate(AppStrings.academyContinueButton), onPressed: onContinue),
             const SizedBox(height: 10),
             TextButton(
               onPressed: onBackToAcademy,
-              child: Text('Voltar à Academia', style: TextStyle(color: tokens.textSecondary, fontSize: 13)),
+              child: Text(
+                Translator.translate(AppStrings.academyBackToAcademyButton),
+                style: TextStyle(color: tokens.textSecondary, fontSize: 13),
+              ),
             ),
           ],
         ),

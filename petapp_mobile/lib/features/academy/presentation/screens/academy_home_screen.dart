@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
+import 'package:petapp_mobile/core/constants/app_strings.dart';
 import 'package:petapp_mobile/core/di/dependency_injection.dart';
 import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
+import 'package:petapp_mobile/core/utils/translator.dart';
 import 'package:petapp_mobile/core/widgets/app_loading_indicator.dart';
 import 'package:petapp_mobile/core/widgets/game_button.dart';
 import 'package:petapp_mobile/core/widgets/glass_card.dart';
@@ -88,6 +90,16 @@ class _AcademyHomeScreenState extends State<AcademyHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Rebuilds when the user switches language in Settings — curriculum
+    // content (AcademyCatalog) and this screen's chrome both key off
+    // `Translator.currentLanguage`, which only changes there.
+    return ValueListenableBuilder<String>(
+      valueListenable: Translator.languageNotifier,
+      builder: (context, _, __) => _buildContent(context),
+    );
+  }
+
+  Widget _buildContent(BuildContext context) {
     final tokens = context.colors;
     final level = LevelCalculator.fromXp(widget.mascotController.profile.xp);
 
@@ -112,7 +124,7 @@ class _AcademyHomeScreenState extends State<AcademyHomeScreen> {
               const SizedBox(height: 24),
             ],
             Text(
-              'MÓDULOS',
+              Translator.translate(AppStrings.academyModulesSectionLabel),
               style: TextStyle(color: tokens.primary.withValues(alpha: 0.6), fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: 2),
             ),
             const SizedBox(height: 10),
@@ -156,10 +168,16 @@ class _AcademyHomeScreenState extends State<AcademyHomeScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Investidor Nível $level', style: TextStyle(color: tokens.textPrimary, fontWeight: FontWeight.bold, fontSize: 16)),
+                  Text(
+                    Translator.translate(AppStrings.academyLevelLabel, params: {'level': '$level'}),
+                    style: TextStyle(color: tokens.textPrimary, fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
                   const SizedBox(height: 2),
                   Text(
-                    '${_controller.totalXpEarned} XP conquistados na Academia',
+                    Translator.translate(
+                      AppStrings.academyXpEarnedLabel,
+                      params: {'xp': '${_controller.totalXpEarned}'},
+                    ),
                     style: TextStyle(color: tokens.textSecondary, fontSize: 12),
                   ),
                 ],
@@ -182,16 +200,19 @@ class _AcademyHomeScreenState extends State<AcademyHomeScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'CONTINUAR',
+              Translator.translate(AppStrings.academyContinueSectionLabel),
               style: TextStyle(color: AppColors.goldenBorder, fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: 2),
             ),
             const SizedBox(height: 6),
             Text(lesson.title, style: TextStyle(color: tokens.textPrimary, fontWeight: FontWeight.bold, fontSize: 17)),
             const SizedBox(height: 4),
-            Text('+${lesson.xpReward} XP ao concluir', style: TextStyle(color: tokens.textSecondary, fontSize: 12)),
+            Text(
+              Translator.translate(AppStrings.academyXpToCompleteLabel, params: {'xp': '${lesson.xpReward}'}),
+              style: TextStyle(color: tokens.textSecondary, fontSize: 12),
+            ),
             const SizedBox(height: 14),
             GameButton(
-              label: 'Começar Lição',
+              label: Translator.translate(AppStrings.academyStartLessonButton),
               icon: Icons.play_arrow_rounded,
               colors: const [AppColors.neonViolet, AppColors.neonPink],
               pulse: true,

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
+import 'package:petapp_mobile/core/constants/app_strings.dart';
 import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
+import 'package:petapp_mobile/core/utils/translator.dart';
 import 'package:petapp_mobile/core/widgets/glass_card.dart';
 import 'package:petapp_mobile/features/academy/domain/entities/academy_module.dart';
 import 'package:petapp_mobile/features/academy/domain/services/academy_progress_calculator.dart';
@@ -92,7 +94,10 @@ class ModuleCard extends StatelessWidget {
                     AcademyProgressBar(progress: progress),
                     const SizedBox(height: 6),
                     Text(
-                      '$completedLessons / $totalLessons lições',
+                      Translator.translate(
+                        AppStrings.academyLessonsProgressLabel,
+                        params: {'completed': '$completedLessons', 'total': '$totalLessons'},
+                      ),
                       style: TextStyle(color: tokens.textTertiary, fontSize: 11),
                     ),
                   ],
@@ -107,10 +112,10 @@ class ModuleCard extends StatelessWidget {
 
   String _statusLabel(ModuleStatus status) {
     return switch (status) {
-      ModuleStatus.completed => 'MÓDULO CONCLUÍDO',
-      ModuleStatus.inProgress => 'EM ANDAMENTO',
-      ModuleStatus.available => 'DISPONÍVEL',
-      ModuleStatus.comingSoon => 'EM BREVE',
+      ModuleStatus.completed => Translator.translate(AppStrings.academyModuleStatusCompleted),
+      ModuleStatus.inProgress => Translator.translate(AppStrings.academyModuleStatusInProgress),
+      ModuleStatus.available => Translator.translate(AppStrings.academyModuleStatusAvailable),
+      ModuleStatus.comingSoon => Translator.translate(AppStrings.academyModuleStatusComingSoon),
     };
   }
 }

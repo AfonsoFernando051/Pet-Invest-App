@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:petapp_mobile/core/constants/app_strings.dart';
 import 'package:petapp_mobile/core/di/dependency_injection.dart';
 import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
+import 'package:petapp_mobile/core/utils/translator.dart';
 import 'package:petapp_mobile/core/widgets/cosmic_background.dart';
 import 'package:petapp_mobile/core/widgets/game_button.dart';
 import 'package:petapp_mobile/features/academy/domain/entities/lesson.dart';
@@ -88,7 +90,13 @@ class _LessonScreenState extends State<LessonScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Center(
               child: SingleChildScrollView(
-                child: _controller.isComplete ? _buildComplete(context) : _buildStep(context),
+                // Rebuilds this screen's chrome (button labels) if the user
+                // switches language in Settings mid-lesson.
+                child: ValueListenableBuilder<String>(
+                  valueListenable: Translator.languageNotifier,
+                  builder: (context, _, __) =>
+                      _controller.isComplete ? _buildComplete(context) : _buildStep(context),
+                ),
               ),
             ),
           ),
@@ -119,7 +127,9 @@ class _LessonScreenState extends State<LessonScreen> {
         stepView,
         const SizedBox(height: 32),
         GameButton(
-          label: _controller.isLastStep ? 'Concluir' : 'Continuar',
+          label: Translator.translate(
+            _controller.isLastStep ? AppStrings.academyConcludeButton : AppStrings.academyContinueButton,
+          ),
           isLoading: _controller.isCompleting,
           onPressed: _controller.canAdvance ? _controller.advance : null,
         ),

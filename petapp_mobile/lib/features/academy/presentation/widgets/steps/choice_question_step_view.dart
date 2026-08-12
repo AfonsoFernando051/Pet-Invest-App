@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
+import 'package:petapp_mobile/core/constants/app_strings.dart';
 import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
+import 'package:petapp_mobile/core/utils/translator.dart';
 import 'package:petapp_mobile/features/academy/domain/entities/lesson_step.dart';
 
 /// Renders any [ChoiceQuestionStep] (multiple choice, true/false-as-2-options,
@@ -35,7 +37,7 @@ class ChoiceQuestionStepView extends StatelessWidget {
             Icon(isApply ? Icons.psychology_outlined : Icons.quiz_outlined, color: AppColors.neonCyan, size: 18),
             const SizedBox(width: 8),
             Text(
-              isApply ? 'APLIQUE O QUE APRENDEU' : 'EXERCÍCIO RÁPIDO',
+              Translator.translate(isApply ? AppStrings.academyApplyLabel : AppStrings.academyMicroExerciseLabel),
               style: const TextStyle(color: AppColors.neonCyan, fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: 1.2),
             ),
           ],
@@ -158,7 +160,9 @@ class _FeedbackCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  isCorrect ? 'Isso mesmo!' : 'Quase! Vamos entender:',
+                  Translator.translate(
+                    isCorrect ? AppStrings.academyCorrectFeedbackTitle : AppStrings.academyIncorrectFeedbackTitle,
+                  ),
                   style: TextStyle(color: accent, fontWeight: FontWeight.bold, fontSize: 13),
                 ),
                 const SizedBox(height: 4),

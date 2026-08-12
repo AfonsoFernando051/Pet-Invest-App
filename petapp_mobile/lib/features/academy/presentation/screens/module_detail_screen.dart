@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:petapp_mobile/core/constants/app_colors.dart';
+import 'package:petapp_mobile/core/constants/app_strings.dart';
 import 'package:petapp_mobile/core/di/dependency_injection.dart';
 import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
+import 'package:petapp_mobile/core/utils/translator.dart';
 import 'package:petapp_mobile/core/widgets/app_loading_indicator.dart';
 import 'package:petapp_mobile/core/widgets/cosmic_background.dart';
 import 'package:petapp_mobile/core/widgets/glass_card.dart';
@@ -73,6 +75,13 @@ class _ModuleDetailScreenState extends State<ModuleDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    return ValueListenableBuilder<String>(
+      valueListenable: Translator.languageNotifier,
+      builder: (context, _, __) => _buildContent(context),
+    );
+  }
+
+  Widget _buildContent(BuildContext context) {
     final tokens = context.colors;
     final lessons = AcademyCatalog.lessonsForModule(widget.module.id);
     final completed = _controller.completedLessonCountFor(widget.module);
@@ -124,7 +133,10 @@ class _ModuleDetailScreenState extends State<ModuleDetailScreen> {
                               AcademyProgressBar(progress: progress),
                               const SizedBox(height: 6),
                               Text(
-                                '$completed / ${lessons.length} lições',
+                                Translator.translate(
+                                  AppStrings.academyLessonsProgressLabel,
+                                  params: {'completed': '$completed', 'total': '${lessons.length}'},
+                                ),
                                 style: TextStyle(color: tokens.textTertiary, fontSize: 11),
                               ),
                             ],
@@ -133,7 +145,7 @@ class _ModuleDetailScreenState extends State<ModuleDetailScreen> {
                       ),
                       const SizedBox(height: 20),
                       Text(
-                        'LIÇÕES',
+                        Translator.translate(AppStrings.academyLessonsSectionLabel),
                         style: TextStyle(color: tokens.primary.withValues(alpha: 0.6), fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: 2),
                       ),
                       const SizedBox(height: 10),
