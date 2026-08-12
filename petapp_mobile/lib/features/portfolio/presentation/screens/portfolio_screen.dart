@@ -6,14 +6,17 @@ import 'package:petapp_mobile/core/utils/game_snack.dart';
 import 'package:petapp_mobile/core/widgets/glass_card.dart';
 import 'package:petapp_mobile/features/investment/presentation/screens/investment_configuration_screen.dart';
 import 'package:petapp_mobile/features/portfolio/presentation/controllers/portfolio_controller.dart';
+import 'package:petapp_mobile/features/portfolio/presentation/widgets/asset_allocation_card.dart';
+import 'package:petapp_mobile/features/portfolio/presentation/widgets/hero_summary_section.dart';
 import 'package:petapp_mobile/features/portfolio/presentation/widgets/holdings_section.dart';
 import 'package:petapp_mobile/features/portfolio/presentation/widgets/quick_actions_fab.dart';
+import 'package:petapp_mobile/features/portfolio/presentation/widgets/wealth_evolution_card.dart';
 
-/// The "Carteira" (Portfolio) tab — dedicated exclusively to managing
-/// holdings (Investidor10-inspired: grouped by category, collapsible,
-/// expandable to full asset detail). Dashboard charts, insights, passive
-/// income and gamification now live on the Home tab instead — this screen
-/// has a single responsibility: let the user see and act on what they own.
+/// The "Carteira" (Portfolio) tab — holdings (Investidor10-inspired: grouped
+/// by category, collapsible, expandable to full asset detail) preceded by
+/// the portfolio summary cards, wealth evolution chart and asset allocation
+/// donut, so the full picture is visible before scrolling into individual
+/// positions.
 ///
 /// [controller] is owned and loaded by `DashboardScreen` and shared with the
 /// Home tab, so both reflect the same data with a single fetch.
@@ -64,7 +67,14 @@ class PortfolioScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                _PortfolioHeader(controller: controller),
+                HeroSummarySection(controller: controller),
+                const SizedBox(height: 16),
+                WealthEvolutionCard(controller: controller),
+                const SizedBox(height: 16),
+                AssetAllocationCard(
+                  allocation: controller.allocation,
+                  totalValue: controller.summary.currentValue,
+                ),
                 const SizedBox(height: 16),
                 HoldingsSection(holdings: controller.holdings, totalPortfolioValue: controller.summary.currentValue),
               ],
@@ -86,66 +96,6 @@ class PortfolioScreen extends StatelessWidget {
         ),
       ],
     );
-  }
-}
-
-/// Compact "what am I managing" strip — count, total value and overall
-/// return — so the holdings list below has context without pulling in the
-/// full Home dashboard's charts.
-class _PortfolioHeader extends StatelessWidget {
-  const _PortfolioHeader({required this.controller});
-
-  final PortfolioController controller;
-
-  @override
-  Widget build(BuildContext context) {
-    final tokens = context.colors;
-    final s = controller.summary;
-    final isPositive = s.totalGain >= 0;
-
-    return GlassCard(
-      backgroundColor: tokens.surface.withValues(alpha: context.isDarkMode ? 0.55 : 0.94),
-      borderColor: AppColors.neonCyan.withValues(alpha: 0.25),
-      borderRadius: 18,
-      borderWidth: 1,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        child: Row(
-          children: [
-            _stat(context, '${s.totalAssets}', 'Ativos'),
-            _divider(context),
-            _stat(context, _compact(s.currentValue), 'Valor Atual'),
-            _divider(context),
-            _stat(
-              context,
-              '${isPositive ? '+' : ''}${s.totalGainPercent.toStringAsFixed(1)}%',
-              'Retorno Total',
-              color: isPositive ? tokens.success : tokens.error,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _divider(BuildContext context) => Container(width: 1, height: 32, color: context.colors.divider);
-
-  Widget _stat(BuildContext context, String value, String label, {Color? color}) {
-    final tokens = context.colors;
-    return Expanded(
-      child: Column(
-        children: [
-          Text(value, style: TextStyle(color: color ?? tokens.textPrimary, fontWeight: FontWeight.bold, fontSize: 15)),
-          const SizedBox(height: 2),
-          Text(label, style: TextStyle(color: tokens.textSecondary, fontSize: 10)),
-        ],
-      ),
-    );
-  }
-
-  String _compact(double value) {
-    if (value.abs() >= 1000) return 'R\$ ${(value / 1000).toStringAsFixed(1)}K';
-    return 'R\$ ${value.toStringAsFixed(0)}';
   }
 }
 
