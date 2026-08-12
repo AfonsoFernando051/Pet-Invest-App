@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
-import 'package:petapp_mobile/core/widgets/glass_card.dart';
-import 'package:petapp_mobile/features/portfolio/domain/entities/insight.dart';
-import 'package:petapp_mobile/features/portfolio/domain/enums/insight_priority.dart';
+import 'package:petrimonium/core/theme/app_color_tokens.dart';
+import 'package:petrimonium/core/widgets/glass_card.dart';
+import 'package:petrimonium/features/portfolio/domain/entities/insight.dart';
+import 'package:petrimonium/features/portfolio/domain/enums/insight_priority.dart';
 
 class InsightCardWidget extends StatelessWidget {
   const InsightCardWidget({super.key, required this.insight});

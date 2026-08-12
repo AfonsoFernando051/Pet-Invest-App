@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
-import 'package:petapp_mobile/features/asset_details/data/repositories/asset_details_repository.dart';
-import 'package:petapp_mobile/features/asset_details/domain/entities/asset_data_status.dart';
-import 'package:petapp_mobile/features/asset_details/domain/entities/asset_details.dart';
-import 'package:petapp_mobile/features/asset_details/domain/entities/user_position.dart';
-import 'package:petapp_mobile/features/portfolio/domain/entities/holding.dart';
+import 'package:petrimonium/features/asset_details/data/repositories/asset_details_repository.dart';
+import 'package:petrimonium/features/asset_details/domain/entities/asset_data_status.dart';
+import 'package:petrimonium/features/asset_details/domain/entities/asset_details.dart';
+import 'package:petrimonium/features/asset_details/domain/entities/user_position.dart';
+import 'package:petrimonium/features/portfolio/domain/entities/holding.dart';
 
 /// Manages loading and state for the Asset Details screen.
 ///

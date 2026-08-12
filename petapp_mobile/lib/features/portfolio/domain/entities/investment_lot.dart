@@ -1,4 +1,4 @@
-import 'package:petapp_mobile/features/investment/data/models/investment_type_enum.dart';
+import 'package:petrimonium/features/investment/data/models/investment_type_enum.dart';
 
 /// One purchase lot exactly as persisted on the backend — a single row in
 /// `jf_investments`. A [Holding] aggregates one or more lots that share the

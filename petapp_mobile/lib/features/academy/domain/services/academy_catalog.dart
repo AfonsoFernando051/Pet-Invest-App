@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:petapp_mobile/core/utils/translator.dart';
-import 'package:petapp_mobile/features/academy/domain/entities/academy_module.dart';
-import 'package:petapp_mobile/features/academy/domain/entities/lesson.dart';
-import 'package:petapp_mobile/features/academy/domain/entities/lesson_step.dart';
+import 'package:petrimonium/core/utils/translator.dart';
+import 'package:petrimonium/features/academy/domain/entities/academy_module.dart';
+import 'package:petrimonium/features/academy/domain/entities/lesson.dart';
+import 'package:petrimonium/features/academy/domain/entities/lesson_step.dart';
 
 /// The fixed Academy curriculum: modules and their lessons, as static data —
 /// not hardcoded into any screen or widget. Mirrors the `AchievementCatalog`/

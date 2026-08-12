@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:petapp_mobile/features/portfolio/domain/entities/portfolio_health.dart';
+import 'package:petrimonium/features/portfolio/domain/entities/portfolio_health.dart';
 
 PortfolioHealth _healthWith(double score) => PortfolioHealth(overallScore: score, metrics: const []);
 

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:petapp_mobile/core/constants/app_colors.dart';
-import 'package:petapp_mobile/core/constants/app_strings.dart';
-import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
-import 'package:petapp_mobile/core/utils/translator.dart';
-import 'package:petapp_mobile/core/widgets/game_button.dart';
-import 'package:petapp_mobile/core/widgets/glass_card.dart';
-import 'package:petapp_mobile/features/investment/presentation/screens/portfolio_choice_screen.dart';
+import 'package:petrimonium/core/constants/app_colors.dart';
+import 'package:petrimonium/core/constants/app_strings.dart';
+import 'package:petrimonium/core/theme/app_color_tokens.dart';
+import 'package:petrimonium/core/utils/translator.dart';
+import 'package:petrimonium/core/widgets/game_button.dart';
+import 'package:petrimonium/core/widgets/glass_card.dart';
+import 'package:petrimonium/features/investment/presentation/screens/portfolio_choice_screen.dart';
 
 /// Home's placeholder when the user skipped (or hasn't yet reached) the
 /// portfolio step — the app must stay fully usable without a portfolio, so

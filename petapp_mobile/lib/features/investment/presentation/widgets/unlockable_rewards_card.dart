@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
-import 'package:petapp_mobile/features/portfolio/domain/entities/portfolio_stats.dart';
-import 'package:petapp_mobile/features/portfolio/domain/services/achievement_catalog.dart';
+import 'package:petrimonium/core/theme/app_color_tokens.dart';
+import 'package:petrimonium/features/portfolio/domain/entities/portfolio_stats.dart';
+import 'package:petrimonium/features/portfolio/domain/services/achievement_catalog.dart';
 
 /// The left panel's "what you're about to unlock" checklist. Every item
 /// here shares the same unlock condition as the real `first_investment`

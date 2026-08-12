@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:petapp_mobile/core/network/api_client.dart';
+import 'package:petrimonium/core/network/api_client.dart';
 
 /// Thin HTTP layer over `GET /api/investments/asset-details/{ticker}`.
 /// Returns raw decoded JSON — mapping into the domain entity is the

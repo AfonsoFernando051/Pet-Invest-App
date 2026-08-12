@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:petapp_mobile/core/utils/password_policy.dart';
+import 'package:petrimonium/core/utils/password_policy.dart';
 
 void main() {
   group('PasswordPolicy.validate', () {

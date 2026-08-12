@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
+import 'package:petrimonium/core/theme/app_color_tokens.dart';
 
 /// The app's two `ThemeData` instances. `MaterialApp` is given both
 /// (`theme`/`darkTheme`) plus a `themeMode`, so Flutter — not app code —

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:petapp_mobile/core/constants/app_colors.dart';
-import 'package:petapp_mobile/core/constants/app_strings.dart';
-import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
-import 'package:petapp_mobile/core/utils/translator.dart';
-import 'package:petapp_mobile/features/academy/domain/entities/lesson_step.dart';
+import 'package:petrimonium/core/constants/app_colors.dart';
+import 'package:petrimonium/core/constants/app_strings.dart';
+import 'package:petrimonium/core/theme/app_color_tokens.dart';
+import 'package:petrimonium/core/utils/translator.dart';
+import 'package:petrimonium/features/academy/domain/entities/lesson_step.dart';
 
 /// Renders any [ChoiceQuestionStep] (multiple choice, true/false-as-2-options,
 /// or an applied scenario) with one shared widget. A wrong answer is never a

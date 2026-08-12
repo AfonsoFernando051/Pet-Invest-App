@@ -1,7 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:petapp_mobile/core/constants/app_colors.dart';
-import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
+import 'package:petrimonium/core/constants/app_colors.dart';
+import 'package:petrimonium/core/theme/app_color_tokens.dart';
 
 /// A real glassmorphism card with BackdropFilter blur.
 /// All content placed on top of the nebula background will now correctly

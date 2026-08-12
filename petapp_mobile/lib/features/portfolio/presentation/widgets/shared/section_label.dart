@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:petapp_mobile/core/constants/app_colors.dart';
+import 'package:petrimonium/core/constants/app_colors.dart';
 
 /// Small uppercase eyebrow label used to separate portfolio sections —
 /// matches the style already established in `DashboardScreen`.

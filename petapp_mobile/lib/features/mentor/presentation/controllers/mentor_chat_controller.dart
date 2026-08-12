@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
-import 'package:petapp_mobile/features/mentor/data/repositories/mentor_chat_repository.dart';
-import 'package:petapp_mobile/features/mentor/domain/entities/chat_message.dart';
+import 'package:petrimonium/features/mentor/data/repositories/mentor_chat_repository.dart';
+import 'package:petrimonium/features/mentor/domain/entities/chat_message.dart';
 
 const String _fallbackErrorReply =
     'Hmm, algo deu errado ao pensar na resposta 🐾 Vamos tentar de novo daqui a pouco?';

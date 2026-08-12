@@ -3,10 +3,10 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:petapp_mobile/core/constants/app_colors.dart';
-import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
-import 'package:petapp_mobile/core/widgets/glass_card.dart';
-import 'package:petapp_mobile/features/portfolio/domain/entities/achievement.dart';
+import 'package:petrimonium/core/constants/app_colors.dart';
+import 'package:petrimonium/core/theme/app_color_tokens.dart';
+import 'package:petrimonium/core/widgets/glass_card.dart';
+import 'package:petrimonium/features/portfolio/domain/entities/achievement.dart';
 
 /// A full-screen celebration shown the moment one or more achievements are
 /// newly unlocked (see `PortfolioController.newlyUnlocked`) — the "reward

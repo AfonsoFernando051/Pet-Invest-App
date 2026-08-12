@@ -1,14 +1,14 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:petapp_mobile/core/constants/app_colors.dart';
-import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
-import 'package:petapp_mobile/features/portfolio/domain/entities/holding.dart';
-import 'package:petapp_mobile/features/portfolio/domain/entities/investment_lot.dart';
-import 'package:petapp_mobile/features/portfolio/domain/entities/investment_type_display.dart';
-import 'package:petapp_mobile/features/portfolio/domain/enums/history_range.dart';
-import 'package:petapp_mobile/features/portfolio/domain/services/wealth_history_calculator.dart';
-import 'package:petapp_mobile/features/portfolio/presentation/widgets/shared/formatters.dart';
-import 'package:petapp_mobile/features/portfolio/presentation/widgets/shared/performance_badge.dart';
+import 'package:petrimonium/core/constants/app_colors.dart';
+import 'package:petrimonium/core/theme/app_color_tokens.dart';
+import 'package:petrimonium/features/portfolio/domain/entities/holding.dart';
+import 'package:petrimonium/features/portfolio/domain/entities/investment_lot.dart';
+import 'package:petrimonium/features/portfolio/domain/entities/investment_type_display.dart';
+import 'package:petrimonium/features/portfolio/domain/enums/history_range.dart';
+import 'package:petrimonium/features/portfolio/domain/services/wealth_history_calculator.dart';
+import 'package:petrimonium/features/portfolio/presentation/widgets/shared/formatters.dart';
+import 'package:petrimonium/features/portfolio/presentation/widgets/shared/performance_badge.dart';
 
 /// Expanded asset detail: mini valuation chart, purchase history and an
 /// estimated-income breakdown for a single [Holding]. Fields the brief

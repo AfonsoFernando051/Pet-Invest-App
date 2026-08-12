@@ -1,11 +1,11 @@
 import 'package:flutter/foundation.dart';
-import 'package:petapp_mobile/core/services/total_xp_calculator.dart';
-import 'package:petapp_mobile/features/academy/data/repositories/academy_progress_local_repository.dart';
-import 'package:petapp_mobile/features/academy/domain/entities/lesson.dart';
-import 'package:petapp_mobile/features/academy/domain/entities/lesson_step.dart';
-import 'package:petapp_mobile/features/pet/domain/enums/pet_animation_state.dart';
-import 'package:petapp_mobile/features/pet/presentation/mascot/controllers/mascot_controller.dart';
-import 'package:petapp_mobile/features/portfolio/data/repositories/achievements_local_repository.dart';
+import 'package:petrimonium/core/services/total_xp_calculator.dart';
+import 'package:petrimonium/features/academy/data/repositories/academy_progress_local_repository.dart';
+import 'package:petrimonium/features/academy/domain/entities/lesson.dart';
+import 'package:petrimonium/features/academy/domain/entities/lesson_step.dart';
+import 'package:petrimonium/features/pet/domain/enums/pet_animation_state.dart';
+import 'package:petrimonium/features/pet/presentation/mascot/controllers/mascot_controller.dart';
+import 'package:petrimonium/features/portfolio/data/repositories/achievements_local_repository.dart';
 
 /// Drives a single lesson play-through: current step, the learner's answer
 /// (if the step is a question), and completion. Self-owned by `LessonScreen`

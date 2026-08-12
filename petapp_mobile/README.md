@@ -1,4 +1,4 @@
-# petapp_mobile
+# Petrimonium
 
 A new Flutter project.
 

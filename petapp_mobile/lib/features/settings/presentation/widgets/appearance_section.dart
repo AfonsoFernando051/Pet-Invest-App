@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:petapp_mobile/core/constants/app_strings.dart';
-import 'package:petapp_mobile/core/theme/theme_controller.dart';
-import 'package:petapp_mobile/core/utils/translator.dart';
-import 'package:petapp_mobile/features/settings/presentation/widgets/appearance_option_card.dart';
+import 'package:petrimonium/core/constants/app_strings.dart';
+import 'package:petrimonium/core/theme/theme_controller.dart';
+import 'package:petrimonium/core/utils/translator.dart';
+import 'package:petrimonium/features/settings/presentation/widgets/appearance_option_card.dart';
 
 /// Settings → Appearance: lets the user pick Light / Dark / System. Wraps
 /// its own `ValueListenableBuilder` on [ThemeController.themeModeNotifier]

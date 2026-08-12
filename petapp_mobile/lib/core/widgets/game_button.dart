@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:petapp_mobile/core/constants/app_colors.dart';
+import 'package:petrimonium/core/constants/app_colors.dart';
 
 /// A premium "mobile-game" CTA button: gradient fill, ambient glow, a tap-down
 /// press animation, and an optional slow idle pulse reserved for the single

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:petapp_mobile/core/constants/app_colors.dart';
-import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
-import 'package:petapp_mobile/core/widgets/app_loading_indicator.dart';
-import 'package:petapp_mobile/features/portfolio/presentation/controllers/portfolio_controller.dart';
-import 'package:petapp_mobile/features/portfolio/presentation/widgets/dividend_radar_section.dart';
-import 'package:petapp_mobile/features/portfolio/presentation/widgets/passive_income_card.dart';
-import 'package:petapp_mobile/features/portfolio/presentation/widgets/proventos_evolution_bar_card.dart';
-import 'package:petapp_mobile/features/portfolio/presentation/widgets/shared/error_banner.dart';
-import 'package:petapp_mobile/features/portfolio/presentation/widgets/shared/section_label.dart';
+import 'package:petrimonium/core/constants/app_colors.dart';
+import 'package:petrimonium/core/theme/app_color_tokens.dart';
+import 'package:petrimonium/core/widgets/app_loading_indicator.dart';
+import 'package:petrimonium/features/portfolio/presentation/controllers/portfolio_controller.dart';
+import 'package:petrimonium/features/portfolio/presentation/widgets/dividend_radar_section.dart';
+import 'package:petrimonium/features/portfolio/presentation/widgets/passive_income_card.dart';
+import 'package:petrimonium/features/portfolio/presentation/widgets/proventos_evolution_bar_card.dart';
+import 'package:petrimonium/features/portfolio/presentation/widgets/shared/error_banner.dart';
+import 'package:petrimonium/features/portfolio/presentation/widgets/shared/section_label.dart';
 
 /// The "Proventos" (Passive Income) tab — its own dedicated home, no longer
 /// folded into the Home dashboard. [controller] is owned and loaded by

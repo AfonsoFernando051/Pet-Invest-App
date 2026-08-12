@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:petapp_mobile/core/constants/app_colors.dart';
-import 'package:petapp_mobile/core/constants/app_strings.dart';
-import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
-import 'package:petapp_mobile/core/utils/translator.dart';
-import 'package:petapp_mobile/core/widgets/glass_card.dart';
-import 'package:petapp_mobile/features/onboarding/presentation/screens/onboarding_screen.dart';
+import 'package:petrimonium/core/constants/app_colors.dart';
+import 'package:petrimonium/core/constants/app_strings.dart';
+import 'package:petrimonium/core/theme/app_color_tokens.dart';
+import 'package:petrimonium/core/utils/translator.dart';
+import 'package:petrimonium/core/widgets/glass_card.dart';
+import 'package:petrimonium/features/onboarding/presentation/screens/onboarding_screen.dart';
 
 /// Home's "always something meaningful to do" list — shown alongside (or
 /// instead of) portfolio data so a user who skipped portfolio setup still

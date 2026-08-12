@@ -1,8 +1,8 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
-import 'package:petapp_mobile/core/widgets/cosmic_background.dart';
-import 'package:petapp_mobile/features/onboarding/presentation/widgets/onboarding_form.dart';
+import 'package:petrimonium/core/theme/app_color_tokens.dart';
+import 'package:petrimonium/core/widgets/cosmic_background.dart';
+import 'package:petrimonium/features/onboarding/presentation/widgets/onboarding_form.dart';
 
 class OnboardingScreen extends StatelessWidget {
   const OnboardingScreen({super.key});

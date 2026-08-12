@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:petapp_mobile/core/constants/app_colors.dart';
-import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
+import 'package:petrimonium/core/constants/app_colors.dart';
+import 'package:petrimonium/core/theme/app_color_tokens.dart';
 
 /// A premium, space-themed modal bottom sheet for picking one value out of a
 /// small enum-like list — used by the pet profile screen's "Meta Principal"

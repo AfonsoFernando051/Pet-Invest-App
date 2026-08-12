@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:petapp_mobile/core/constants/api_constants.dart';
-import 'package:petapp_mobile/core/network/api_client.dart';
+import 'package:petrimonium/core/constants/api_constants.dart';
+import 'package:petrimonium/core/network/api_client.dart';
 
 /// Thin HTTP layer over `/api/mentor/chat`. The backend builds the real
 /// portfolio/pet context server-side from the authenticated user — this only

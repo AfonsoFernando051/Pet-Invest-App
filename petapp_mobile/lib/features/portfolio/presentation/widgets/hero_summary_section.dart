@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:petapp_mobile/core/constants/app_colors.dart';
-import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
-import 'package:petapp_mobile/features/portfolio/presentation/controllers/portfolio_controller.dart';
-import 'package:petapp_mobile/features/portfolio/presentation/widgets/portfolio_summary_card.dart';
+import 'package:petrimonium/core/constants/app_colors.dart';
+import 'package:petrimonium/core/theme/app_color_tokens.dart';
+import 'package:petrimonium/features/portfolio/presentation/controllers/portfolio_controller.dart';
+import 'package:petrimonium/features/portfolio/presentation/widgets/portfolio_summary_card.dart';
 
 /// The "Hero Portfolio Summary" — a horizontally-scrolling row of premium
 /// stat cards giving an instant read on value, profit, income and

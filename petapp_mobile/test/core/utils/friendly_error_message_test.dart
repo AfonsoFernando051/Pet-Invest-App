@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:petapp_mobile/core/utils/friendly_error_message.dart';
+import 'package:petrimonium/core/utils/friendly_error_message.dart';
 
 void main() {
   group('friendlyErrorMessage', () {

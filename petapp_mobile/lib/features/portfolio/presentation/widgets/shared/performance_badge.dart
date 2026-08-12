@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
-import 'package:petapp_mobile/features/portfolio/presentation/widgets/shared/formatters.dart';
+import 'package:petrimonium/core/theme/app_color_tokens.dart';
+import 'package:petrimonium/features/portfolio/presentation/widgets/shared/formatters.dart';
 
 /// Small pill showing a signed percentage with a trend arrow, colored
 /// positive/negative — reused across hero cards, holdings rows and

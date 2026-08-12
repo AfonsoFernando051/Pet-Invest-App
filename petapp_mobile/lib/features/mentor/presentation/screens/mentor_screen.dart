@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:petapp_mobile/core/constants/app_colors.dart';
-import 'package:petapp_mobile/core/di/dependency_injection.dart';
-import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
-import 'package:petapp_mobile/core/utils/pet_assets.dart';
-import 'package:petapp_mobile/core/widgets/app_loading_indicator.dart';
-import 'package:petapp_mobile/core/widgets/glass_card.dart';
-import 'package:petapp_mobile/features/mentor/domain/entities/chat_message.dart';
-import 'package:petapp_mobile/features/mentor/presentation/controllers/mentor_chat_controller.dart';
-import 'package:petapp_mobile/features/mentor/presentation/widgets/chat_bubble.dart';
-import 'package:petapp_mobile/features/mentor/presentation/widgets/mentor_input_bar.dart';
-import 'package:petapp_mobile/features/mentor/presentation/widgets/suggested_prompt_chip.dart';
-import 'package:petapp_mobile/features/mentor/presentation/widgets/typing_indicator.dart';
+import 'package:petrimonium/core/constants/app_colors.dart';
+import 'package:petrimonium/core/di/dependency_injection.dart';
+import 'package:petrimonium/core/theme/app_color_tokens.dart';
+import 'package:petrimonium/core/utils/pet_assets.dart';
+import 'package:petrimonium/core/widgets/app_loading_indicator.dart';
+import 'package:petrimonium/core/widgets/glass_card.dart';
+import 'package:petrimonium/features/mentor/domain/entities/chat_message.dart';
+import 'package:petrimonium/features/mentor/presentation/controllers/mentor_chat_controller.dart';
+import 'package:petrimonium/features/mentor/presentation/widgets/chat_bubble.dart';
+import 'package:petrimonium/features/mentor/presentation/widgets/mentor_input_bar.dart';
+import 'package:petrimonium/features/mentor/presentation/widgets/suggested_prompt_chip.dart';
+import 'package:petrimonium/features/mentor/presentation/widgets/typing_indicator.dart';
 
 const List<String> _suggestedPrompts = [
   'O que são dividendos?',

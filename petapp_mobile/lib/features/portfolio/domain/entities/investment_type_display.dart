@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:petapp_mobile/core/constants/app_colors.dart';
-import 'package:petapp_mobile/features/investment/data/models/investment_type_enum.dart';
+import 'package:petrimonium/core/constants/app_colors.dart';
+import 'package:petrimonium/features/investment/data/models/investment_type_enum.dart';
 
 /// UI presentation (label/icon/color/ideal target) for each backend
 /// [InvestmentTypeEnum]. Kept in the portfolio feature — rather than added to

@@ -1,5 +1,5 @@
-import 'package:petapp_mobile/features/investment/data/models/investment_type_enum.dart';
-import 'package:petapp_mobile/features/portfolio/domain/entities/investment_lot.dart';
+import 'package:petrimonium/features/investment/data/models/investment_type_enum.dart';
+import 'package:petrimonium/features/portfolio/domain/entities/investment_lot.dart';
 
 /// A single ticker's aggregated position — the sum of every [InvestmentLot]
 /// the user holds for that ticker, each of which may have its own purchase

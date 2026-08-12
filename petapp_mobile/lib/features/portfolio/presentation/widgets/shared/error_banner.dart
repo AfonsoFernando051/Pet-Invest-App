@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
-import 'package:petapp_mobile/core/widgets/glass_card.dart';
+import 'package:petrimonium/core/theme/app_color_tokens.dart';
+import 'package:petrimonium/core/widgets/glass_card.dart';
 
 /// Small non-blocking banner shown above a tab's content when a refresh
 /// fails but cached data is still being displayed — used by Home, Proventos

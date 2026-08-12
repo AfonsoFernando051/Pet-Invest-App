@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:petapp_mobile/core/constants/app_colors.dart';
-import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
-import 'package:petapp_mobile/features/investment/data/models/asset_registration_model.dart';
-import 'package:petapp_mobile/features/portfolio/domain/entities/investment_type_display.dart';
-import 'package:petapp_mobile/features/portfolio/presentation/widgets/shared/formatters.dart';
+import 'package:petrimonium/core/constants/app_colors.dart';
+import 'package:petrimonium/core/theme/app_color_tokens.dart';
+import 'package:petrimonium/features/investment/data/models/asset_registration_model.dart';
+import 'package:petrimonium/features/portfolio/domain/entities/investment_type_display.dart';
+import 'package:petrimonium/features/portfolio/presentation/widgets/shared/formatters.dart';
 
 /// One row in the "assets added so far" list — shows the ticker, quantity/
 /// price and lets the user edit (reload into the form) or remove it before

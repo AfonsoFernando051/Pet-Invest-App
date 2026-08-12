@@ -1,4 +1,4 @@
-import 'package:petapp_mobile/features/pet/domain/enums/pet_evolution_stage.dart';
+import 'package:petrimonium/features/pet/domain/enums/pet_evolution_stage.dart';
 
 /// The financial thresholds a user must reach to unlock [stage].
 ///

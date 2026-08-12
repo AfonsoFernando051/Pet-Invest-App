@@ -1,10 +1,10 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:petapp_mobile/core/constants/app_colors.dart';
-import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
-import 'package:petapp_mobile/core/widgets/glass_card.dart';
-import 'package:petapp_mobile/features/portfolio/domain/entities/portfolio_health.dart';
-import 'package:petapp_mobile/features/portfolio/presentation/widgets/shared/section_label.dart';
+import 'package:petrimonium/core/constants/app_colors.dart';
+import 'package:petrimonium/core/theme/app_color_tokens.dart';
+import 'package:petrimonium/core/widgets/glass_card.dart';
+import 'package:petrimonium/features/portfolio/domain/entities/portfolio_health.dart';
+import 'package:petrimonium/features/portfolio/presentation/widgets/shared/section_label.dart';
 
 /// The RPG-inspired "Portfolio Health" panel: an overall 0-100 score/grade,
 /// a radar chart across six facets, and per-facet animated progress bars.

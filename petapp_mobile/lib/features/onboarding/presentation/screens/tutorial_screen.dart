@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:petapp_mobile/core/constants/app_colors.dart';
-import 'package:petapp_mobile/core/constants/app_strings.dart';
-import 'package:petapp_mobile/core/di/dependency_injection.dart';
-import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
-import 'package:petapp_mobile/core/utils/translator.dart';
-import 'package:petapp_mobile/core/widgets/cosmic_background.dart';
-import 'package:petapp_mobile/core/widgets/game_button.dart';
-import 'package:petapp_mobile/features/investment/presentation/screens/portfolio_choice_screen.dart';
+import 'package:petrimonium/core/constants/app_colors.dart';
+import 'package:petrimonium/core/constants/app_strings.dart';
+import 'package:petrimonium/core/di/dependency_injection.dart';
+import 'package:petrimonium/core/theme/app_color_tokens.dart';
+import 'package:petrimonium/core/utils/translator.dart';
+import 'package:petrimonium/core/widgets/cosmic_background.dart';
+import 'package:petrimonium/core/widgets/game_button.dart';
+import 'package:petrimonium/features/investment/presentation/screens/portfolio_choice_screen.dart';
 
 class _TutorialStep {
   const _TutorialStep({required this.icon, required this.titleKey, required this.bodyKey});

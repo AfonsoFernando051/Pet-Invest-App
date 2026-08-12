@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:petapp_mobile/core/constants/app_strings.dart';
-import 'package:petapp_mobile/core/di/dependency_injection.dart';
-import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
-import 'package:petapp_mobile/core/utils/translator.dart';
-import 'package:petapp_mobile/core/widgets/cosmic_background.dart';
-import 'package:petapp_mobile/core/widgets/game_button.dart';
-import 'package:petapp_mobile/features/academy/domain/entities/lesson.dart';
-import 'package:petapp_mobile/features/academy/domain/entities/lesson_step.dart';
-import 'package:petapp_mobile/features/academy/presentation/controllers/lesson_session_controller.dart';
-import 'package:petapp_mobile/features/academy/presentation/widgets/academy_progress_bar.dart';
-import 'package:petapp_mobile/features/academy/presentation/widgets/lesson_complete_card.dart';
-import 'package:petapp_mobile/features/academy/presentation/widgets/steps/choice_question_step_view.dart';
-import 'package:petapp_mobile/features/academy/presentation/widgets/steps/example_step_view.dart';
-import 'package:petapp_mobile/features/academy/presentation/widgets/steps/explanation_step_view.dart';
-import 'package:petapp_mobile/features/academy/presentation/widgets/steps/summary_step_view.dart';
-import 'package:petapp_mobile/features/pet/presentation/mascot/controllers/mascot_controller.dart';
+import 'package:petrimonium/core/constants/app_strings.dart';
+import 'package:petrimonium/core/di/dependency_injection.dart';
+import 'package:petrimonium/core/theme/app_color_tokens.dart';
+import 'package:petrimonium/core/utils/translator.dart';
+import 'package:petrimonium/core/widgets/cosmic_background.dart';
+import 'package:petrimonium/core/widgets/game_button.dart';
+import 'package:petrimonium/features/academy/domain/entities/lesson.dart';
+import 'package:petrimonium/features/academy/domain/entities/lesson_step.dart';
+import 'package:petrimonium/features/academy/presentation/controllers/lesson_session_controller.dart';
+import 'package:petrimonium/features/academy/presentation/widgets/academy_progress_bar.dart';
+import 'package:petrimonium/features/academy/presentation/widgets/lesson_complete_card.dart';
+import 'package:petrimonium/features/academy/presentation/widgets/steps/choice_question_step_view.dart';
+import 'package:petrimonium/features/academy/presentation/widgets/steps/example_step_view.dart';
+import 'package:petrimonium/features/academy/presentation/widgets/steps/explanation_step_view.dart';
+import 'package:petrimonium/features/academy/presentation/widgets/steps/summary_step_view.dart';
+import 'package:petrimonium/features/pet/presentation/mascot/controllers/mascot_controller.dart';
 
 /// The step player: one [LessonStep] at a time, a top progress bar, and a
 /// single "Continuar" action that only enables once a question step has an

@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:petapp_mobile/core/theme/app_theme.dart';
-import 'package:petapp_mobile/core/utils/translator.dart';
-import 'package:petapp_mobile/core/di/dependency_injection.dart';
-import 'package:petapp_mobile/features/auth/data/repositories/auth_repository.dart';
-import 'package:petapp_mobile/features/onboarding/data/models/onboarding_status_model.dart';
-import 'package:petapp_mobile/features/onboarding/data/models/question_model.dart';
-import 'package:petapp_mobile/features/onboarding/data/repositories/onboarding_repository.dart';
-import 'package:petapp_mobile/features/auth/presentation/screens/login_screen.dart';
-import 'package:petapp_mobile/features/auth/presentation/widgets/custom_text_field.dart';
-import 'package:petapp_mobile/features/auth/presentation/widgets/login_background.dart';
-import 'package:petapp_mobile/features/auth/presentation/widgets/login_button.dart';
-import 'package:petapp_mobile/features/auth/presentation/widgets/login_card.dart';
+import 'package:petrimonium/core/theme/app_theme.dart';
+import 'package:petrimonium/core/utils/translator.dart';
+import 'package:petrimonium/core/di/dependency_injection.dart';
+import 'package:petrimonium/features/auth/data/repositories/auth_repository.dart';
+import 'package:petrimonium/features/onboarding/data/models/onboarding_status_model.dart';
+import 'package:petrimonium/features/onboarding/data/models/question_model.dart';
+import 'package:petrimonium/features/onboarding/data/repositories/onboarding_repository.dart';
+import 'package:petrimonium/features/auth/presentation/screens/login_screen.dart';
+import 'package:petrimonium/features/auth/presentation/widgets/custom_text_field.dart';
+import 'package:petrimonium/features/auth/presentation/widgets/login_background.dart';
+import 'package:petrimonium/features/auth/presentation/widgets/login_button.dart';
+import 'package:petrimonium/features/auth/presentation/widgets/login_card.dart';
 
 class MockAuthRepository extends Mock implements AuthRepository {}
 

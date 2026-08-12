@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:petapp_mobile/core/constants/app_colors.dart';
-import 'package:petapp_mobile/features/portfolio/domain/entities/insight.dart';
-import 'package:petapp_mobile/features/portfolio/domain/entities/investment_type_display.dart';
-import 'package:petapp_mobile/features/portfolio/domain/entities/portfolio_stats.dart';
-import 'package:petapp_mobile/features/portfolio/domain/enums/insight_priority.dart';
+import 'package:petrimonium/core/constants/app_colors.dart';
+import 'package:petrimonium/features/portfolio/domain/entities/insight.dart';
+import 'package:petrimonium/features/portfolio/domain/entities/investment_type_display.dart';
+import 'package:petrimonium/features/portfolio/domain/entities/portfolio_stats.dart';
+import 'package:petrimonium/features/portfolio/domain/enums/insight_priority.dart';
 
 /// Generates rule-based "Portfolio Insights" cards from a real
 /// [PortfolioStats] snapshot. These are transparent, explainable rules over

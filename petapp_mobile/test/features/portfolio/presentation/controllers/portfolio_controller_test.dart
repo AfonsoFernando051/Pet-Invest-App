@@ -1,16 +1,16 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:petapp_mobile/features/academy/data/repositories/academy_progress_local_repository.dart';
-import 'package:petapp_mobile/features/investment/data/models/investment_type_enum.dart';
-import 'package:petapp_mobile/features/portfolio/data/datasources/portfolio_remote_datasource.dart';
-import 'package:petapp_mobile/features/portfolio/data/repositories/achievements_local_repository.dart';
-import 'package:petapp_mobile/features/portfolio/data/repositories/portfolio_repository.dart';
-import 'package:petapp_mobile/features/portfolio/domain/entities/allocation_slice.dart';
-import 'package:petapp_mobile/features/portfolio/domain/entities/dividend_event.dart';
-import 'package:petapp_mobile/features/portfolio/domain/entities/history_point.dart';
-import 'package:petapp_mobile/features/portfolio/domain/entities/holding.dart';
-import 'package:petapp_mobile/features/portfolio/domain/entities/portfolio_summary.dart';
-import 'package:petapp_mobile/features/portfolio/domain/enums/history_range.dart';
-import 'package:petapp_mobile/features/portfolio/presentation/controllers/portfolio_controller.dart';
+import 'package:petrimonium/features/academy/data/repositories/academy_progress_local_repository.dart';
+import 'package:petrimonium/features/investment/data/models/investment_type_enum.dart';
+import 'package:petrimonium/features/portfolio/data/datasources/portfolio_remote_datasource.dart';
+import 'package:petrimonium/features/portfolio/data/repositories/achievements_local_repository.dart';
+import 'package:petrimonium/features/portfolio/data/repositories/portfolio_repository.dart';
+import 'package:petrimonium/features/portfolio/domain/entities/allocation_slice.dart';
+import 'package:petrimonium/features/portfolio/domain/entities/dividend_event.dart';
+import 'package:petrimonium/features/portfolio/domain/entities/history_point.dart';
+import 'package:petrimonium/features/portfolio/domain/entities/holding.dart';
+import 'package:petrimonium/features/portfolio/domain/entities/portfolio_summary.dart';
+import 'package:petrimonium/features/portfolio/domain/enums/history_range.dart';
+import 'package:petrimonium/features/portfolio/presentation/controllers/portfolio_controller.dart';
 
 import '../../domain/services/portfolio_test_fixtures.dart';
 

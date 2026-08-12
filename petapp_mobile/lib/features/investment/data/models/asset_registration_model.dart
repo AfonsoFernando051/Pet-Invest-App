@@ -1,4 +1,4 @@
-import 'package:petapp_mobile/features/investment/data/models/investment_type_enum.dart';
+import 'package:petrimonium/features/investment/data/models/investment_type_enum.dart';
 
 class AssetRegistrationModel {
   final String name;

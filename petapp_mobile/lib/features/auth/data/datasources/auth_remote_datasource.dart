@@ -1,8 +1,8 @@
 import 'dart:convert';
-import 'package:petapp_mobile/core/network/api_client.dart';
-import 'package:petapp_mobile/core/network/api_error_parser.dart';
-import 'package:petapp_mobile/core/constants/api_constants.dart';
-import 'package:petapp_mobile/features/auth/data/models/user_model.dart';
+import 'package:petrimonium/core/network/api_client.dart';
+import 'package:petrimonium/core/network/api_error_parser.dart';
+import 'package:petrimonium/core/constants/api_constants.dart';
+import 'package:petrimonium/features/auth/data/models/user_model.dart';
 
 class AuthRemoteDataSource {
   final ApiClient apiClient;

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:petapp_mobile/features/investment/data/models/investment_type_enum.dart';
-import 'package:petapp_mobile/features/portfolio/domain/entities/mission.dart';
-import 'package:petapp_mobile/features/portfolio/domain/entities/portfolio_stats.dart';
-import 'package:petapp_mobile/features/portfolio/domain/services/passive_income_estimator.dart';
+import 'package:petrimonium/features/investment/data/models/investment_type_enum.dart';
+import 'package:petrimonium/features/portfolio/domain/entities/mission.dart';
+import 'package:petrimonium/features/portfolio/domain/entities/portfolio_stats.dart';
+import 'package:petrimonium/features/portfolio/domain/services/passive_income_estimator.dart';
 
 /// Resolves the fixed mission catalog against a real [PortfolioStats]
 /// snapshot. Missions are re-evaluated on every load (they're meant to be

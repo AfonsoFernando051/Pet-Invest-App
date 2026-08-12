@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
-import 'package:petapp_mobile/features/portfolio/domain/entities/holding.dart';
-import 'package:petapp_mobile/features/portfolio/domain/entities/investment_type_display.dart';
-import 'package:petapp_mobile/features/portfolio/presentation/widgets/asset_details_sheet.dart';
-import 'package:petapp_mobile/features/portfolio/presentation/widgets/shared/formatters.dart';
-import 'package:petapp_mobile/features/portfolio/presentation/widgets/shared/performance_badge.dart';
+import 'package:petrimonium/core/theme/app_color_tokens.dart';
+import 'package:petrimonium/features/portfolio/domain/entities/holding.dart';
+import 'package:petrimonium/features/portfolio/domain/entities/investment_type_display.dart';
+import 'package:petrimonium/features/portfolio/presentation/widgets/asset_details_sheet.dart';
+import 'package:petrimonium/features/portfolio/presentation/widgets/shared/formatters.dart';
+import 'package:petrimonium/features/portfolio/presentation/widgets/shared/performance_badge.dart';
 
 /// One holding row inside an [ExpandableCategory]. There's no logo CDN or
 /// company-name/fundamentals feed in this app's data model (the backend

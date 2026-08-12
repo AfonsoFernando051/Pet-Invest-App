@@ -1,7 +1,7 @@
-import 'package:petapp_mobile/features/pet/domain/entities/pet_profile.dart';
-import 'package:petapp_mobile/features/pet/domain/enums/accessory_type.dart';
-import 'package:petapp_mobile/features/pet/domain/enums/pet_accessory_id.dart';
-import 'package:petapp_mobile/features/pet/domain/enums/pet_evolution_stage.dart';
+import 'package:petrimonium/features/pet/domain/entities/pet_profile.dart';
+import 'package:petrimonium/features/pet/domain/enums/accessory_type.dart';
+import 'package:petrimonium/features/pet/domain/enums/pet_accessory_id.dart';
+import 'package:petrimonium/features/pet/domain/enums/pet_evolution_stage.dart';
 
 /// Persists the gamification side of the mascot: evolution stage, XP,
 /// net worth snapshot and equipped/unlocked accessories.

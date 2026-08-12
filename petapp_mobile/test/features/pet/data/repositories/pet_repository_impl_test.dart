@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:petapp_mobile/core/network/api_client.dart';
-import 'package:petapp_mobile/features/pet/data/datasources/pet_remote_datasource.dart';
-import 'package:petapp_mobile/features/pet/data/models/pet_specie_enum.dart';
-import 'package:petapp_mobile/features/pet/data/repositories/pet_repository_impl.dart';
+import 'package:petrimonium/core/network/api_client.dart';
+import 'package:petrimonium/features/pet/data/datasources/pet_remote_datasource.dart';
+import 'package:petrimonium/features/pet/data/models/pet_specie_enum.dart';
+import 'package:petrimonium/features/pet/data/repositories/pet_repository_impl.dart';
 
 // Mock class
 class MockPetRemoteDataSource extends PetRemoteDataSource {

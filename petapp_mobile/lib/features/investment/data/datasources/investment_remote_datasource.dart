@@ -1,6 +1,6 @@
 import 'dart:convert';
-import 'package:petapp_mobile/core/network/api_client.dart';
-import 'package:petapp_mobile/features/investment/data/models/asset_registration_model.dart';
+import 'package:petrimonium/core/network/api_client.dart';
+import 'package:petrimonium/features/investment/data/models/asset_registration_model.dart';
 
 class InvestmentRemoteDataSource {
   final ApiClient apiClient;

@@ -1,5 +1,5 @@
-import 'package:petapp_mobile/features/investment/data/datasources/investment_remote_datasource.dart';
-import 'package:petapp_mobile/features/investment/data/models/asset_registration_model.dart';
+import 'package:petrimonium/features/investment/data/datasources/investment_remote_datasource.dart';
+import 'package:petrimonium/features/investment/data/models/asset_registration_model.dart';
 
 class InvestmentRepository {
   final InvestmentRemoteDataSource remoteDataSource;

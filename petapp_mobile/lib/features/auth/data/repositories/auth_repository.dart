@@ -1,5 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:petapp_mobile/features/auth/data/datasources/auth_remote_datasource.dart';
+import 'package:petrimonium/features/auth/data/datasources/auth_remote_datasource.dart';
 
 class AuthRepository {
   final AuthRemoteDataSource remoteDataSource;

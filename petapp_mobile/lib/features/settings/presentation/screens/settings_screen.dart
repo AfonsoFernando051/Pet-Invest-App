@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:petapp_mobile/core/constants/app_colors.dart';
-import 'package:petapp_mobile/core/constants/app_strings.dart';
-import 'package:petapp_mobile/core/di/dependency_injection.dart';
-import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
-import 'package:petapp_mobile/core/utils/game_snack.dart';
-import 'package:petapp_mobile/core/utils/translator.dart';
-import 'package:petapp_mobile/core/widgets/cosmic_background.dart';
-import 'package:petapp_mobile/core/widgets/glass_card.dart';
-import 'package:petapp_mobile/core/widgets/app_loading_indicator.dart';
-import 'package:petapp_mobile/core/widgets/confirm_logout_dialog.dart';
-import 'package:petapp_mobile/features/auth/presentation/screens/login_screen.dart';
-import 'package:petapp_mobile/features/settings/presentation/widgets/appearance_section.dart';
+import 'package:petrimonium/core/constants/app_colors.dart';
+import 'package:petrimonium/core/constants/app_strings.dart';
+import 'package:petrimonium/core/di/dependency_injection.dart';
+import 'package:petrimonium/core/theme/app_color_tokens.dart';
+import 'package:petrimonium/core/utils/game_snack.dart';
+import 'package:petrimonium/core/utils/translator.dart';
+import 'package:petrimonium/core/widgets/cosmic_background.dart';
+import 'package:petrimonium/core/widgets/glass_card.dart';
+import 'package:petrimonium/core/widgets/app_loading_indicator.dart';
+import 'package:petrimonium/core/widgets/confirm_logout_dialog.dart';
+import 'package:petrimonium/features/auth/presentation/screens/login_screen.dart';
+import 'package:petrimonium/features/settings/presentation/widgets/appearance_section.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});

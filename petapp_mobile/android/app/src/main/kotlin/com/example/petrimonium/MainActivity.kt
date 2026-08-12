@@ -1,4 +1,4 @@
-package com.example.petapp_mobile
+package com.example.petrimonium
 
 import io.flutter.embedding.android.FlutterActivity
 

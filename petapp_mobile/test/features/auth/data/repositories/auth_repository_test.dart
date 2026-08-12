@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:petapp_mobile/features/auth/data/datasources/auth_remote_datasource.dart';
-import 'package:petapp_mobile/features/auth/data/repositories/auth_repository.dart';
-import 'package:petapp_mobile/features/auth/data/models/user_model.dart';
+import 'package:petrimonium/features/auth/data/datasources/auth_remote_datasource.dart';
+import 'package:petrimonium/features/auth/data/repositories/auth_repository.dart';
+import 'package:petrimonium/features/auth/data/models/user_model.dart';
 
 class MockAuthRemoteDataSource extends Mock implements AuthRemoteDataSource {}
 

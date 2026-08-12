@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:petapp_mobile/core/constants/app_colors.dart';
-import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
-import 'package:petapp_mobile/core/widgets/glass_card.dart';
-import 'package:petapp_mobile/features/pet/domain/entities/pet_evolution_rule.dart';
-import 'package:petapp_mobile/features/pet/domain/enums/pet_evolution_stage.dart';
-import 'package:petapp_mobile/features/pet/presentation/mascot/controllers/mascot_controller.dart';
-import 'package:petapp_mobile/features/pet/presentation/mascot/widgets/pet_mascot_widget.dart';
-import 'package:petapp_mobile/features/portfolio/domain/entities/portfolio_stats.dart';
-import 'package:petapp_mobile/features/portfolio/presentation/widgets/shared/formatters.dart';
-import 'package:petapp_mobile/features/portfolio/presentation/widgets/shared/section_label.dart';
+import 'package:petrimonium/core/constants/app_colors.dart';
+import 'package:petrimonium/core/theme/app_color_tokens.dart';
+import 'package:petrimonium/core/widgets/glass_card.dart';
+import 'package:petrimonium/features/pet/domain/entities/pet_evolution_rule.dart';
+import 'package:petrimonium/features/pet/domain/enums/pet_evolution_stage.dart';
+import 'package:petrimonium/features/pet/presentation/mascot/controllers/mascot_controller.dart';
+import 'package:petrimonium/features/pet/presentation/mascot/widgets/pet_mascot_widget.dart';
+import 'package:petrimonium/features/portfolio/domain/entities/portfolio_stats.dart';
+import 'package:petrimonium/features/portfolio/presentation/widgets/shared/formatters.dart';
+import 'package:petrimonium/features/portfolio/presentation/widgets/shared/section_label.dart';
 
 /// Where the portfolio directly powers the RPG layer: real net worth and
 /// achievement-earned XP (see `PortfolioController._evaluateGamification`)

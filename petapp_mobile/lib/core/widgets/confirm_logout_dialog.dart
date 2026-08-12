@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:petapp_mobile/core/constants/app_strings.dart';
-import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
-import 'package:petapp_mobile/core/utils/translator.dart';
+import 'package:petrimonium/core/constants/app_strings.dart';
+import 'package:petrimonium/core/theme/app_color_tokens.dart';
+import 'package:petrimonium/core/utils/translator.dart';
 
 /// The app's single logout-confirmation dialog, shown from both Dashboard
 /// and Settings. Centralizing it means there's exactly one place that needs

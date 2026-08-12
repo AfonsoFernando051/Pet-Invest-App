@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:petapp_mobile/core/constants/app_colors.dart';
-import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
-import 'package:petapp_mobile/core/widgets/glass_card.dart';
-import 'package:petapp_mobile/features/investment/data/models/investment_type_enum.dart';
-import 'package:petapp_mobile/features/portfolio/domain/entities/holding.dart';
-import 'package:petapp_mobile/features/portfolio/presentation/widgets/expandable_category.dart';
-import 'package:petapp_mobile/features/portfolio/presentation/widgets/shared/section_label.dart';
+import 'package:petrimonium/core/constants/app_colors.dart';
+import 'package:petrimonium/core/theme/app_color_tokens.dart';
+import 'package:petrimonium/core/widgets/glass_card.dart';
+import 'package:petrimonium/features/investment/data/models/investment_type_enum.dart';
+import 'package:petrimonium/features/portfolio/domain/entities/holding.dart';
+import 'package:petrimonium/features/portfolio/presentation/widgets/expandable_category.dart';
+import 'package:petrimonium/features/portfolio/presentation/widgets/shared/section_label.dart';
 
 /// Groups holdings by category (Investidor10-inspired usability): each
 /// category is collapsible and shows aggregate stats in its header.

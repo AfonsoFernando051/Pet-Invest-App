@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:petapp_mobile/core/constants/app_colors.dart';
-import 'package:petapp_mobile/core/di/dependency_injection.dart';
-import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
-import 'package:petapp_mobile/features/asset_details/domain/entities/asset_data_status.dart';
-import 'package:petapp_mobile/features/asset_details/presentation/controllers/asset_details_controller.dart';
-import 'package:petapp_mobile/features/asset_details/presentation/widgets/asset_education_section.dart';
-import 'package:petapp_mobile/features/asset_details/presentation/widgets/asset_header.dart';
-import 'package:petapp_mobile/features/asset_details/presentation/widgets/concentration_warning.dart';
-import 'package:petapp_mobile/features/asset_details/presentation/widgets/dividend_history_section.dart';
-import 'package:petapp_mobile/features/asset_details/presentation/widgets/key_indicators_section.dart';
-import 'package:petapp_mobile/features/asset_details/presentation/widgets/pet_teacher_widget.dart';
-import 'package:petapp_mobile/features/asset_details/presentation/widgets/portfolio_context_card.dart';
-import 'package:petapp_mobile/features/asset_details/presentation/widgets/user_position_card.dart';
-import 'package:petapp_mobile/features/portfolio/domain/entities/holding.dart';
+import 'package:petrimonium/core/constants/app_colors.dart';
+import 'package:petrimonium/core/di/dependency_injection.dart';
+import 'package:petrimonium/core/theme/app_color_tokens.dart';
+import 'package:petrimonium/features/asset_details/domain/entities/asset_data_status.dart';
+import 'package:petrimonium/features/asset_details/presentation/controllers/asset_details_controller.dart';
+import 'package:petrimonium/features/asset_details/presentation/widgets/asset_education_section.dart';
+import 'package:petrimonium/features/asset_details/presentation/widgets/asset_header.dart';
+import 'package:petrimonium/features/asset_details/presentation/widgets/concentration_warning.dart';
+import 'package:petrimonium/features/asset_details/presentation/widgets/dividend_history_section.dart';
+import 'package:petrimonium/features/asset_details/presentation/widgets/key_indicators_section.dart';
+import 'package:petrimonium/features/asset_details/presentation/widgets/pet_teacher_widget.dart';
+import 'package:petrimonium/features/asset_details/presentation/widgets/portfolio_context_card.dart';
+import 'package:petrimonium/features/asset_details/presentation/widgets/user_position_card.dart';
+import 'package:petrimonium/features/portfolio/domain/entities/holding.dart';
 
 /// Full-screen asset details page — the core of the Real Asset Intelligence
 /// feature. Replaces the previous [AssetDetailsSheet] bottom sheet with a

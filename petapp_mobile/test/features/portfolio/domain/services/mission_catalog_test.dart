@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:petapp_mobile/features/investment/data/models/investment_type_enum.dart';
-import 'package:petapp_mobile/features/portfolio/domain/entities/portfolio_stats.dart';
-import 'package:petapp_mobile/features/portfolio/domain/services/mission_catalog.dart';
+import 'package:petrimonium/features/investment/data/models/investment_type_enum.dart';
+import 'package:petrimonium/features/portfolio/domain/entities/portfolio_stats.dart';
+import 'package:petrimonium/features/portfolio/domain/services/mission_catalog.dart';
 
 import 'portfolio_test_fixtures.dart';
 

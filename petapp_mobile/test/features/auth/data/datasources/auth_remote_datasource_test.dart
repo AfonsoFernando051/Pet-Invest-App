@@ -2,10 +2,10 @@ import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:mocktail/mocktail.dart';
-import 'package:petapp_mobile/core/network/api_client.dart';
-import 'package:petapp_mobile/core/constants/api_constants.dart';
-import 'package:petapp_mobile/features/auth/data/datasources/auth_remote_datasource.dart';
-import 'package:petapp_mobile/features/auth/data/models/user_model.dart';
+import 'package:petrimonium/core/network/api_client.dart';
+import 'package:petrimonium/core/constants/api_constants.dart';
+import 'package:petrimonium/features/auth/data/datasources/auth_remote_datasource.dart';
+import 'package:petrimonium/features/auth/data/models/user_model.dart';
 
 class MockApiClient extends Mock implements ApiClient {}
 

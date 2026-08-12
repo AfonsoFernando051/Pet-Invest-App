@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:petapp_mobile/core/utils/pet_assets.dart';
+import 'package:petrimonium/core/utils/pet_assets.dart';
 
 void main() {
   group('PetAssets.imageFor', () {

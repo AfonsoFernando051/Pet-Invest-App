@@ -1,12 +1,12 @@
 import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:petapp_mobile/core/utils/translator.dart';
-import 'package:petapp_mobile/features/mentor/data/datasources/mentor_remote_datasource.dart';
-import 'package:petapp_mobile/features/mentor/domain/entities/chat_message.dart';
-import 'package:petapp_mobile/features/pet/data/models/investment_horizon_enum.dart';
-import 'package:petapp_mobile/features/pet/data/models/pet_goal_enum.dart';
-import 'package:petapp_mobile/features/pet/data/repositories/pet_preferences_repository.dart';
+import 'package:petrimonium/core/utils/translator.dart';
+import 'package:petrimonium/features/mentor/data/datasources/mentor_remote_datasource.dart';
+import 'package:petrimonium/features/mentor/domain/entities/chat_message.dart';
+import 'package:petrimonium/features/pet/data/models/investment_horizon_enum.dart';
+import 'package:petrimonium/features/pet/data/models/pet_goal_enum.dart';
+import 'package:petrimonium/features/pet/data/repositories/pet_preferences_repository.dart';
 
 /// One repository facade (mirrors `PortfolioRepository`'s single-class-per-
 /// feature style): sends messages to the backend, and persists the running

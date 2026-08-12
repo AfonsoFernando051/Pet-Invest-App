@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:petapp_mobile/core/constants/app_colors.dart';
-import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
-import 'package:petapp_mobile/core/widgets/app_loading_indicator.dart';
-import 'package:petapp_mobile/core/widgets/glass_card.dart';
-import 'package:petapp_mobile/features/portfolio/domain/entities/dividend_event.dart';
-import 'package:petapp_mobile/features/portfolio/presentation/widgets/dividend_event_tile.dart';
-import 'package:petapp_mobile/features/portfolio/presentation/widgets/shared/section_label.dart';
+import 'package:petrimonium/core/constants/app_colors.dart';
+import 'package:petrimonium/core/theme/app_color_tokens.dart';
+import 'package:petrimonium/core/widgets/app_loading_indicator.dart';
+import 'package:petrimonium/core/widgets/glass_card.dart';
+import 'package:petrimonium/features/portfolio/domain/entities/dividend_event.dart';
+import 'package:petrimonium/features/portfolio/presentation/widgets/dividend_event_tile.dart';
+import 'package:petrimonium/features/portfolio/presentation/widgets/shared/section_label.dart';
 
 /// "Radar de Dividendos" — real, provider-confirmed dividend/JCP/yield
 /// payments for the user's real holdings (contrast with the "estimated"

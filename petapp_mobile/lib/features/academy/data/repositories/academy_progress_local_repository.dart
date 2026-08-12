@@ -1,5 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:petapp_mobile/features/academy/domain/services/academy_catalog.dart';
+import 'package:petrimonium/features/academy/domain/services/academy_catalog.dart';
 
 /// Persists completed Academy lesson ids on-device. Mirrors
 /// `AchievementsLocalRepository`'s style exactly: entries are only ever

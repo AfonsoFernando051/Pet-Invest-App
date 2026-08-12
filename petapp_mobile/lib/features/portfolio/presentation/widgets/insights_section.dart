@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:petapp_mobile/features/portfolio/domain/entities/insight.dart';
-import 'package:petapp_mobile/features/portfolio/presentation/widgets/insight_card_widget.dart';
-import 'package:petapp_mobile/features/portfolio/presentation/widgets/shared/section_label.dart';
+import 'package:petrimonium/features/portfolio/domain/entities/insight.dart';
+import 'package:petrimonium/features/portfolio/presentation/widgets/insight_card_widget.dart';
+import 'package:petrimonium/features/portfolio/presentation/widgets/shared/section_label.dart';
 
 class InsightsSection extends StatelessWidget {
   const InsightsSection({super.key, required this.insights});

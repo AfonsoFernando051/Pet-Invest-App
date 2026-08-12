@@ -1,6 +1,6 @@
-import 'package:petapp_mobile/features/academy/domain/entities/academy_module.dart';
-import 'package:petapp_mobile/features/academy/domain/entities/lesson.dart';
-import 'package:petapp_mobile/features/academy/domain/services/academy_catalog.dart';
+import 'package:petrimonium/features/academy/domain/entities/academy_module.dart';
+import 'package:petrimonium/features/academy/domain/entities/lesson.dart';
+import 'package:petrimonium/features/academy/domain/services/academy_catalog.dart';
 
 enum LessonStatus { locked, available, completed }
 

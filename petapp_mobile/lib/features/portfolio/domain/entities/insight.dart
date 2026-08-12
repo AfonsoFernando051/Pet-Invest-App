@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:petapp_mobile/features/portfolio/domain/enums/insight_priority.dart';
+import 'package:petrimonium/features/portfolio/domain/enums/insight_priority.dart';
 
 /// A single "Portfolio Insight" card — a rule-based observation derived
 /// from the user's real holdings/allocation/history (see

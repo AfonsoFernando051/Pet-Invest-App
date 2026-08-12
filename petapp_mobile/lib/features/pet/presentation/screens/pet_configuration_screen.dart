@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:petapp_mobile/core/constants/app_colors.dart';
-import 'package:petapp_mobile/core/constants/app_strings.dart';
-import 'package:petapp_mobile/core/di/dependency_injection.dart';
-import 'package:petapp_mobile/core/utils/friendly_error_message.dart';
-import 'package:petapp_mobile/core/utils/game_snack.dart';
-import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
-import 'package:petapp_mobile/core/utils/pet_assets.dart';
-import 'package:petapp_mobile/core/utils/translator.dart';
-import 'package:petapp_mobile/features/pet/data/models/pet_specie_enum.dart';
-import 'package:petapp_mobile/features/pet/presentation/screens/financial_goal_screen.dart';
-import 'package:petapp_mobile/core/widgets/glass_card.dart';
+import 'package:petrimonium/core/constants/app_colors.dart';
+import 'package:petrimonium/core/constants/app_strings.dart';
+import 'package:petrimonium/core/di/dependency_injection.dart';
+import 'package:petrimonium/core/utils/friendly_error_message.dart';
+import 'package:petrimonium/core/utils/game_snack.dart';
+import 'package:petrimonium/core/theme/app_color_tokens.dart';
+import 'package:petrimonium/core/utils/pet_assets.dart';
+import 'package:petrimonium/core/utils/translator.dart';
+import 'package:petrimonium/features/pet/data/models/pet_specie_enum.dart';
+import 'package:petrimonium/features/pet/presentation/screens/financial_goal_screen.dart';
+import 'package:petrimonium/core/widgets/glass_card.dart';
 
 /// Onboarding's "Configure Your Pet" step — the pet introduces itself, and
 /// the player picks its species and name together in one screen right

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
+import 'package:petrimonium/core/theme/app_color_tokens.dart';
 
 /// Utility for themed, branded snack bars.
 /// Replaces all raw ScaffoldMessenger.showSnackBar calls.

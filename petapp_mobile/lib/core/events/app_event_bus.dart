@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:petapp_mobile/core/events/app_event.dart';
+import 'package:petrimonium/core/events/app_event.dart';
 
 /// The connective tissue between the Financial Engine, Game Engine and
 /// (future) Character Engine: financial/game logic emits an [AppEvent] here

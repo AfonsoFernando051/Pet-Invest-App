@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:petapp_mobile/core/constants/app_colors.dart';
+import 'package:petrimonium/core/constants/app_colors.dart';
 
 /// Centralized semantic design tokens. Every screen/widget should read
 /// intent through these (via `context.colors`) instead of a literal color —

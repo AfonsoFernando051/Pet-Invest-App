@@ -1,7 +1,7 @@
-import 'package:petapp_mobile/features/asset_details/domain/entities/asset_details.dart';
-import 'package:petapp_mobile/features/asset_details/domain/entities/asset_indicator.dart';
-import 'package:petapp_mobile/features/asset_details/domain/entities/educational_explanation.dart';
-import 'package:petapp_mobile/features/portfolio/presentation/widgets/shared/formatters.dart';
+import 'package:petrimonium/features/asset_details/domain/entities/asset_details.dart';
+import 'package:petrimonium/features/asset_details/domain/entities/asset_indicator.dart';
+import 'package:petrimonium/features/asset_details/domain/entities/educational_explanation.dart';
+import 'package:petrimonium/features/portfolio/presentation/widgets/shared/formatters.dart';
 
 /// Static catalog of indicator explanations and asset-type-aware indicator
 /// builders. This is educational content — not market data — so it's

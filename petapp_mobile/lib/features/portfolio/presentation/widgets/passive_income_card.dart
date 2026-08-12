@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:petapp_mobile/core/constants/app_colors.dart';
-import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
-import 'package:petapp_mobile/core/widgets/glass_card.dart';
-import 'package:petapp_mobile/features/portfolio/domain/entities/investment_type_display.dart';
-import 'package:petapp_mobile/features/portfolio/domain/entities/passive_income_estimate.dart';
-import 'package:petapp_mobile/features/portfolio/presentation/widgets/shared/formatters.dart';
-import 'package:petapp_mobile/features/portfolio/presentation/widgets/shared/section_label.dart';
+import 'package:petrimonium/core/constants/app_colors.dart';
+import 'package:petrimonium/core/theme/app_color_tokens.dart';
+import 'package:petrimonium/core/widgets/glass_card.dart';
+import 'package:petrimonium/features/portfolio/domain/entities/investment_type_display.dart';
+import 'package:petrimonium/features/portfolio/domain/entities/passive_income_estimate.dart';
+import 'package:petrimonium/features/portfolio/presentation/widgets/shared/formatters.dart';
+import 'package:petrimonium/features/portfolio/presentation/widgets/shared/section_label.dart';
 
 /// "Passive Income" section. No real dividend/coupon payment feed exists
 /// anywhere in this system (see `PassiveIncomeEstimator`), so this is a

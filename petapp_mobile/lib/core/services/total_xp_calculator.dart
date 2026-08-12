@@ -1,6 +1,6 @@
-import 'package:petapp_mobile/features/academy/data/repositories/academy_progress_local_repository.dart';
-import 'package:petapp_mobile/features/portfolio/data/repositories/achievements_local_repository.dart';
-import 'package:petapp_mobile/features/portfolio/domain/services/achievement_catalog.dart';
+import 'package:petrimonium/features/academy/data/repositories/academy_progress_local_repository.dart';
+import 'package:petrimonium/features/portfolio/data/repositories/achievements_local_repository.dart';
+import 'package:petrimonium/features/portfolio/domain/services/achievement_catalog.dart';
 
 /// The single place that composes total game XP from every source that
 /// grants it (achievements, Academy lessons, …), so

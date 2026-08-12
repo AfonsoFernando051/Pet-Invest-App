@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
-import 'package:petapp_mobile/core/network/api_error_parser.dart';
+import 'package:petrimonium/core/network/api_error_parser.dart';
 
 http.Response _jsonResponse(Map<String, dynamic> body, int statusCode) {
   return http.Response(jsonEncode(body), statusCode);

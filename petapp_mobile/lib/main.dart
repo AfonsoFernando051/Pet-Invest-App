@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:petapp_mobile/core/constants/app_colors.dart';
-import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
-import 'package:petapp_mobile/core/theme/app_theme.dart';
-import 'package:petapp_mobile/core/theme/theme_controller.dart';
-import 'package:petapp_mobile/core/di/dependency_injection.dart';
-import 'package:petapp_mobile/core/navigation/start_route_resolver.dart';
-import 'package:petapp_mobile/core/utils/translator.dart';
-import 'package:petapp_mobile/features/auth/presentation/screens/login_screen.dart';
-import 'package:petapp_mobile/features/dashboard/presentation/screens/dashboard_screen.dart';
-import 'package:petapp_mobile/features/investment/presentation/screens/portfolio_choice_screen.dart';
-import 'package:petapp_mobile/features/onboarding/presentation/screens/tutorial_screen.dart';
-import 'package:petapp_mobile/features/pet/presentation/screens/financial_goal_screen.dart';
-import 'package:petapp_mobile/features/pet/presentation/screens/pet_configuration_screen.dart';
+import 'package:petrimonium/core/constants/app_colors.dart';
+import 'package:petrimonium/core/theme/app_color_tokens.dart';
+import 'package:petrimonium/core/theme/app_theme.dart';
+import 'package:petrimonium/core/theme/theme_controller.dart';
+import 'package:petrimonium/core/di/dependency_injection.dart';
+import 'package:petrimonium/core/navigation/start_route_resolver.dart';
+import 'package:petrimonium/core/utils/translator.dart';
+import 'package:petrimonium/features/auth/presentation/screens/login_screen.dart';
+import 'package:petrimonium/features/dashboard/presentation/screens/dashboard_screen.dart';
+import 'package:petrimonium/features/investment/presentation/screens/portfolio_choice_screen.dart';
+import 'package:petrimonium/features/onboarding/presentation/screens/tutorial_screen.dart';
+import 'package:petrimonium/features/pet/presentation/screens/financial_goal_screen.dart';
+import 'package:petrimonium/features/pet/presentation/screens/pet_configuration_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

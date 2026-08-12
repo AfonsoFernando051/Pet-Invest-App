@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
-import 'package:petapp_mobile/features/investment/data/models/investment_type_enum.dart';
-import 'package:petapp_mobile/features/portfolio/domain/entities/holding.dart';
-import 'package:petapp_mobile/features/portfolio/domain/entities/investment_type_display.dart';
-import 'package:petapp_mobile/features/portfolio/presentation/widgets/asset_row.dart';
-import 'package:petapp_mobile/features/portfolio/presentation/widgets/shared/performance_badge.dart';
+import 'package:petrimonium/core/theme/app_color_tokens.dart';
+import 'package:petrimonium/features/investment/data/models/investment_type_enum.dart';
+import 'package:petrimonium/features/portfolio/domain/entities/holding.dart';
+import 'package:petrimonium/features/portfolio/domain/entities/investment_type_display.dart';
+import 'package:petrimonium/features/portfolio/presentation/widgets/asset_row.dart';
+import 'package:petrimonium/features/portfolio/presentation/widgets/shared/performance_badge.dart';
 
 /// A collapsible category (Ações/FIIs/ETFs/Cripto/...) inside Holdings,
 /// showing an aggregate header and expanding to its individual [AssetRow]s.

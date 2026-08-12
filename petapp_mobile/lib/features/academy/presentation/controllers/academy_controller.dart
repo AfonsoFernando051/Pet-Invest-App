@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
-import 'package:petapp_mobile/features/academy/data/repositories/academy_progress_local_repository.dart';
-import 'package:petapp_mobile/features/academy/domain/entities/academy_module.dart';
-import 'package:petapp_mobile/features/academy/domain/entities/lesson.dart';
-import 'package:petapp_mobile/features/academy/domain/services/academy_catalog.dart';
-import 'package:petapp_mobile/features/academy/domain/services/academy_progress_calculator.dart';
+import 'package:petrimonium/features/academy/data/repositories/academy_progress_local_repository.dart';
+import 'package:petrimonium/features/academy/domain/entities/academy_module.dart';
+import 'package:petrimonium/features/academy/domain/entities/lesson.dart';
+import 'package:petrimonium/features/academy/domain/services/academy_catalog.dart';
+import 'package:petrimonium/features/academy/domain/services/academy_progress_calculator.dart';
 
 /// Owns the Academy module list / overview state: loads persisted progress
 /// and exposes derived status per module/lesson. Mirrors `PortfolioController`
