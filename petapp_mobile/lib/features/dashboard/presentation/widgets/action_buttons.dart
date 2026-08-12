@@ -2,14 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/game_button.dart';
-import '../../../academy/presentation/screens/academy_home_screen.dart';
 import '../../../investment/presentation/screens/investment_configuration_screen.dart';
-import '../../../pet/presentation/mascot/controllers/mascot_controller.dart';
 
 class ActionButtons extends StatelessWidget {
-  const ActionButtons({super.key, required this.mascotController});
+  const ActionButtons({super.key, required this.onTrainTap});
 
-  final MascotController mascotController;
+  /// Switches Home to the Academia tab — kept as a callback (like
+  /// `SuggestedActionsList.onLearnDividends`) rather than this widget
+  /// navigating itself, since Academia is a bottom-nav tab now, not a
+  /// pushed screen.
+  final VoidCallback onTrainTap;
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +36,7 @@ class ActionButtons extends StatelessWidget {
         ),
         const SizedBox(width: 10),
 
-        // Secondary CTA — Treinar / Analisar: entry point into the Academy.
+        // Secondary CTA — Treinar / Aprender: switches to the Academia tab.
         Expanded(
           child: _buildSecondaryButton(
             context,
@@ -43,12 +45,7 @@ class ActionButtons extends StatelessWidget {
             icon: Icons.menu_book_outlined,
             onTap: () {
               HapticFeedback.lightImpact();
-              Navigator.of(context).push(
-                _fadeRoute(
-                  AcademyHomeScreen(mascotController: mascotController),
-                  name: 'academy_home',
-                ),
-              );
+              onTrainTap();
             },
           ),
         ),
@@ -193,9 +190,8 @@ class ActionButtons extends StatelessWidget {
     );
   }
 
-  Route _fadeRoute(Widget page, {String? name}) {
+  Route _fadeRoute(Widget page) {
     return PageRouteBuilder(
-      settings: RouteSettings(name: name),
       pageBuilder: (context, animation, secondaryAnimation) => page,
       transitionsBuilder: (context, animation, secondaryAnimation, child) => FadeTransition(
         opacity: animation,

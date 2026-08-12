@@ -4,7 +4,6 @@ import 'package:petapp_mobile/core/constants/app_colors.dart';
 import 'package:petapp_mobile/core/di/dependency_injection.dart';
 import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
 import 'package:petapp_mobile/core/widgets/app_loading_indicator.dart';
-import 'package:petapp_mobile/core/widgets/cosmic_background.dart';
 import 'package:petapp_mobile/core/widgets/game_button.dart';
 import 'package:petapp_mobile/core/widgets/glass_card.dart';
 import 'package:petapp_mobile/features/academy/domain/entities/academy_module.dart';
@@ -16,10 +15,15 @@ import 'package:petapp_mobile/features/academy/presentation/widgets/module_card.
 import 'package:petapp_mobile/features/game/domain/services/level_calculator.dart';
 import 'package:petapp_mobile/features/pet/presentation/mascot/controllers/mascot_controller.dart';
 
-/// The Academy's home: current level, an unmissable "what's next" CTA, and
+/// The "Academia" tab: current level, an unmissable "what's next" CTA, and
 /// the module list — the answer to "what should I learn next?" is always on
-/// screen (see `docs/ACADEMY_ENGINE.md` §5). Reached from Home's "Treinar"
-/// button, previously a stub.
+/// screen (see `docs/ACADEMY_ENGINE.md` §5).
+///
+/// No own `Scaffold`/`AppBar`/background — like `PortfolioScreen` and
+/// `MentorScreen`, this is embedded directly in `DashboardScreen`'s shared
+/// `Scaffold`/`AppBar`/`CosmicBackground`/`IndexedStack`. Module detail and
+/// individual lessons remain separately pushed screens (they need their own
+/// back navigation); only the top-level tab content lives here.
 class AcademyHomeScreen extends StatefulWidget {
   const AcademyHomeScreen({super.key, required this.mascotController});
 
@@ -87,57 +91,42 @@ class _AcademyHomeScreenState extends State<AcademyHomeScreen> {
     final tokens = context.colors;
     final level = LevelCalculator.fromXp(widget.mascotController.profile.xp);
 
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        title: Text('Academia', style: TextStyle(color: tokens.textPrimary, fontWeight: FontWeight.bold)),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: tokens.textPrimary),
-          onPressed: () {
-            if (Navigator.canPop(context)) Navigator.pop(context);
-          },
-        ),
-      ),
-      body: CosmicBackground(
-        child: SafeArea(
-          child: _controller.isLoading
-              ? const AppLoadingIndicator()
-              : RefreshIndicator(
-                  color: tokens.primary,
-                  backgroundColor: tokens.surfaceElevated,
-                  onRefresh: _controller.load,
-                  child: SingleChildScrollView(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        _buildLevelHeader(context, level.level),
-                        const SizedBox(height: 20),
-                        if (_controller.nextLesson != null) ...[
-                          _buildContinueCard(context, _controller.nextLesson!),
-                          const SizedBox(height: 24),
-                        ],
-                        Text(
-                          'MÓDULOS',
-                          style: TextStyle(color: tokens.primary.withValues(alpha: 0.6), fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: 2),
-                        ),
-                        const SizedBox(height: 10),
-                        for (final module in _controller.modules) ...[
-                          ModuleCard(
-                            module: module,
-                            status: _controller.statusFor(module),
-                            completedLessons: _controller.completedLessonCountFor(module),
-                            onTap: () => _openModule(module),
-                          ),
-                          const SizedBox(height: 12),
-                        ],
-                      ],
-                    ),
-                  ),
-                ),
+    if (_controller.isLoading) {
+      return const AppLoadingIndicator();
+    }
+
+    return RefreshIndicator(
+      color: tokens.primary,
+      backgroundColor: tokens.surfaceElevated,
+      onRefresh: _controller.load,
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _buildLevelHeader(context, level.level),
+            const SizedBox(height: 20),
+            if (_controller.nextLesson != null) ...[
+              _buildContinueCard(context, _controller.nextLesson!),
+              const SizedBox(height: 24),
+            ],
+            Text(
+              'MÓDULOS',
+              style: TextStyle(color: tokens.primary.withValues(alpha: 0.6), fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: 2),
+            ),
+            const SizedBox(height: 10),
+            for (final module in _controller.modules) ...[
+              ModuleCard(
+                module: module,
+                status: _controller.statusFor(module),
+                completedLessons: _controller.completedLessonCountFor(module),
+                onTap: () => _openModule(module),
+              ),
+              const SizedBox(height: 12),
+            ],
+            const SizedBox(height: 20),
+          ],
         ),
       ),
     );

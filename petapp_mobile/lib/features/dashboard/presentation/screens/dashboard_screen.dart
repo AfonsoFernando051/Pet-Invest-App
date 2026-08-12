@@ -150,9 +150,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   // ── Page route helper ─────────────────────────────────────────────────────
-  Route _fadeRoute(Widget page, {String? name}) {
+  Route _fadeRoute(Widget page) {
     return PageRouteBuilder(
-      settings: RouteSettings(name: name),
       pageBuilder: (context, animation, secondaryAnimation) => page,
       transitionsBuilder: (context, animation, secondaryAnimation, child) => FadeTransition(
         opacity: animation,
@@ -225,6 +224,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   _buildHomeContent(),
                   _buildWalletContent(),
                   _buildPassiveIncomeContent(),
+                  _buildAcademyContent(),
                   _buildMentorContent(),
                 ],
               ),
@@ -382,9 +382,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               const SizedBox(height: 8),
               SuggestedActionsList(
                 onLearnDividends: () => setState(() => _selectedIndex = 2),
-                onOpenAcademy: () => Navigator.of(context).push(
-                  _fadeRoute(AcademyHomeScreen(mascotController: _mascotController), name: 'academy_home'),
-                ),
+                onOpenAcademy: () => setState(() => _selectedIndex = 3),
                 showInvestorProfileAction: _investorProfileUnanswered,
               ),
               const SizedBox(height: 16),
@@ -406,7 +404,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
             _buildSectionLabel('AÇÕES RÁPIDAS'),
             const SizedBox(height: 8),
-            ActionButtons(mascotController: _mascotController),
+            ActionButtons(onTrainTap: () => setState(() => _selectedIndex = 3)),
             const SizedBox(height: 16),
 
             MissionsAchievementsSection(
@@ -440,6 +438,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
   // ── Proventos / Passive Income ────────────────────────────────────────────
   Widget _buildPassiveIncomeContent() {
     return PassiveIncomeScreen(controller: _portfolioController);
+  }
+
+  // ── Academia: module/lesson progression (see docs/ACADEMY_ENGINE.md) ────
+  Widget _buildAcademyContent() {
+    return AcademyHomeScreen(mascotController: _mascotController);
   }
 
   // ── Mentor: AI-powered chat with the pet acting as investment mentor ────
@@ -529,6 +532,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
             icon: Icon(Icons.payments_outlined),
             activeIcon: Icon(Icons.payments),
             label: 'Proventos',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.school_outlined),
+            activeIcon: Icon(Icons.school),
+            label: 'Academia',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.auto_awesome_outlined),

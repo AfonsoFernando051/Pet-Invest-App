@@ -54,9 +54,11 @@ class _LessonScreenState extends State<LessonScreen> {
     super.dispose();
   }
 
+  // Academia is a bottom-nav tab living on the Dashboard's root route (its
+  // `IndexedStack` keeps the tab's own state, `_selectedIndex`, alive) —
+  // "back to Academia" is just "pop every pushed screen back to that root".
   void _backToAcademy() {
-    final navigator = Navigator.of(context);
-    navigator.popUntil((route) => route.settings.name == 'academy_home' || route.isFirst);
+    Navigator.of(context).popUntil((route) => route.isFirst);
   }
 
   @override
