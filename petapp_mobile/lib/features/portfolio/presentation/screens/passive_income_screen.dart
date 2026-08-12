@@ -5,6 +5,7 @@ import 'package:petapp_mobile/core/widgets/app_loading_indicator.dart';
 import 'package:petapp_mobile/features/portfolio/presentation/controllers/portfolio_controller.dart';
 import 'package:petapp_mobile/features/portfolio/presentation/widgets/dividend_radar_section.dart';
 import 'package:petapp_mobile/features/portfolio/presentation/widgets/passive_income_card.dart';
+import 'package:petapp_mobile/features/portfolio/presentation/widgets/proventos_evolution_bar_card.dart';
 import 'package:petapp_mobile/features/portfolio/presentation/widgets/shared/error_banner.dart';
 import 'package:petapp_mobile/features/portfolio/presentation/widgets/shared/section_label.dart';
 
@@ -58,6 +59,8 @@ class _PassiveIncomeScreenState extends State<PassiveIncomeScreen> {
               ErrorBanner(onRetry: controller.refresh),
               const SizedBox(height: 12),
             ],
+            ProventosEvolutionBarCard(radar: controller.dividendRadar),
+            const SizedBox(height: 16),
             DividendRadarSection(
               isLoading: controller.isDividendRadarLoading,
               error: controller.dividendRadarError,
