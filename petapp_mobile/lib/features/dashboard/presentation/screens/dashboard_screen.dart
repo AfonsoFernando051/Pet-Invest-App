@@ -14,6 +14,7 @@ import '../../../../core/widgets/glass_card.dart';
 import '../../../../core/di/dependency_injection.dart';
 import '../../../../core/events/app_event.dart';
 import '../../../../core/events/app_event_bus.dart';
+import '../../../academy/presentation/screens/academy_home_screen.dart';
 import '../../../auth/presentation/screens/login_screen.dart';
 import '../../../game/domain/services/level_calculator.dart';
 import '../../../pet/presentation/mascot/controllers/mascot_controller.dart';
@@ -149,8 +150,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   // ── Page route helper ─────────────────────────────────────────────────────
-  Route _fadeRoute(Widget page) {
+  Route _fadeRoute(Widget page, {String? name}) {
     return PageRouteBuilder(
+      settings: RouteSettings(name: name),
       pageBuilder: (context, animation, secondaryAnimation) => page,
       transitionsBuilder: (context, animation, secondaryAnimation, child) => FadeTransition(
         opacity: animation,
@@ -380,6 +382,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
               const SizedBox(height: 8),
               SuggestedActionsList(
                 onLearnDividends: () => setState(() => _selectedIndex = 2),
+                onOpenAcademy: () => Navigator.of(context).push(
+                  _fadeRoute(AcademyHomeScreen(mascotController: _mascotController), name: 'academy_home'),
+                ),
                 showInvestorProfileAction: _investorProfileUnanswered,
               ),
               const SizedBox(height: 16),
@@ -401,7 +406,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
             _buildSectionLabel('AÇÕES RÁPIDAS'),
             const SizedBox(height: 8),
-            const ActionButtons(),
+            ActionButtons(mascotController: _mascotController),
             const SizedBox(height: 16),
 
             MissionsAchievementsSection(

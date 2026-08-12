@@ -1,0 +1,43 @@
+import 'package:flutter/material.dart';
+import 'package:petapp_mobile/core/constants/app_colors.dart';
+import 'package:petapp_mobile/core/theme/app_color_tokens.dart';
+
+/// A generic animated gradient progress bar — same visual language as
+/// `PortfolioProgressBar`, kept separate since that widget's label copy is
+/// specific to portfolio onboarding, not reusable as-is for lesson/module
+/// progress.
+class AcademyProgressBar extends StatelessWidget {
+  const AcademyProgressBar({super.key, required this.progress, this.height = 8});
+
+  final double progress;
+  final double height;
+
+  @override
+  Widget build(BuildContext context) {
+    final tokens = context.colors;
+    final clamped = progress.clamp(0.0, 1.0);
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(height),
+      child: Stack(
+        children: [
+          Container(height: height, color: tokens.textPrimary.withValues(alpha: 0.08)),
+          TweenAnimationBuilder<double>(
+            tween: Tween(begin: 0, end: clamped),
+            duration: const Duration(milliseconds: 400),
+            curve: Curves.easeOutCubic,
+            builder: (context, value, _) => FractionallySizedBox(
+              widthFactor: value,
+              child: Container(
+                height: height,
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(colors: [AppColors.neonViolet, AppColors.neonCyan]),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

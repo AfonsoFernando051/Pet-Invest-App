@@ -159,6 +159,16 @@ Deliver:
 
 ---
 
+## Academy (Learning Content)
+
+Priority: Medium
+
+Phase 0 delivered (client-only): one fully authored module reachable from "Treinar", local XP/progress, no
+punitive mechanics. See `ACADEMY_ENGINE.md` for the full phased design and what remains deferred (backend-authoritative
+progress, remaining curriculum modules, practical market challenges, paper trading — tracked under Phase 3+ below).
+
+---
+
 # MVP Completion Criteria
 
 The MVP is considered complete when users can:

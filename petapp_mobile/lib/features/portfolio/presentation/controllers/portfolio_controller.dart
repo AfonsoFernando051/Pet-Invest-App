@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:petapp_mobile/core/events/app_event.dart';
 import 'package:petapp_mobile/core/events/app_event_bus.dart';
+import 'package:petapp_mobile/core/services/total_xp_calculator.dart';
+import 'package:petapp_mobile/features/academy/data/repositories/academy_progress_local_repository.dart';
 import 'package:petapp_mobile/features/investment/data/models/investment_type_enum.dart';
 import 'package:petapp_mobile/features/pet/presentation/mascot/controllers/mascot_controller.dart';
 import 'package:petapp_mobile/features/portfolio/data/repositories/achievements_local_repository.dart';
@@ -34,15 +36,18 @@ class PortfolioController extends ChangeNotifier {
   PortfolioController({
     required PortfolioRepository repository,
     required AchievementsLocalRepository achievementsRepository,
+    AcademyProgressLocalRepository? academyRepository,
     MascotController? mascotController,
     AppEventBus? eventBus,
   })  : _repository = repository,
         _achievementsRepository = achievementsRepository,
+        _academyRepository = academyRepository ?? AcademyProgressLocalRepository(),
         _mascotController = mascotController,
         _eventBus = eventBus ?? AppEventBus.instance;
 
   final PortfolioRepository _repository;
   final AchievementsLocalRepository _achievementsRepository;
+  final AcademyProgressLocalRepository _academyRepository;
   final MascotController? _mascotController;
   final AppEventBus _eventBus;
 
@@ -260,7 +265,13 @@ class PortfolioController extends ChangeNotifier {
       }
     }
 
-    final totalXp = AchievementCatalog.totalXpFor(_unlockedAchievements.keys.toSet());
+    // Sums achievement XP *and* Academy lesson XP (see `TotalXpCalculator`)
+    // so a portfolio refresh never overwrites XP earned from a lesson —
+    // `evaluateEvolution` sets the pet's stored XP outright, it doesn't add.
+    final totalXp = await TotalXpCalculator.compute(
+      achievementsRepository: _achievementsRepository,
+      academyRepository: _academyRepository,
+    );
     await _mascotController?.evaluateEvolution(summary.currentValue, totalXp);
   }
 }

@@ -2,10 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/game_button.dart';
+import '../../../academy/presentation/screens/academy_home_screen.dart';
 import '../../../investment/presentation/screens/investment_configuration_screen.dart';
+import '../../../pet/presentation/mascot/controllers/mascot_controller.dart';
 
 class ActionButtons extends StatelessWidget {
-  const ActionButtons({super.key});
+  const ActionButtons({super.key, required this.mascotController});
+
+  final MascotController mascotController;
 
   @override
   Widget build(BuildContext context) {
@@ -30,17 +34,20 @@ class ActionButtons extends StatelessWidget {
         ),
         const SizedBox(width: 10),
 
-        // Secondary CTA — Treinar / Analisar
+        // Secondary CTA — Treinar / Analisar: entry point into the Academy.
         Expanded(
           child: _buildSecondaryButton(
             context,
             title: 'Treinar',
-            subtitle: 'Analisar',
+            subtitle: 'Aprender',
             icon: Icons.menu_book_outlined,
             onTap: () {
               HapticFeedback.lightImpact();
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Análise de Ativos em construção...')),
+              Navigator.of(context).push(
+                _fadeRoute(
+                  AcademyHomeScreen(mascotController: mascotController),
+                  name: 'academy_home',
+                ),
               );
             },
           ),
@@ -186,8 +193,9 @@ class ActionButtons extends StatelessWidget {
     );
   }
 
-  Route _fadeRoute(Widget page) {
+  Route _fadeRoute(Widget page, {String? name}) {
     return PageRouteBuilder(
+      settings: RouteSettings(name: name),
       pageBuilder: (context, animation, secondaryAnimation) => page,
       transitionsBuilder: (context, animation, secondaryAnimation, child) => FadeTransition(
         opacity: animation,

@@ -14,11 +14,17 @@ class SuggestedActionsList extends StatelessWidget {
   const SuggestedActionsList({
     super.key,
     required this.onLearnDividends,
+    required this.onOpenAcademy,
     required this.showInvestorProfileAction,
   });
 
   /// Switches Home to the Proventos (passive income / dividends) tab.
   final VoidCallback onLearnDividends;
+
+  /// Opens the Academy — the "Complete a Lesson" and "First Quiz" entries
+  /// both lead here today, since Academy doesn't yet have a distinct quiz-only
+  /// entry point (see `docs/ACADEMY_ENGINE.md`).
+  final VoidCallback onOpenAcademy;
 
   /// Whether the risk-assessment questionnaire is still unanswered — that
   /// step is optional now, so it only appears here if not already done.
@@ -34,13 +40,19 @@ class SuggestedActionsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final actions = <(IconData, String, VoidCallback)>[
-      (Icons.menu_book_outlined, AppStrings.suggestedActionCompleteLesson, () => _comingSoon(context)),
+      (Icons.menu_book_outlined, AppStrings.suggestedActionCompleteLesson, () {
+        HapticFeedback.selectionClick();
+        onOpenAcademy();
+      }),
       (Icons.flag_outlined, AppStrings.suggestedActionTodayMission, () => _comingSoon(context)),
       (Icons.payments_outlined, AppStrings.suggestedActionLearnDividends, () {
         HapticFeedback.selectionClick();
         onLearnDividends();
       }),
-      (Icons.quiz_outlined, AppStrings.suggestedActionFirstQuiz, () => _comingSoon(context)),
+      (Icons.quiz_outlined, AppStrings.suggestedActionFirstQuiz, () {
+        HapticFeedback.selectionClick();
+        onOpenAcademy();
+      }),
       if (showInvestorProfileAction)
         (Icons.assignment_outlined, AppStrings.suggestedActionInvestorProfile, () {
           HapticFeedback.selectionClick();

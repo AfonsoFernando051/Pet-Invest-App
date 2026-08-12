@@ -380,26 +380,32 @@ Planned
 
 ---
 
-# Learning Content
+# Learning Content (Academy)
 
 ## Purpose
 
-Teach investing concepts.
+Teach investing concepts through short, interactive lessons rather than articles — see
+`ACADEMY_ENGINE.md` for the full design.
 
 ## Responsibilities
 
-- Educational articles
-- Tutorials
-- Investment concepts
-- Financial education
+- Module/lesson progression, reachable from the Home "Treinar" button
+- Short interactive lessons (explanation, example, micro-exercise, applied scenario, summary)
+- XP integration with the existing gamification system
+- Curriculum structured across 7-8 modules of increasing difficulty
 
 ## Business Rules
 
-Content should prioritize clarity over technical complexity.
+- Content should prioritize clarity over technical complexity.
+- Content teaches users to investigate concepts, never to imply a buy/sell signal
+  (e.g. never "low P/L = good investment").
+- No punitive mechanics — a wrong answer gets encouraging feedback, never a lost life or reset progress,
+  per this app's existing no-punishment principle for the Pet.
 
 ## Status
 
-Planned
+In Progress — Phase 0 slice shipped (client-only): one fully authored module ("Fundamentos do Investidor"),
+remaining modules shown as "coming soon" placeholders. See `ACADEMY_ENGINE.md` for what's deferred and why.
 
 ---
 

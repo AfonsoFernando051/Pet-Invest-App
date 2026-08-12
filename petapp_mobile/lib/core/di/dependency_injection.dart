@@ -1,4 +1,5 @@
 import 'package:petapp_mobile/core/network/api_client.dart';
+import 'package:petapp_mobile/features/academy/data/repositories/academy_progress_local_repository.dart';
 import 'package:petapp_mobile/features/auth/data/datasources/auth_remote_datasource.dart';
 import 'package:petapp_mobile/features/auth/data/repositories/auth_repository.dart';
 import 'package:petapp_mobile/features/onboarding/data/datasources/onboarding_remote_datasource.dart';
@@ -73,6 +74,9 @@ class DI {
 
   // Not `final` so tests can replace it with a mock repository.
   static AchievementsLocalRepository achievementsRepository = AchievementsLocalRepository();
+
+  // Not `final` so tests can replace it with a mock repository.
+  static AcademyProgressLocalRepository academyProgressRepository = AcademyProgressLocalRepository();
 
   static final MentorRemoteDataSource _mentorRemoteDataSource =
       MentorRemoteDataSource(apiClient: _apiClient);

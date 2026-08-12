@@ -383,6 +383,46 @@ Avoid replacing stable technologies without measurable benefits.
 
 ---
 
+# DECISION-011
+
+## Title
+
+Academy (Financial Education) — Phase 0 Scope, Client-Only, No Punitive Mechanics
+
+### Status
+
+Accepted
+
+### Context
+
+A brief requested a full production Academy: backend REST API + Flyway tables, offline-first sync, CMS-ready
+content, eight fully populated curriculum modules, and a Duolingo-style lives/hearts mechanic. This exceeds
+DECISION-004 (MVP First) and ROADMAP.md, which lists "Interactive tutorials" and "Investment quizzes" as
+post-MVP. Separately, a lives/hearts mechanic conflicts with PROJECT_CONTEXT.md's explicit rule that the game must
+never punish the user.
+
+### Decision
+
+Ship a client-only Phase 0 slice: one fully authored module reachable from the existing "Treinar" button, local
+XP/progress persistence following the same pattern as `AchievementsLocalRepository`, and no lives/hearts or other
+punitive mechanic — wrong answers get encouraging feedback and the user continues. The full north-star design
+(backend-authoritative progress, remaining curriculum, practical market challenges, paper trading) is documented in
+`ACADEMY_ENGINE.md` as explicit future phases, not built now.
+
+### Rationale
+
+Mirrors the precedent already set by `MARKET_EVENTS_ENGINE.md` for the same tension. A real, working slice that
+reuses existing patterns (catalog-of-defs content, local persistence, the achievement celebration UI) delivers value
+now without the multi-week, cross-stack lift the full brief implies, and without contradicting the project's own
+no-punishment design principle.
+
+### Consequences
+
+Future work extending Academy content or moving progress server-side should follow `ACADEMY_ENGINE.md`'s phasing
+rather than re-deriving scope from the original brief.
+
+---
+
 # Future Decisions
 
 Whenever a significant architectural or product decision is made, add a new entry following the same structure.

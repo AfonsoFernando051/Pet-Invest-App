@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:petapp_mobile/features/academy/data/repositories/academy_progress_local_repository.dart';
 import 'package:petapp_mobile/features/investment/data/models/investment_type_enum.dart';
 import 'package:petapp_mobile/features/portfolio/data/datasources/portfolio_remote_datasource.dart';
 import 'package:petapp_mobile/features/portfolio/data/repositories/achievements_local_repository.dart';
@@ -73,6 +74,25 @@ class FakeAchievementsLocalRepository implements AchievementsLocalRepository {
   }
 }
 
+/// In-memory [AcademyProgressLocalRepository] double — the real one persists
+/// to `SharedPreferences`, unavailable in a plain unit test. No lessons are
+/// ever completed in these tests, so it always reports zero Academy XP.
+class FakeAcademyProgressLocalRepository implements AcademyProgressLocalRepository {
+  final Set<String> _completed = {};
+
+  @override
+  Future<Set<String>> loadCompletedLessonIds() async => _completed;
+
+  @override
+  Future<Set<String>> markLessonCompleted(String lessonId) async {
+    _completed.add(lessonId);
+    return _completed;
+  }
+
+  @override
+  Future<int> totalXpEarned() async => 0;
+}
+
 /// A single-lot [Holding] built the same way the real pipeline does
 /// (`Holding.fromLots`), so `firstPurchaseDate` and other lot-derived
 /// getters behave exactly as they would for real data.
@@ -91,14 +111,17 @@ List<Holding> _holdingList({
 void main() {
   late FakePortfolioRepository repository;
   late FakeAchievementsLocalRepository achievementsRepository;
+  late FakeAcademyProgressLocalRepository academyRepository;
   late PortfolioController controller;
 
   setUp(() {
     repository = FakePortfolioRepository();
     achievementsRepository = FakeAchievementsLocalRepository();
+    academyRepository = FakeAcademyProgressLocalRepository();
     controller = PortfolioController(
       repository: repository,
       achievementsRepository: achievementsRepository,
+      academyRepository: academyRepository,
     );
   });
 
