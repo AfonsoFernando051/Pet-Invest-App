@@ -154,6 +154,34 @@ class _MentorScreenState extends State<MentorScreen> {
     );
   }
 
+  // A soft purple/cyan halo behind the Mentor's avatar — Light theme has no
+  // cosmic backdrop directly behind the header card, so without this the
+  // character reads as a plain chat-app avatar. Dark theme already gets
+  // that atmosphere for free from the cosmic background, so it's skipped
+  // there rather than doubling up on glow.
+  Widget _avatarWithHalo({required Widget avatar, required double haloSize}) {
+    if (!context.isDarkMode) {
+      return Container(
+        width: haloSize,
+        height: haloSize,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          gradient: RadialGradient(
+            colors: [
+              AppColors.neonPurple.withValues(alpha: 0.22),
+              AppColors.neonCyan.withValues(alpha: 0.10),
+              AppColors.neonCyan.withValues(alpha: 0),
+            ],
+            stops: const [0.0, 0.6, 1.0],
+          ),
+        ),
+        child: avatar,
+      );
+    }
+    return avatar;
+  }
+
   Widget _buildHeader() {
     final tokens = context.colors;
     return GlassCard(
@@ -162,16 +190,19 @@ class _MentorScreenState extends State<MentorScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       child: Row(
         children: [
-          CircleAvatar(
-            radius: 20,
-            backgroundColor: tokens.surface,
-            child: ClipOval(
-              child: Image.asset(
-                _petAsset,
-                width: 40,
-                height: 40,
-                fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Icon(Icons.pets, color: tokens.textSecondary, size: 20),
+          _avatarWithHalo(
+            haloSize: 52,
+            avatar: CircleAvatar(
+              radius: 20,
+              backgroundColor: tokens.surface,
+              child: ClipOval(
+                child: Image.asset(
+                  _petAsset,
+                  width: 40,
+                  height: 40,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => Icon(Icons.pets, color: tokens.textSecondary, size: 20),
+                ),
               ),
             ),
           ),
@@ -233,16 +264,19 @@ class _MentorScreenState extends State<MentorScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const SizedBox(height: 24),
-          CircleAvatar(
-            radius: 40,
-            backgroundColor: tokens.surface,
-            child: ClipOval(
-              child: Image.asset(
-                _petAsset,
-                width: 80,
-                height: 80,
-                fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Icon(Icons.pets, color: tokens.textSecondary, size: 40),
+          _avatarWithHalo(
+            haloSize: 104,
+            avatar: CircleAvatar(
+              radius: 40,
+              backgroundColor: tokens.surface,
+              child: ClipOval(
+                child: Image.asset(
+                  _petAsset,
+                  width: 80,
+                  height: 80,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => Icon(Icons.pets, color: tokens.textSecondary, size: 40),
+                ),
               ),
             ),
           ),

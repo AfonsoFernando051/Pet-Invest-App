@@ -39,6 +39,12 @@ class AppColors {
   static const Color neonPink   = Color(0xFFFF2A85);
   static const Color goldenBorder = Color(0xFFFFD54F);
 
+  /// The product's single strongest visual signature — progression, XP,
+  /// rewards, primary CTAs, "this is the current step" states. Reused as a
+  /// constant (rather than redefined per widget) so every gradient moment
+  /// in the app reads as the same brand gesture.
+  static const List<Color> brandGradient = [neonViolet, neonPink];
+
   // Semantic / state colors — themed, NOT generic Material defaults
   static const Color positiveGreen = Color(0xFF00E676); // neon green
   static const Color negativeRed   = Color(0xFFFF1744); // vivid red

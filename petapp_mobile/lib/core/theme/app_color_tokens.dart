@@ -17,10 +17,12 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
     required this.backgroundSecondary,
     required this.surface,
     required this.surfaceElevated,
+    required this.surfaceMuted,
     required this.textPrimary,
     required this.textSecondary,
     required this.textTertiary,
     required this.border,
+    required this.borderStrong,
     required this.divider,
     required this.primary,
     required this.primaryContainer,
@@ -48,6 +50,11 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
   /// Elevated surface — dialogs, sheets, snackbars, popovers.
   final Color surfaceElevated;
 
+  /// Recessed/quiet surface — disabled cards, locked states, inline
+  /// highlight backgrounds that need to sit *below* [surface] rather than
+  /// above it.
+  final Color surfaceMuted;
+
   final Color textPrimary;
   final Color textSecondary;
   final Color textTertiary;
@@ -55,6 +62,11 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
   /// Neutral border for generic surfaces (not the colorful per-feature
   /// accent borders, which stay theme-invariant — see [AppColors]).
   final Color border;
+
+  /// A more visible neutral border for elevated/active surfaces that need
+  /// to read as a step up from [border] without reaching for a full accent
+  /// color.
+  final Color borderStrong;
   final Color divider;
 
   final Color primary;
@@ -82,10 +94,12 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
     backgroundSecondary: AppColors.backgroundDark,
     surface: AppColors.spaceDark,
     surfaceElevated: AppColors.spaceBlue,
+    surfaceMuted: Colors.black.withValues(alpha: 0.24),
     textPrimary: Colors.white,
     textSecondary: AppColors.subtleText,
     textTertiary: Colors.white54,
     border: Colors.white.withValues(alpha: 0.12),
+    borderStrong: Colors.white.withValues(alpha: 0.24),
     divider: Colors.white24,
     primary: AppColors.neonCyan,
     primaryContainer: AppColors.neonCyan.withValues(alpha: 0.16),
@@ -111,10 +125,12 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
     backgroundSecondary: const Color(0xFFEEF0F6),
     surface: const Color(0xFFFCFCFE),
     surfaceElevated: const Color(0xFFFFFFFF),
+    surfaceMuted: const Color(0xFFECEEF6),
     textPrimary: const Color(0xFF1B1C29),
     textSecondary: const Color(0xFF5B5E72),
     textTertiary: const Color(0xFF9296AA),
     border: const Color(0xFFE3E5EF),
+    borderStrong: const Color(0xFFD2D6E4),
     divider: const Color(0xFFEAEBF2),
     primary: const Color(0xFF0089A0),
     primaryContainer: const Color(0xFFDDF5F8),
@@ -136,10 +152,12 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
     Color? backgroundSecondary,
     Color? surface,
     Color? surfaceElevated,
+    Color? surfaceMuted,
     Color? textPrimary,
     Color? textSecondary,
     Color? textTertiary,
     Color? border,
+    Color? borderStrong,
     Color? divider,
     Color? primary,
     Color? primaryContainer,
@@ -159,10 +177,12 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
       backgroundSecondary: backgroundSecondary ?? this.backgroundSecondary,
       surface: surface ?? this.surface,
       surfaceElevated: surfaceElevated ?? this.surfaceElevated,
+      surfaceMuted: surfaceMuted ?? this.surfaceMuted,
       textPrimary: textPrimary ?? this.textPrimary,
       textSecondary: textSecondary ?? this.textSecondary,
       textTertiary: textTertiary ?? this.textTertiary,
       border: border ?? this.border,
+      borderStrong: borderStrong ?? this.borderStrong,
       divider: divider ?? this.divider,
       primary: primary ?? this.primary,
       primaryContainer: primaryContainer ?? this.primaryContainer,
@@ -187,10 +207,12 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
       backgroundSecondary: Color.lerp(backgroundSecondary, other.backgroundSecondary, t)!,
       surface: Color.lerp(surface, other.surface, t)!,
       surfaceElevated: Color.lerp(surfaceElevated, other.surfaceElevated, t)!,
+      surfaceMuted: Color.lerp(surfaceMuted, other.surfaceMuted, t)!,
       textPrimary: Color.lerp(textPrimary, other.textPrimary, t)!,
       textSecondary: Color.lerp(textSecondary, other.textSecondary, t)!,
       textTertiary: Color.lerp(textTertiary, other.textTertiary, t)!,
       border: Color.lerp(border, other.border, t)!,
+      borderStrong: Color.lerp(borderStrong, other.borderStrong, t)!,
       divider: Color.lerp(divider, other.divider, t)!,
       primary: Color.lerp(primary, other.primary, t)!,
       primaryContainer: Color.lerp(primaryContainer, other.primaryContainer, t)!,

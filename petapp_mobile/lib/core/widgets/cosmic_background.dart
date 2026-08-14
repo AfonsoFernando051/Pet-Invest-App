@@ -260,6 +260,10 @@ class _LightAuroraBackground extends StatelessWidget {
     // rather than an evenly-faded wash.
     final visibleAnchors = preset.glowOpacity >= 0.09 ? 3 : (preset.glowOpacity > 0 ? 2 : 1);
     final alphaScale = (preset.nebulaOpacity).clamp(0.35, 1.0);
+    // Richer presets (Home) get larger, more overlapping/blended blobs for
+    // a genuine atmospheric wash; quieter presets (Academy/Lesson) pull
+    // them tighter and smaller so they read as a few quiet light sources.
+    final radiusScale = 0.34 + 0.12 * alphaScale;
     return Stack(
       fit: StackFit.expand,
       children: [
@@ -268,7 +272,15 @@ class _LightAuroraBackground extends StatelessWidget {
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [tokens.backgroundPrimary, tokens.backgroundSecondary],
+              // A faint warm-lavender middle stop instead of a flat 2-tone
+              // fade — this is what keeps the page background from reading
+              // as plain off-white while staying well under text contrast.
+              colors: [
+                tokens.backgroundPrimary,
+                Color.alphaBlend(AppColors.neonPurple.withValues(alpha: 0.035), tokens.backgroundPrimary),
+                tokens.backgroundSecondary,
+              ],
+              stops: const [0.0, 0.55, 1.0],
             ),
           ),
         ),
@@ -280,10 +292,11 @@ class _LightAuroraBackground extends StatelessWidget {
               painter: _AuroraPainter(
                 t: t,
                 anchorCount: visibleAnchors,
+                radiusScale: radiusScale,
                 colors: [
-                  AppColors.neonCyan.withValues(alpha: 0.10 * alphaScale),
-                  AppColors.neonPurple.withValues(alpha: 0.09 * alphaScale),
-                  AppColors.goldenBorder.withValues(alpha: 0.06 * alphaScale),
+                  AppColors.neonCyan.withValues(alpha: 0.17 * alphaScale),
+                  AppColors.neonPurple.withValues(alpha: 0.15 * alphaScale),
+                  AppColors.neonPink.withValues(alpha: 0.10 * alphaScale),
                 ],
               ),
             );
@@ -348,11 +361,15 @@ class _LightImageBackground extends StatelessWidget {
 }
 
 class _AuroraPainter extends CustomPainter {
-  _AuroraPainter({required this.t, required this.colors, this.anchorCount = 3});
+  _AuroraPainter({required this.t, required this.colors, this.anchorCount = 3, this.radiusScale = 0.42});
 
   final double t;
   final List<Color> colors;
   final int anchorCount;
+
+  /// Fraction of `size.shortestSide` each blob's radius spans — richer
+  /// presets use a larger value so blobs blend into one atmospheric wash.
+  final double radiusScale;
 
   static const List<Offset> _anchors = [Offset(0.15, 0.12), Offset(0.85, 0.28), Offset(0.35, 0.85)];
 
@@ -363,7 +380,7 @@ class _AuroraPainter extends CustomPainter {
       final phase = t + i * (2 * pi / _anchors.length);
       final dx = anchor.dx * size.width + sin(phase) * size.width * 0.06;
       final dy = anchor.dy * size.height + cos(phase * 0.8) * size.height * 0.05;
-      final radius = size.shortestSide * 0.42;
+      final radius = size.shortestSide * radiusScale;
       final paint = Paint()
         ..shader = RadialGradient(
           colors: [colors[i % colors.length], colors[i % colors.length].withValues(alpha: 0)],
@@ -374,7 +391,7 @@ class _AuroraPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _AuroraPainter oldDelegate) =>
-      oldDelegate.t != t || oldDelegate.anchorCount != anchorCount;
+      oldDelegate.t != t || oldDelegate.anchorCount != anchorCount || oldDelegate.radiusScale != radiusScale;
 }
 
 class _Star {

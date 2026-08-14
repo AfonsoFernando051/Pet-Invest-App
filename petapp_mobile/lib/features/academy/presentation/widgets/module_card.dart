@@ -29,17 +29,28 @@ class ModuleCard extends StatelessWidget {
     final totalLessons = module.lessonIds.length;
     final progress = totalLessons == 0 ? 0.0 : completedLessons / totalLessons;
 
+    // `inProgress` (the user's "current step") gets the brand purple
+    // treatment so it's visually dominant against merely-`available`
+    // modules, which stay a quieter cyan — otherwise the two states looked
+    // identical apart from a text label.
     final accentColor = switch (status) {
       ModuleStatus.completed => tokens.success,
-      ModuleStatus.inProgress => AppColors.neonCyan,
+      ModuleStatus.inProgress => AppColors.neonPurple,
       ModuleStatus.available => AppColors.neonCyan,
       ModuleStatus.comingSoon => tokens.textTertiary,
+    };
+    final cardSurface = switch (status) {
+      ModuleStatus.completed => CardSurface.reward,
+      ModuleStatus.inProgress => CardSurface.active,
+      ModuleStatus.available => CardSurface.standard,
+      ModuleStatus.comingSoon => CardSurface.disabled,
     };
 
     return Opacity(
       opacity: isLocked ? 0.65 : 1.0,
       child: GlassCard(
-        borderColor: accentColor.withValues(alpha: isLocked ? 0.15 : 0.35),
+        surface: cardSurface,
+        borderColor: context.isDarkMode ? accentColor.withValues(alpha: isLocked ? 0.15 : 0.35) : null,
         borderRadius: 20,
         padding: EdgeInsets.zero,
         child: Material(
