@@ -9,6 +9,7 @@ import '../../../../core/utils/translator.dart';
 import '../../../../core/utils/game_snack.dart';
 import '../../../../core/widgets/app_loading_indicator.dart';
 import '../../../../core/widgets/confirm_logout_dialog.dart';
+import '../../../../core/theme/background_presets.dart';
 import '../../../../core/widgets/cosmic_background.dart';
 import '../../../../core/widgets/glass_card.dart';
 import '../../../../core/di/dependency_injection.dart';
@@ -143,10 +144,23 @@ class _DashboardScreenState extends State<DashboardScreen> {
     super.dispose();
   }
 
-  // Shared background for all tabs — slow drift + twinkling stars so the
-  // space theme reads as alive rather than a static wallpaper.
+  // Shared background instance for all tabs (the IndexedStack below keeps
+  // every tab's state alive, so there's one CosmicBackground behind all of
+  // them, not five). Content-hierarchy comes from swapping `intensity` per
+  // selected tab instead: full cosmic expression on Home, progressively
+  // quieter as the screen gets more cognitively demanding, down to Academy.
+  // Lesson/quiz screens go one step further with their own `focus`-level
+  // CosmicBackground pushed as a separate route (see LessonScreen).
+  static const List<BackgroundIntensity> _tabIntensities = [
+    BackgroundIntensity.immersive, // Home
+    BackgroundIntensity.balanced, // Carteira / Portfolio
+    BackgroundIntensity.balanced, // Proventos / Passive income
+    BackgroundIntensity.subtle, // Academia
+    BackgroundIntensity.mentor, // Mentor
+  ];
+
   Widget _buildBackground({required Widget child}) {
-    return CosmicBackground(child: child);
+    return CosmicBackground(intensity: _tabIntensities[_selectedIndex], child: child);
   }
 
   // ── Page route helper ─────────────────────────────────────────────────────

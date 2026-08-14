@@ -2,20 +2,35 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:petrimonium/core/constants/app_colors.dart';
 import 'package:petrimonium/core/theme/app_color_tokens.dart';
+import 'package:petrimonium/core/theme/background_presets.dart';
 
 /// The app's shared "living background". In Dark theme this is the original
-/// nebula image with a slow Ken-Burns drift, a darken pass, and a twinkling
-/// starfield. Light theme swaps the space imagery for a soft, bright aurora
-/// gradient with slow-drifting color blobs — same "alive, not static
-/// wallpaper" feeling, without forcing a dark space scene onto a bright,
-/// friendly theme. One widget, two looks — no duplicated screens.
+/// nebula image with a slow Ken-Burns drift, a darken pass, a localized
+/// ambient glow, and a twinkling starfield. Light theme swaps the space
+/// imagery for a soft, bright aurora gradient with slow-drifting color blobs
+/// — same "alive, not static wallpaper" feeling, without forcing a dark
+/// space scene onto a bright, friendly theme. One widget, two looks — no
+/// duplicated screens.
+///
+/// [intensity] is what makes the background context-aware: every knob
+/// (readability overlay strength, particle density, glow, how much the
+/// scene moves) is driven by a single [BackgroundPreset] looked up from
+/// [BackgroundPresets] — see that file to retune the whole app's feel from
+/// one place instead of hunting hardcoded values across screens. The rule
+/// of thumb: the more cognitively demanding the screen, the quieter the
+/// preset (`immersive` on Home → `focus` on a lesson/quiz).
+///
+/// [darken]/[starCount] remain as optional escape-hatch overrides for
+/// screens with a bespoke mood (e.g. Login) that isn't one of the named
+/// intensities.
 class CosmicBackground extends StatefulWidget {
   const CosmicBackground({
     super.key,
     required this.child,
+    this.intensity = BackgroundIntensity.balanced,
     this.assetPath = 'assets/images/bg_nebula.png',
-    this.darken = 0.5,
-    this.starCount = 46,
+    this.darken,
+    this.starCount,
     this.errorBuilder,
     this.showArtworkInLightMode = false,
   });
@@ -23,10 +38,14 @@ class CosmicBackground extends StatefulWidget {
   final Widget child;
   final String assetPath;
 
-  /// 0-1 black overlay strength on top of the (already desaturated) nebula.
-  /// Dark theme only.
-  final double darken;
-  final int starCount;
+  /// Context-aware visual weight — see [BackgroundIntensity].
+  final BackgroundIntensity intensity;
+
+  /// Overrides the resolved preset's darken value when set. Dark theme only.
+  final double? darken;
+
+  /// Overrides the resolved preset's star count when set.
+  final int? starCount;
   final ImageErrorWidgetBuilder? errorBuilder;
 
   /// When true, Light theme reuses [assetPath] (with a lightened, white-wash
@@ -42,17 +61,24 @@ class CosmicBackground extends StatefulWidget {
 }
 
 class _CosmicBackgroundState extends State<CosmicBackground> with TickerProviderStateMixin {
+  late BackgroundPreset _preset = BackgroundPresets.resolve(widget.intensity);
+
   late final AnimationController _driftController = AnimationController(
     vsync: this,
-    duration: const Duration(seconds: 26),
-  )..repeat();
+    duration: _preset.driftDuration,
+  );
 
   late final AnimationController _twinkleController = AnimationController(
     vsync: this,
-    duration: const Duration(seconds: 5),
-  )..repeat();
+    duration: _preset.twinkleDuration,
+  );
 
-  late final List<_Star> _stars = _generateStars(widget.starCount);
+  late List<_Star> _stars = _generateStars(_effectiveStarCount);
+
+  bool? _reducedMotion;
+
+  int get _effectiveStarCount => widget.starCount ?? _preset.starCount;
+  double get _effectiveDarken => widget.darken ?? _preset.darken;
 
   static List<_Star> _generateStars(int count) {
     final random = Random(7); // fixed seed: stable layout across rebuilds
@@ -65,6 +91,46 @@ class _CosmicBackgroundState extends State<CosmicBackground> with TickerProvider
         speed: 0.6 + random.nextDouble() * 0.8,
       );
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Flutter's equivalent of CSS `prefers-reduced-motion`: driven by the
+    // OS-level "Reduce Motion" accessibility setting.
+    final reducedMotion = MediaQuery.of(context).disableAnimations;
+    if (reducedMotion != _reducedMotion) {
+      _reducedMotion = reducedMotion;
+      _syncAnimation();
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant CosmicBackground oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Same widget/State can be reused across a background-intensity change
+    // (e.g. the Dashboard's IndexedStack swapping tabs) — retune the live
+    // controllers/particles instead of waiting for a full remount.
+    if (oldWidget.intensity != widget.intensity) {
+      _preset = BackgroundPresets.resolve(widget.intensity);
+      _driftController.duration = _preset.driftDuration;
+      _twinkleController.duration = _preset.twinkleDuration;
+      _syncAnimation();
+    }
+    if (oldWidget.starCount != widget.starCount || oldWidget.intensity != widget.intensity) {
+      _stars = _generateStars(_effectiveStarCount);
+    }
+  }
+
+  void _syncAnimation() {
+    final reduced = _reducedMotion ?? false;
+    if (reduced) {
+      _driftController.stop();
+      _twinkleController.stop();
+    } else {
+      if (!_driftController.isAnimating) _driftController.repeat();
+      if (!_twinkleController.isAnimating) _twinkleController.repeat();
+    }
   }
 
   @override
@@ -98,10 +164,11 @@ class _CosmicBackgroundState extends State<CosmicBackground> with TickerProvider
           driftController: _driftController,
           assetPath: widget.assetPath,
           errorBuilder: widget.errorBuilder,
+          preset: _preset,
           child: widget.child,
         );
       }
-      return _LightAuroraBackground(driftController: _driftController, child: widget.child);
+      return _LightAuroraBackground(driftController: _driftController, preset: _preset, child: widget.child);
     }
 
     return Stack(
@@ -110,48 +177,89 @@ class _CosmicBackgroundState extends State<CosmicBackground> with TickerProvider
         AnimatedBuilder(
           animation: _driftController,
           builder: (context, child) {
-            // Slow figure-eight-ish pan/scale — a Ken-Burns drift subtle
-            // enough to read as "alive" without ever being distracting.
+            // Slow figure-eight-ish pan/scale — a Ken-Burns drift, scaled by
+            // the preset's driftAmplitude so Focus/Subtle screens barely
+            // move while Home keeps the full "alive" feeling.
             final t = _driftController.value * 2 * pi;
-            final dx = sin(t) * 10;
-            final dy = cos(t * 0.7) * 6;
+            final amp = _preset.driftAmplitude;
+            final dx = sin(t) * 10 * amp;
+            final dy = cos(t * 0.7) * 6 * amp;
             return Transform.scale(
-              scale: 1.06,
+              scale: 1.0 + 0.06 * amp,
               child: Transform.translate(offset: Offset(dx, dy), child: child),
             );
           },
-          child: ColorFiltered(
-            colorFilter: ColorFilter.matrix(_desaturationMatrix(0.2)),
-            child: Image.asset(widget.assetPath, fit: BoxFit.cover, errorBuilder: widget.errorBuilder),
+          child: Opacity(
+            opacity: _preset.nebulaOpacity,
+            child: ColorFiltered(
+              colorFilter: ColorFilter.matrix(_desaturationMatrix(_preset.desaturation)),
+              child: Image.asset(widget.assetPath, fit: BoxFit.cover, errorBuilder: widget.errorBuilder),
+            ),
           ),
         ),
-        Container(color: Colors.black.withValues(alpha: widget.darken)),
-        AnimatedBuilder(
-          animation: _twinkleController,
-          builder: (context, _) => CustomPaint(
-            painter: _StarfieldPainter(stars: _stars, t: _twinkleController.value),
+        if (_preset.glowOpacity > 0) _AmbientGlow(opacity: _preset.glowOpacity),
+        Container(color: Colors.black.withValues(alpha: _effectiveDarken)),
+        if (_effectiveStarCount > 0)
+          AnimatedBuilder(
+            animation: _twinkleController,
+            builder: (context, _) => CustomPaint(
+              painter: _StarfieldPainter(
+                stars: _stars,
+                t: _twinkleController.value,
+                opacityScale: _preset.starOpacityScale,
+              ),
+            ),
           ),
-        ),
         widget.child,
       ],
     );
   }
 }
 
+/// Layer 4 — a single, static (unanimated, so effectively free) localized
+/// light source in the upper field of the screen. Kept out of the lower/
+/// center area where primary content and glass cards usually sit, so it
+/// reads as ambient depth rather than a hotspot behind information.
+class _AmbientGlow extends StatelessWidget {
+  const _AmbientGlow({required this.opacity});
+
+  final double opacity;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        gradient: RadialGradient(
+          center: const Alignment(-0.55, -0.75),
+          radius: 0.9,
+          colors: [AppColors.neonPurple.withValues(alpha: opacity), AppColors.neonPurple.withValues(alpha: 0)],
+        ),
+      ),
+    );
+  }
+}
+
 /// Light theme's answer to the nebula: a soft pearl/lavender gradient with
-/// two or three large, heavily-blurred accent-tinted blobs drifting slowly
-/// behind the content — "bright and alive", not "dark space scene lightened
-/// up". Built from plain gradients (no BackdropFilter/blur passes) so it
-/// stays cheap to repaint every frame.
+/// large, heavily-blurred accent-tinted blobs drifting slowly behind the
+/// content — "bright and alive", not "dark space scene lightened up". Built
+/// from plain gradients (no BackdropFilter/blur passes) so it stays cheap to
+/// repaint every frame. Blob count/opacity/drift scale with [preset] so the
+/// same context-aware hierarchy applies in Light theme too.
 class _LightAuroraBackground extends StatelessWidget {
-  const _LightAuroraBackground({required this.driftController, required this.child});
+  const _LightAuroraBackground({required this.driftController, required this.preset, required this.child});
 
   final AnimationController driftController;
+  final BackgroundPreset preset;
   final Widget child;
 
   @override
   Widget build(BuildContext context) {
     final tokens = context.colors;
+    // Quieter presets show fewer blobs at lower alpha instead of just a
+    // flat opacity scale — keeps the "few soft light sources" look intact
+    // rather than an evenly-faded wash.
+    final visibleAnchors = preset.glowOpacity >= 0.09 ? 3 : (preset.glowOpacity > 0 ? 2 : 1);
+    final alphaScale = (preset.nebulaOpacity).clamp(0.35, 1.0);
     return Stack(
       fit: StackFit.expand,
       children: [
@@ -167,14 +275,15 @@ class _LightAuroraBackground extends StatelessWidget {
         AnimatedBuilder(
           animation: driftController,
           builder: (context, _) {
-            final t = driftController.value * 2 * pi;
+            final t = driftController.value * 2 * pi * preset.driftAmplitude.clamp(0.3, 1.0);
             return CustomPaint(
               painter: _AuroraPainter(
                 t: t,
+                anchorCount: visibleAnchors,
                 colors: [
-                  AppColors.neonCyan.withValues(alpha: 0.10),
-                  AppColors.neonPurple.withValues(alpha: 0.09),
-                  AppColors.goldenBorder.withValues(alpha: 0.06),
+                  AppColors.neonCyan.withValues(alpha: 0.10 * alphaScale),
+                  AppColors.neonPurple.withValues(alpha: 0.09 * alphaScale),
+                  AppColors.goldenBorder.withValues(alpha: 0.06 * alphaScale),
                 ],
               ),
             );
@@ -197,12 +306,14 @@ class _LightImageBackground extends StatelessWidget {
     required this.driftController,
     required this.assetPath,
     required this.child,
+    required this.preset,
     this.errorBuilder,
   });
 
   final AnimationController driftController;
   final String assetPath;
   final Widget child;
+  final BackgroundPreset preset;
   final ImageErrorWidgetBuilder? errorBuilder;
 
   @override
@@ -216,10 +327,11 @@ class _LightImageBackground extends StatelessWidget {
           animation: driftController,
           builder: (context, child) {
             final t = driftController.value * 2 * pi;
-            final dx = sin(t) * 10;
-            final dy = cos(t * 0.7) * 6;
+            final amp = preset.driftAmplitude;
+            final dx = sin(t) * 10 * amp;
+            final dy = cos(t * 0.7) * 6 * amp;
             return Transform.scale(
-              scale: 1.06,
+              scale: 1.0 + 0.06 * amp,
               child: Transform.translate(offset: Offset(dx, dy), child: child),
             );
           },
@@ -236,16 +348,17 @@ class _LightImageBackground extends StatelessWidget {
 }
 
 class _AuroraPainter extends CustomPainter {
-  _AuroraPainter({required this.t, required this.colors});
+  _AuroraPainter({required this.t, required this.colors, this.anchorCount = 3});
 
   final double t;
   final List<Color> colors;
+  final int anchorCount;
 
   static const List<Offset> _anchors = [Offset(0.15, 0.12), Offset(0.85, 0.28), Offset(0.35, 0.85)];
 
   @override
   void paint(Canvas canvas, Size size) {
-    for (var i = 0; i < _anchors.length; i++) {
+    for (var i = 0; i < anchorCount && i < _anchors.length; i++) {
       final anchor = _anchors[i];
       final phase = t + i * (2 * pi / _anchors.length);
       final dx = anchor.dx * size.width + sin(phase) * size.width * 0.06;
@@ -260,7 +373,8 @@ class _AuroraPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant _AuroraPainter oldDelegate) => oldDelegate.t != t;
+  bool shouldRepaint(covariant _AuroraPainter oldDelegate) =>
+      oldDelegate.t != t || oldDelegate.anchorCount != anchorCount;
 }
 
 class _Star {
@@ -274,10 +388,11 @@ class _Star {
 }
 
 class _StarfieldPainter extends CustomPainter {
-  _StarfieldPainter({required this.stars, required this.t});
+  _StarfieldPainter({required this.stars, required this.t, this.opacityScale = 1.0});
 
   final List<_Star> stars;
   final double t;
+  final double opacityScale;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -285,12 +400,13 @@ class _StarfieldPainter extends CustomPainter {
     for (final star in stars) {
       final cycle = (t * star.speed + star.phase) % 1.0;
       final twinkle = (sin(cycle * 2 * pi) + 1) / 2; // 0..1
-      final opacity = 0.15 + twinkle * 0.55;
+      final opacity = ((0.15 + twinkle * 0.55) * opacityScale).clamp(0.0, 1.0);
       paint.color = Colors.white.withValues(alpha: opacity);
       canvas.drawCircle(Offset(star.dx * size.width, star.dy * size.height), star.radius, paint);
     }
   }
 
   @override
-  bool shouldRepaint(covariant _StarfieldPainter oldDelegate) => oldDelegate.t != t;
+  bool shouldRepaint(covariant _StarfieldPainter oldDelegate) =>
+      oldDelegate.t != t || oldDelegate.opacityScale != opacityScale;
 }
