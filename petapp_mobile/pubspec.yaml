@@ -40,6 +40,9 @@ dependencies:
   sensors_plus: ^5.0.1
   google_fonts: ^6.2.1
   lottie: ^3.3.3
+  # Rive runtime — used for hand-authored .riv pet animations.
+  # Lottie JSON files serve as the automatic fallback when a .riv is absent.
+  rive: ^0.14.11
   flutter_markdown_plus: ^1.0.12
 
 dev_dependencies:
@@ -82,6 +85,7 @@ flutter:
     - assets/images/
     - assets/anim/
     - assets/mascot/animations/
+    - assets/mascot/rive/
     - assets/mascot/evolutions/
     - assets/mascot/accessories/
 

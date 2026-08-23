@@ -13,7 +13,12 @@ enum PetAnimationState {
 }
 
 extension PetAnimationStateAsset on PetAnimationState {
-  /// File name (without extension) used to look up the Lottie animation
-  /// under `assets/mascot/animations/`.
+  /// Generic fallback animation file name (without extension).
+  /// Used when no species-specific file exists.
   String get assetKey => name;
+
+  /// Species-specific animation key, e.g. `dog_idle`.
+  /// Primary lookup under `assets/mascot/animations/`.
+  String speciesAssetKey(String specie) =>
+      '${specie.toLowerCase()}_$name';
 }

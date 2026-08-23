@@ -9,6 +9,7 @@ import 'package:petrimonium/features/pet/domain/enums/pet_accessory_id.dart';
 import 'package:petrimonium/features/pet/domain/enums/pet_animation_state.dart';
 import 'package:petrimonium/features/pet/domain/enums/pet_evolution_stage.dart';
 import 'package:petrimonium/features/pet/presentation/mascot/controllers/mascot_controller.dart';
+import 'package:petrimonium/features/pet/presentation/mascot/widgets/rive_pet_layer.dart';
 
 /// Renders the gamified pet mascot: an aura layer, the base evolution
 /// animation (Lottie, falling back to a static PNG per stage), and any
@@ -122,6 +123,7 @@ class _PetMascotWidgetState extends State<PetMascotWidget>
               _BaseMascotLayer(
                 state: profile.animationState,
                 stage: profile.stage,
+                specie: profile.specie.name.toLowerCase(),
                 size: widget.size,
               ),
               for (final entry in profile.equippedAccessories.entries)
@@ -181,24 +183,72 @@ class _BaseMascotLayer extends StatelessWidget {
   const _BaseMascotLayer({
     required this.state,
     required this.stage,
+    required this.specie,
     required this.size,
   });
 
   final PetAnimationState state;
   final PetEvolutionStage stage;
+  final String specie;
   final double size;
 
   @override
   Widget build(BuildContext context) {
     final mascotSize = size * 0.9;
-    return Lottie.asset(
-      'assets/mascot/animations/${state.assetKey}.json',
-      width: mascotSize,
-      height: mascotSize,
-      fit: BoxFit.contain,
-      errorBuilder: (context, error, stackTrace) => _EvolutionFallback(
+    // Fallback chain (highest → lowest priority):
+    //   1. assets/mascot/rive/{specie}.riv   ← hand-authored Rive file
+    //   2. assets/mascot/animations/{specie}_{state}.json  ← species Lottie
+    //   3. assets/mascot/animations/{state}.json           ← generic Lottie
+    //   4. assets/mascot/evolutions/{stage}.png            ← static PNG
+    return RivePetLayer(
+      specie: specie,
+      state: state,
+      size: mascotSize,
+      onFallback: (_) => _LottieFallback(
+        state: state,
         stage: stage,
+        specie: specie,
         size: mascotSize,
+      ),
+    );
+  }
+}
+
+/// Tries the species-specific Lottie JSON, then the generic one, then a
+/// static evolution PNG.
+class _LottieFallback extends StatelessWidget {
+  const _LottieFallback({
+    required this.state,
+    required this.stage,
+    required this.specie,
+    required this.size,
+  });
+
+  final PetAnimationState state;
+  final PetEvolutionStage stage;
+  final String specie;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    final speciesPath =
+        'assets/mascot/animations/${state.speciesAssetKey(specie)}.json';
+    final genericPath =
+        'assets/mascot/animations/${state.assetKey}.json';
+    return Lottie.asset(
+      speciesPath,
+      width: size,
+      height: size,
+      fit: BoxFit.contain,
+      errorBuilder: (ctx, e, s) => Lottie.asset(
+        genericPath,
+        width: size,
+        height: size,
+        fit: BoxFit.contain,
+        errorBuilder: (ctx2, e2, s2) => _EvolutionFallback(
+          stage: stage,
+          size: size,
+        ),
       ),
     );
   }
