@@ -97,8 +97,10 @@ void main() {
       expect(find.text('test@example.com'), findsOneWidget);
       expect(find.text('password123'), findsOneWidget);
 
-      final loginBtn = find.byType(ElevatedButton).first;
-      await tester.tap(loginBtn);
+      final loginBtn = find.byType(LoginButton);
+      await tester.ensureVisible(loginBtn);
+      await tester.pump();
+      await tester.tap(loginBtn, warnIfMissed: false);
       await tester.pump(); // Start loading
       await tester.pump(); // Finish loading
 
