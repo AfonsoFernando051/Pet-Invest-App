@@ -2,7 +2,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:petrimonium/features/investment/data/models/asset_registration_model.dart';
 import 'package:petrimonium/features/investment/data/models/investment_type_enum.dart';
 import 'package:petrimonium/features/investment/domain/services/pending_portfolio_stats_builder.dart';
-import 'package:petrimonium/features/portfolio/domain/entities/portfolio_stats.dart';
 
 AssetRegistrationModel asset({
   String name = 'PETR4',

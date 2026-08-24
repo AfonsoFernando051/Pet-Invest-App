@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:petrimonium/core/constants/app_colors.dart';
 import 'package:petrimonium/core/theme/app_color_tokens.dart';
 import 'package:petrimonium/features/asset_details/domain/entities/asset_indicator.dart';
-import 'package:petrimonium/features/asset_details/domain/entities/educational_explanation.dart';
 import 'package:petrimonium/features/asset_details/domain/services/indicator_education_catalog.dart';
 
 /// Educational bottom sheet shown when the user taps an indicator.

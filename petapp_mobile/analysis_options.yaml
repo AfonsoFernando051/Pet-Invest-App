@@ -24,5 +24,20 @@ linter:
     # avoid_print: false  # Uncomment to disable the `avoid_print` rule
     # prefer_single_quotes: true  # Uncomment to enable the `prefer_single_quotes` rule
 
+    # Pet enum values (DOG, CAT, WOLF…) must stay UPPER_CASE to match the
+    # backend JSON contract — renaming them would break serialization.
+    constant_identifier_names: false
+
+    # Dart >=3.11 flags __ in callbacks; our lambdas still use the older
+    # double-underscore convention. Harmless and too widespread to fix now.
+    unnecessary_underscores: false
+
+analyzer:
+  errors:
+    # onReorder is deprecated in Flutter >=3.42 but onReorderItem doesn't
+    # exist in 3.41.x. Treat as info so the CI stays green while we support
+    # both versions.
+    deprecated_member_use: info
+
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options
